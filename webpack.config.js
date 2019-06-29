@@ -20,11 +20,17 @@ const PATHS = {
 let entry = PATHS.src + 'jquery-slider.js';
 let outputPath = PATHS.dist;
 let outputFilename = './js/[name].js';
+let devtool = '';
+let htmlFilename = 'result.html';
+let htmlTemplate = PATHS.src + 'jquery-slider.pug';
 
 if (process.env.TESTBUILD) {
     entry = glob.sync(__dirname + "/app/tests/**/*.test.js");
     outputPath = __dirname + '/tests-dist/';
     outputFilename = 'tests.js';
+    devtool = 'source-map';
+    htmlTemplate = __dirname + '/app/tests/tests.pug';
+    htmlFilename = 'tests.html'
 }
 
 
@@ -39,12 +45,14 @@ const common = merge([
 
         plugins: [
             new HtmlWebpackPlugin({
-                filename: 'result.html',
+                filename: htmlFilename,
                 //chunks: ['jquery-slider'],
-                template: PATHS.src + 'jquery-slider.pug',
+                template: htmlTemplate,
             }),
 
         ],
+
+        devtool: devtool,
     },
     babel(),
     pug(),

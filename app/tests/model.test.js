@@ -1,8 +1,9 @@
 import {expect} from 'chai'
-//var expect = require('chai').expect;
 
 import clone from '../src/objectCopy'
 Object.clone = clone;
+
+import Model from '../src/MVP modules/model/model'
 
 var defaultOp = {
     min: 0,
@@ -16,7 +17,6 @@ var defaultOp = {
     value: 1,
     orientation: "horizontal",
     range: false,
-
 };
 
 describe('Model', () => {
@@ -39,10 +39,6 @@ describe('Model', () => {
             expect(modelOptions).to.deep.equal(testOptions);
         });
 
-        it("true", function () {
-            expect(true).to.equal(true);
-        });
-        
         it("extends object with max = 60 and min = 20", function () {
 
             const modelOptions = (new Model({min: 20, max: 60})).options;
@@ -66,3 +62,4 @@ describe('Model', () => {
 
 
 });
+
