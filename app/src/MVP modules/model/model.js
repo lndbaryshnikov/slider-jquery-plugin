@@ -50,6 +50,11 @@ export default function Model( userOptions ) {
             enumerable : false
         },
 
-
+        classes : {
+            get : function() {
+                return settings.classes;
+            },
+            enumerable : false
+        }
     })
 }
