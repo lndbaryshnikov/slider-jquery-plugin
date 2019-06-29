@@ -49,5 +49,7 @@ export default function Model( userOptions ) {
             },
             enumerable : false
         },
+
+
     })
 }

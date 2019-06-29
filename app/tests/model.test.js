@@ -21,7 +21,7 @@ var defaultOp = {
 
 describe('Model', () => {
 
-    describe("Options object extension", () => {
+    describe("Options object extension(getOptions method)", () => {
 
         it("extends object when user changes classes", function () {
 
@@ -58,6 +58,29 @@ describe('Model', () => {
             expect(modelOptions).to.deep.equal(defaultOp);
         });
 
+    });
+
+    describe('getClasses method', () => {
+
+        it("returns classes when user changes nothing", function () {
+
+            const modelClasses = (new Model()).classes;
+            const testClasses = (Object.assign({}, defaultOp)).classes;
+
+            expect(modelClasses).to.deep.equal(testClasses);
+        });
+
+        it("returns classes when user adds value to \'jquery-slider\' class", function () {
+
+            const modelClasses = (new Model({classes: {
+                'jquery-slider': 'user-own-class'
+                }})).classes;
+
+            const testClasses = (Object.assign({}, defaultOp)).classes = {
+                    'jquery-slider': 'user-own-class'
+            };
+            expect(modelClasses).to.deep.equal(testClasses);
+        });
     })
 
 
