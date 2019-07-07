@@ -53,6 +53,13 @@ const common = merge([
         ],
 
         devtool: devtool,
+        // node: {
+        //     net: 'empty',
+        //     tls: 'empty',
+        //     dns: 'empty',
+        //     fs: 'empty',
+        //     child_process: 'empty'
+        // }
     },
     babel(),
     pug(),

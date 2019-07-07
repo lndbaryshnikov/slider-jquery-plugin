@@ -1,4 +1,4 @@
-import {expect} from 'chai'
+//import expect from 'chai'
 
 import clone from '../src/objectCopy'
 Object.clone = clone;
@@ -85,4 +85,9 @@ describe('Model', () => {
 
 
 });
+
+
+// var model = new Model();
+// console.log(model._defaultOptions);
+
 
