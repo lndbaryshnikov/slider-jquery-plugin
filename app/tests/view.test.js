@@ -6,6 +6,6 @@ describe('View', () => {
    
     it("getHtml method", () => {
 
-        expect(view.html).to.be.a('function');
+        expect(!!view.html).to.be.true;
     });
 });
