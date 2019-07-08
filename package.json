@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env TESTBUILD=true webpack --env development --mode development && mocha tests-dist/tests.js --require source-map-support/register && rd /s/q tests-dist",
-    "get-test": "cross-env TESTBUILD=true webpack --env development --mode development",
+    "node-test": "cross-env TESTBUILD=true webpack --env development --mode development && mocha tests-dist/tests.js --require source-map-support/register && rd /s/q tests-dist",
+    "test": "cross-env TESTBUILD=true webpack --env development --mode development",
+    "test-and-watch": "cross-env TESTBUILD=true webpack --env development --mode development --watch",
     "dev": "webpack --mode development --env development",
     "build": "webpack --mode production --env production",
     "watch": "webpack --mode development --watch --env development",
