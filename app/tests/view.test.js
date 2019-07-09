@@ -23,7 +23,7 @@ describe('View', () => {
             const separateView = new View();
             const presenter = new Presenter(new View());
 
-            presenter.model(model);
+            presenter.model = model;
 
             expect(presenter.view.html).to.deep.equal(separateView.html);
 

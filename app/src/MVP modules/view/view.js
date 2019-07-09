@@ -16,6 +16,13 @@ export default function View() {
                     return html;
                 },
                 enumerable : false
+            },
+            
+            modelOptions : {
+                set : function(options) {
+                    
+                },
+                enumerable : false
             }
         });
 
