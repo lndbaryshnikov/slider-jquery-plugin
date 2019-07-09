@@ -6,6 +6,17 @@ import Model from '../src/MVP modules/model/model'
 import Presenter from '../src/MVP modules/presenter/presenter'
 
 
+const createInstance = (options) => {
+
+    const model = new Model(options);
+    const presenter = new Presenter(new View());
+
+    presenter.model = model;
+
+    return presenter;
+};
+
+
 describe('View', () => {
    
     it("getHtml method", () => {
@@ -19,16 +30,21 @@ describe('View', () => {
 
         it("Set classes when user passes no classes in model", () => {
 
-            const model = new Model();
             const separateView = new View();
-            const presenter = new Presenter(new View());
+            const app = createInstance();
+            expect(app.view.html).to.deep.equal(separateView.html);
 
-            presenter.model = model;
+        });
+        
+        it("Set classes when user passes extra class 'my-slider' to 'jquery-slider' class", () => {
 
-            expect(presenter.view.html).to.deep.equal(separateView.html);
+            const app = createInstance({classes: {
+                'jquery-slider': 'my-slider'
+                }});
 
 
-
+            $('body').append(app.view.html);
+            expect($('.jquery-slider').hasClass('my-slider')). to.be.true;
         });
 
     });
