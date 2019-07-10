@@ -53,6 +53,7 @@ const common = merge([
         ],
 
         devtool: devtool,
+        //For jsdom when I tried to run tests om Node.js
         // node: {
         //     net: 'empty',
         //     tls: 'empty',

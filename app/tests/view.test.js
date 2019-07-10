@@ -16,6 +16,37 @@ const createInstance = (options) => {
     return presenter;
 };
 
+const getClassList = (elements) => {
+    const classList = {};
+
+    for (let i = 1; i < elements.length; i++) {
+
+        //let i = 1 cause first 'div' is mocha
+        const classesString = $(elements[i]).attr('class');
+        const classesArray = classesString.split(' ');
+
+        if(!!classesArray[1]) {
+
+            const mainClass = classesArray[0];
+            classesArray.shift();
+            classList[mainClass] = classesArray.join(' ');
+
+        } else {
+
+            classList[classesArray[0]] = '';
+
+        }
+    }
+
+    return classList;
+};
+
+const defaultClasses = {
+    "jquery-slider": "",
+    "jquery-slider-range": "",
+    "jquery-slider-handle": ""
+};
+
 
 describe('View', () => {
    
@@ -30,21 +61,31 @@ describe('View', () => {
 
         it("Set classes when user passes no classes in model", () => {
 
-            const separateView = new View();
             const app = createInstance();
-            expect(app.view.html).to.deep.equal(separateView.html);
+            $('body').append(app.view.html);
+
+            expect(getClassList($('div'))).to.deep.equal(defaultClasses);
+            //expect(app.view.html).to.deep.equal(separateView.html);
 
         });
         
-        it("Set classes when user passes extra class 'my-slider' to 'jquery-slider' class", () => {
+        it("Set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
 
             const app = createInstance({classes: {
                 'jquery-slider': 'my-slider'
                 }});
 
-
             $('body').append(app.view.html);
-            expect($('.jquery-slider').hasClass('my-slider')). to.be.true;
+
+            const divs = $('div');
+            const classes = getClassList(divs);
+
+
+            expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
+            expect(classes).to.deep.equal(defaultClasses);
+
+
+
         });
 
     });
