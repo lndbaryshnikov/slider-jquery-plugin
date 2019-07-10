@@ -19,9 +19,9 @@ const createInstance = (options) => {
 const getClassList = (elements) => {
     const classList = {};
 
-    for (let i = 1; i < elements.length; i++) {
+    for (let i = 2; i < elements.length; i++) {
 
-        //let i = 1 cause first 'div' is mocha
+        //i = 2 cause first 'div' is mocha and second is empty - wrapper(view.js)
         const classesString = $(elements[i]).attr('class');
         const classesArray = classesString.split(' ');
 
@@ -65,26 +65,31 @@ describe('View', () => {
             $('body').append(app.view.html);
 
             expect(getClassList($('div'))).to.deep.equal(defaultClasses);
-            //expect(app.view.html).to.deep.equal(separateView.html);
+
+            app.view.html.remove();
 
         });
         
         it("Set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
 
-            const app = createInstance({classes: {
+            const app = createInstance({
+                classes: {
                 'jquery-slider': 'my-slider'
-                }});
+                }
+            });
 
             $('body').append(app.view.html);
 
             const divs = $('div');
-            const classes = getClassList(divs);
+            const domClasses = getClassList(divs);
 
+            const testClasses = defaultClasses;
+            testClasses["jquery-slider"] = 'my-slider';
 
             expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
-            expect(classes).to.deep.equal(defaultClasses);
+            expect(domClasses).to.deep.equal(testClasses);
 
-
+            app.view.html.remove();
 
         });
 

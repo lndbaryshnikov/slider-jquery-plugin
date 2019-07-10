@@ -13,7 +13,7 @@ export default function Presenter(_view) {
         
         model : {
             set : function(model) {
-               view.model = model.options;
+               view.modelOptions = model.options;
             },
             enumerable : false
         }
