@@ -5,6 +5,14 @@ Object.clone = clone;
 
 import Model from '../src/MVP modules/model/model'
 
+const createModel = (options) => {
+
+    return () => {
+        new Model(options);
+    }
+
+};
+
 var defaultOp = {
     min: 0,
     classes: {
@@ -64,9 +72,18 @@ describe('Model', () => {
         
         it("throws error when userOptions isn't an object", () => {
 
-            const createWrongOptions = () => { new Model('options'); };
+            expect(createModel('options')).to.throw('Options are incorrect(should be an object)');
+        });
+        
+        it("throws error when userOptions object doesn't correspond the required format", () => {
 
-            expect(createWrongOptions).to.throw('Options are incorrect(should be an object)');
+            const createWrongModel = createModel({
+                minimal: 100,
+                sweetness: 35
+            });
+
+            expect(createWrongModel).to.throw('Options are incorrect(should correspond the required format)');
+
         });
     })
 
