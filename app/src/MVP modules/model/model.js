@@ -18,6 +18,12 @@ export default function Model( userOptions ) {
 
     if ( userOptions ) {
 
+        if(typeof userOptions !== 'object') {
+
+            throw new Error('Options are incorrect(should be an object)');
+
+        }
+
         settings = $.extend(settings, userOptions);
     }
 

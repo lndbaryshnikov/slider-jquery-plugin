@@ -64,9 +64,7 @@ describe('Model', () => {
         
         it("throws error when userOptions isn't an object", () => {
 
-            const createWrongOptions = () => {
-                new Model('options');
-            };
+            const createWrongOptions = () => { new Model('options'); };
 
             expect(createWrongOptions).to.throw('Options are incorrect(should be an object)');
         });
