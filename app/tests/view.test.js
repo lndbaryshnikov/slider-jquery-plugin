@@ -1,6 +1,6 @@
 //import {expect} from 'chai';
 import {View} from '../src/MVP modules/view/view'
-import {getClassList, createInstance} from "../src/private.functions/view.private";
+import {getClassList, createInstance} from "../src/private/view.private";
 import {defaultOptions} from '../src/MVP modules/model/model';
 
 const defaultClasses = defaultOptions.classes;

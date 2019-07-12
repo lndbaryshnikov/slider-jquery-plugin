@@ -12,22 +12,18 @@ export const defaultOptions = {
     range: false,
 };
 
-import {getCorrectOptions} from '../../private.functions/model.private'
+import {getCorrectOptions} from '../../private/model.private'
 
 
 export function Model( userOptions ) {
 
-    const settings = getCorrectOptions(userOptions, defaultOptions);
-
-    Object.defineProperties(this, {
-
-        options : {
-            get : function() {
-                return settings;
-            },
-            enumerable : false
-        },
-
-    })
+    this.options = getCorrectOptions(userOptions, defaultOptions);
 
 }
+
+Object.defineProperties(Model.prototype, {
+
+
+});
+
+

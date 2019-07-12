@@ -3,7 +3,7 @@ import clone from '../src/objectCopy'
 Object.clone = clone;
 
 import {Model} from '../src/MVP modules/model/model'
-import {createModel} from "../src/private.functions/model.private";
+import {createModel} from "../src/private/model.private";
 import {defaultOptions} from '../src/MVP modules/model/model'
 
 describe('Model', () => {
