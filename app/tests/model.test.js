@@ -1,5 +1,5 @@
 //import expect from 'chai'
-import clone from '../src/objectCopy'
+import clone from '../src/common-functions/objectCopy'
 Object.clone = clone;
 
 import {Model} from '../src/MVP modules/model/model'

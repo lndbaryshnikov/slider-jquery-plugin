@@ -36,3 +36,13 @@ export const getClassList = (elements) => {
 
     return classList;
 };
+
+export const getInitialHtml = (defaultClasses) => {
+
+    const keys = Object.keys(defaultClasses);
+
+    return `<div><div class=${keys[0]}>` +
+        `<div class=${keys[1]}>` +
+        `<div class=${keys[2]}>` +
+        `</div></div></div></div>`;
+};

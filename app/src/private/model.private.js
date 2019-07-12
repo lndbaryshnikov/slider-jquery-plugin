@@ -1,5 +1,5 @@
 import {Model} from "../MVP modules/model/model";
-import arrayEquals from "../arrayEquals"
+import arrayEquals from "../common-functions/arrayEquals"
 
 export const hasAnArrayElements = (array_checking, source) => {
 

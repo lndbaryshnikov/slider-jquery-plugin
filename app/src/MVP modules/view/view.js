@@ -1,9 +1,11 @@
+import {getInitialHtml} from "../../private/view.private";
+import {defaultOptions} from '../model/model'
+
+const defaultClasses = defaultOptions.classes;
+
 export function View() {
 
-    this.html = $("<div><div class='jquery-slider'>" +
-        "<div class='jquery-slider-range'>" +
-        "<div class='jquery-slider-handle'>" +
-        "</div></div></div></div>");
+    this.html = $(getInitialHtml(defaultClasses));
 }
 
 Object.defineProperties(View.prototype, {

@@ -1,3 +1,5 @@
+import {getCorrectOptions} from '../../private/model.private'
+
 export const defaultOptions = {
     min: 0,
     classes: {
@@ -11,9 +13,6 @@ export const defaultOptions = {
     orientation: "horizontal",
     range: false,
 };
-
-import {getCorrectOptions} from '../../private/model.private'
-
 
 export function Model( userOptions ) {
 
