@@ -72,7 +72,8 @@ describe('Model', () => {
         
         it("throws error when userOptions isn't an object", () => {
 
-            expect(createModel('options')).to.throw('Options are incorrect(should be an object)');
+            expect(createModel('options')).to.throw('Options are incorrect' +
+                '(should be an object)');
         });
         
         it("throws error when userOptions object doesn't correspond the required format", () => {
@@ -82,9 +83,22 @@ describe('Model', () => {
                 sweetness: 35
             });
 
-            expect(createWrongModel).to.throw('Options are incorrect(should correspond the required format)');
-
+            expect(createWrongModel).to.throw('Options are incorrect' +
+                '(should correspond the required format)');
         });
+
+        it("throws error when user passes wrong class options", () => {
+
+            const createWrongModel = createModel({
+                classes: {
+                    'jquery-sl': 'my-slider'
+                }
+            });
+
+            expect(createWrongModel).to.throw('Options are incorrect' +
+                '(classes should correspond the required format)');
+        });
+
     })
 
 });
