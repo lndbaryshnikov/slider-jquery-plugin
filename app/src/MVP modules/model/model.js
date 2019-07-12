@@ -16,7 +16,7 @@ export default function Model( userOptions ) {
 
     let settings = Object.assign({}, defaultOptions);
 
-    if (userOptions) {
+    if ( userOptions ) {
 
         settings = $.extend(settings, userOptions);
     }

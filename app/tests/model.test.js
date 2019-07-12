@@ -60,10 +60,16 @@ describe('Model', () => {
 
     });
 
+    describe('Throwing exception when user passes incorrect options', () => {
+        
+        it("throws error when userOptions isn't an object", () => {
+
+            const createWrongOptions = () => {
+                new Model('options');
+            };
+
+            expect(createWrongOptions).to.throw('Options are incorrect(should be an object)');
+        });
+    })
+
 });
-
-
-// var model = new Model();
-// console.log(model._defaultOptions);
-
-
