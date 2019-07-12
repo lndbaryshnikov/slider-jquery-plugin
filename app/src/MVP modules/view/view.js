@@ -1,4 +1,4 @@
-export default function View() {
+export function View() {
 
     let html;
 
@@ -22,7 +22,6 @@ export default function View() {
                 set : function(modelOptions) {
 
                     this.classes = modelOptions.classes;
-
 
                 },
                 enumerable : false

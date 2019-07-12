@@ -1,31 +1,10 @@
 //import expect from 'chai'
-
 import clone from '../src/objectCopy'
 Object.clone = clone;
 
-import Model from '../src/MVP modules/model/model'
-
-const createModel = (options) => {
-
-    return () => {
-        new Model(options);
-    }
-
-};
-
-var defaultOp = {
-    min: 0,
-    classes: {
-        "jquery-slider": "",
-        "jquery-slider-range": "",
-        "jquery-slider-handle": ""
-    },
-    max: 100,
-    step: 1,
-    value: 1,
-    orientation: "horizontal",
-    range: false,
-};
+import {Model} from '../src/MVP modules/model/model'
+import {createModel} from "../src/private.functions/model.private";
+import {defaultOptions} from '../src/MVP modules/model/model'
 
 describe('Model', () => {
 
@@ -39,7 +18,7 @@ describe('Model', () => {
                 }
             })).options;
 
-            const testOptions = Object.clone(defaultOp);
+            const testOptions = Object.clone(defaultOptions);
             testOptions.classes = {
                 "jquery-slider-range": "my-slider-range"
             };
@@ -51,7 +30,7 @@ describe('Model', () => {
 
             const modelOptions = (new Model({min: 20, max: 60})).options;
 
-            const testOptions = Object.assign({}, defaultOp);
+            const testOptions = Object.assign({}, defaultOptions);
 
             testOptions.min = 20;
             testOptions.max = 60;
@@ -63,7 +42,7 @@ describe('Model', () => {
 
             const modelOptions = (new Model()).options;
 
-            expect(modelOptions).to.deep.equal(defaultOp);
+            expect(modelOptions).to.deep.equal(defaultOptions);
         });
 
     });

@@ -1,4 +1,4 @@
-export default function Presenter(_view) {
+export function Presenter(_view) {
 
     const view = _view;
 
