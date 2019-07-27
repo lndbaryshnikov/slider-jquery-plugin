@@ -1,4 +1,7 @@
-export function Presenter(_view) {
+
+
+
+export default function Presenter(_view) {
 
     this.view = _view;
 }

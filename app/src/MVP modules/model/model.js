@@ -1,4 +1,4 @@
-import {getCorrectOptions} from '../../private/model.private'
+import {getSliderSettings} from '../../functions/private/model.private'
 
 export const defaultOptions = {
     min: 0,
@@ -14,9 +14,9 @@ export const defaultOptions = {
     range: false,
 };
 
-export function Model( userOptions ) {
+export default function Model( userOptions ) {
 
-    this.options = getCorrectOptions(userOptions, defaultOptions);
+    this.options = getSliderSettings(userOptions, defaultOptions);
 
 }
 

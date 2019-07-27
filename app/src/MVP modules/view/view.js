@@ -1,9 +1,11 @@
-import {getInitialHtml} from "../../private/view.private";
+import {getInitialHtml} from "../../functions/private/view.private";
 import {defaultOptions} from '../model/model'
 
 const defaultClasses = defaultOptions.classes;
 
-export function View() {
+
+
+export default function View() {
 
     this.html = $(getInitialHtml(defaultClasses));
 }

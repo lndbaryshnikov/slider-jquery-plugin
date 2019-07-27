@@ -1,6 +1,6 @@
-import {Model} from "../MVP modules/model/model";
-import {Presenter} from "../MVP modules/presenter/presenter";
-import {View} from "../MVP modules/view/view";
+import Model from "../../MVP modules/model/model";
+import Presenter from "../../MVP modules/presenter/presenter";
+import View from "../../MVP modules/view/view";
 
 export const createInstance = (options) => {
 

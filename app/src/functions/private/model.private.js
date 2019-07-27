@@ -1,5 +1,5 @@
-import {Model} from "../MVP modules/model/model";
-import arrayEquals from "../common-functions/arrayEquals"
+import Model from "../../MVP modules/model/model";
+import arrayEquals from "../common/arrayEquals"
 
 export const hasAnArrayElements = (array_checking, source) => {
 
@@ -22,7 +22,7 @@ export const hasAnArrayElements = (array_checking, source) => {
     return has;
 };
 
-export const getCorrectOptions = (userOptions, defaultOptions) => {
+export const getSliderSettings = (userOptions, defaultOptions) => {
 
     let settings = Object.assign({}, defaultOptions);
 

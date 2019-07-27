@@ -1,9 +1,9 @@
 //import expect from 'chai'
-import clone from '../src/common-functions/objectCopy'
+import clone from '../src/functions/common/objectCopy'
 Object.clone = clone;
 
-import {Model} from '../src/MVP modules/model/model'
-import {createModel} from "../src/private/model.private";
+import Model from '../src/MVP modules/model/model'
+import {createModel} from "../src/functions/private/model.private";
 import {defaultOptions} from '../src/MVP modules/model/model'
 
 describe('Model', () => {
