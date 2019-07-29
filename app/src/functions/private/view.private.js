@@ -46,3 +46,12 @@ export const getInitialHtml = (defaultClasses) => {
         `<div class=${keys[2]}>` +
         `</div></div></div></div>`;
 };
+
+export const setClasses = (classes, html) => {
+
+    for (let key in classes) {
+
+        html.find('.' + key).addClass(classes[key]);
+
+    }
+};

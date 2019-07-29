@@ -47,6 +47,7 @@ describe('View', () => {
             expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
             expect(domClasses).to.deep.equal(testClasses);
 
+
             app.view.html.remove();
 
         });
