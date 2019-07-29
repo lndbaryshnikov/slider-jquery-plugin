@@ -8,7 +8,7 @@ const defaultClasses = defaultOptions.classes;
 
 describe('View', () => {
    
-    it("getHtml method", () => {
+    it("should have html property", () => {
 
         const view = new View();
         expect(!!view.html).to.be.true;
@@ -17,7 +17,7 @@ describe('View', () => {
 
     describe("setModel method for setting classes", () => {
 
-        it("Set classes when user passes no classes in model", () => {
+        it("set classes when user passes no classes in model", () => {
 
             const app = createInstance();
             $('body').append(app.view.html);
@@ -28,7 +28,7 @@ describe('View', () => {
 
         });
         
-        it("Set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
+        it("set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
 
             const app = createInstance({
                 classes: {

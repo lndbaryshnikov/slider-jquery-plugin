@@ -5,7 +5,7 @@ import View from '../src/MVP modules/view/view'
 
 describe('Presenter', () => {
 
-    it("getView method", () => {
+    it("view property should return an object", () => {
 
         const view = new Presenter(new View()).view;
         expect(view).to.be.an('object');
