@@ -55,3 +55,17 @@ export const setClasses = (classes, html) => {
 
     }
 };
+
+export const createEvent = (type, x, y) => {
+  const e = $.Event(type);
+
+  if (!!x) {
+      e.pageX = x;
+  }
+
+  if (!!y){
+      e.pageY = y;
+  }
+
+  return e;
+};

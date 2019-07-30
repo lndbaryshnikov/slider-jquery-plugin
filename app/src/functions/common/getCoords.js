@@ -1,5 +1,6 @@
-export const getCoords = (domElement) => {
-  const box = domElement.getBoundingClientRect();
+const getCoords = (domElem) => {
+
+  const box = domElem.getBoundingClientRect();
 
   return {
       top: box.top + pageYOffset,
@@ -10,3 +11,5 @@ export const getCoords = (domElement) => {
       height: box.height
     };
 };
+
+export default getCoords;

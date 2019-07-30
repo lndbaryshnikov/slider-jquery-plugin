@@ -1,7 +1,13 @@
 //import {expect} from 'chai';
 import View from '../src/MVP modules/view/view'
-import {getClassList, createInstance} from "../src/functions/private/view.private";
+import {getClassList, createInstance, createEvent} from "../src/functions/private/view.private";
 import {defaultOptions} from '../src/MVP modules/model/model';
+import getCoords from '../src/functions/common/getCoords'
+
+//styles here:
+import '../src/styles/jquery-slider.scss'
+import '../src/styles/jquery-slider-range.scss'
+import '../src/styles/jquery-slider-handle.scss'
 
 const defaultClasses = defaultOptions.classes;
 
@@ -38,10 +44,9 @@ describe('View', () => {
 
             $('body').append(app.view.html);
 
-            const divs = $('div');
-            const domClasses = getClassList(divs);
+            const domClasses = getClassList($('div'));
 
-            const testClasses = defaultClasses;
+            const testClasses = Object.assign({}, defaultClasses);
             testClasses["jquery-slider"] = 'my-slider';
 
             expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
@@ -52,5 +57,47 @@ describe('View', () => {
 
         });
 
+    });
+    
+    describe("slider events", () => {
+        
+        it("move jquery-slider-handle to specific coordinates", () => {
+
+            const app = createInstance();
+            $("body").append(app.view.html);
+
+            const slider = $('.jquery-slider')[0];
+
+            const sliderCoords = getCoords(slider);
+            const sliderMiddleLeft = sliderCoords.left + sliderCoords.width/2;
+
+            const handle = $('.jquery-slider-handle')[0];
+            console.log(handle);
+            const handleCoords = getCoords(handle);
+
+
+            const mousedownEvent = createEvent('mousedown', handleCoords.left, handleCoords.top);
+            $(handle).trigger(mousedownEvent);
+
+            const mousemoveEvent = createEvent('mousemove', sliderMiddleLeft, handleCoords.top);
+            $(document).trigger(mousemoveEvent);
+
+            $(handle).trigger('mouseup');
+
+            const newHandleCoords = getCoords(handle);
+
+            const coordsObj = {
+              top: newHandleCoords.top,
+              left: newHandleCoords.left
+            };
+            const testcoordsObj = {
+              top: handleCoords.top,
+              left: sliderMiddleLeft
+            };
+
+            expect(coordsObj).to.deep.equal(testcoordsObj);
+
+            app.view.html.remove();
+        });
     });
 });
