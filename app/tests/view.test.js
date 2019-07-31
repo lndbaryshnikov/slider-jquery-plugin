@@ -1,6 +1,6 @@
 //import {expect} from 'chai';
 import View from '../src/MVP modules/view/view'
-import {getClassList, createInstance, createEvent} from "../src/functions/private/view.private";
+import {getClassList, createInstance, createEvent, moveHandleToCertainCoords} from "../src/functions/private/view.private";
 import {defaultOptions} from '../src/MVP modules/model/model';
 import getCoords from '../src/functions/common/getCoords'
 
@@ -26,11 +26,11 @@ describe('View', () => {
         it("set classes when user passes no classes in model", () => {
 
             const app = createInstance();
-            $('body').append(app.view.html);
+            app.createDom();
 
             expect(getClassList($('div'))).to.deep.equal(defaultClasses);
 
-            app.view.html.remove();
+            app.removeDom();
 
         });
         
@@ -42,7 +42,7 @@ describe('View', () => {
                 }
             });
 
-            $('body').append(app.view.html);
+            app.createDom();
 
             const domClasses = getClassList($('div'));
 
@@ -52,8 +52,7 @@ describe('View', () => {
             expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
             expect(domClasses).to.deep.equal(testClasses);
 
-
-            app.view.html.remove();
+            app.removeDom();
 
         });
 
@@ -64,73 +63,54 @@ describe('View', () => {
         it("move jquery-slider-handle to specific coordinates inside the slider", () => {
 
             const app = createInstance();
-            $("body").append(app.view.html);
+            app.createDom();
 
             const slider = $('.jquery-slider')[0];
-
             const sliderCoords = getCoords(slider);
+
             const sliderMiddleLeft = sliderCoords.left + sliderCoords.width/2;
 
             const handle = $('.jquery-slider-handle')[0];
-            console.log(handle);
             const handleCoords = getCoords(handle);
 
+            const newHandleCoords = moveHandleToCertainCoords(sliderMiddleLeft);
 
-            const mousedownEvent = createEvent('mousedown', handleCoords.left, handleCoords.top);
-            $(handle).trigger(mousedownEvent);
-
-            const mousemoveEvent = createEvent('mousemove', sliderMiddleLeft, handleCoords.top);
-            $(document).trigger(mousemoveEvent);
-
-            $(handle).trigger('mouseup');
-
-            const newHandleCoords = getCoords(handle);
-
-            const coordsObj = {
+            const newCoords = {
               top: newHandleCoords.top,
               left: newHandleCoords.left
             };
-            const testcoordsObj = {
+            const testCoords = {
               top: handleCoords.top,
               left: sliderMiddleLeft
             };
 
-            expect(coordsObj).to.deep.equal(testcoordsObj);
+            expect(newCoords).to.deep.equal(testCoords);
 
-            app.view.html.remove();
+            app.removeDom();
         });
         
         it("handle stays within the slider when the cursor goes outside", () => {
 
             const app = createInstance();
-            $('body').append(app.view.html);
+            app.createDom();
 
-            const handle = $('.jquery-slider-handle')[0];
             const slider = $('.jquery-slider')[0];
-
             const sliderCoords = getCoords(slider);
-            const handleCoords = getCoords(handle);
 
-            const mousedownEvent = createEvent('mousedown',
-                handleCoords.left, handleCoords.top);
+            const newHandleCoordsLeft = moveHandleToCertainCoords(sliderCoords.left - 10);
 
-            $(handle).trigger(mousedownEvent);
+            const newLeft_1 = newHandleCoordsLeft.left - sliderCoords.left;
 
-            const mousemoveEvent = createEvent('mousemove',
-                sliderCoords.left - 10, handleCoords.top);
+            const newHandleCoordsRight = moveHandleToCertainCoords(sliderCoords.right + 10);
 
-            $(document).trigger(mousemoveEvent);
+            const newLeft_2 = newHandleCoordsRight.left - sliderCoords.left;
+            const rightEdge = sliderCoords.width - newHandleCoordsRight.width;
 
-            $(document).trigger('mouseup');
 
-            const newHandleCoords = getCoords(handle);
-            const newSliderCoords = getCoords(slider);
+            expect(newLeft_1).to.equal(0);
+            expect(newLeft_2).to.equal(rightEdge);
 
-            const newLeft = newHandleCoords.left - newSliderCoords.left;
-
-            expect(newLeft).to.equal(0);
-
-            app.view.html.remove();
+            app.removeDom();
         });
     });
 });

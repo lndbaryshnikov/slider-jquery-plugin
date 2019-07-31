@@ -15,7 +15,6 @@ Object.defineProperties(View.prototype, {
     modelOptions : {
         set : function(modelOptions) {
 
-            //setting classes
             setClasses(modelOptions.classes, this.html);
 
         },
@@ -24,16 +23,16 @@ Object.defineProperties(View.prototype, {
 
     movingHandler : {
         set : function(handler) {
-            const handle = this.html.find('.jquery-slider-handle');
-            const horizontalArea = this.html.find('.jquery-slider');
+            const handle = this.html.find('.jquery-slider-handle')[0];
+            const horizontalArea = this.html.find('.jquery-slider')[0];
 
-            handle.mousedown((e) => {
+            $(handle).mousedown((e) => {
 
-                handler(handle[0], horizontalArea[0], e);
+                handler(handle, horizontalArea, e);
 
             });
 
-            handle[0].ondragstart = () =>{
+            handle.ondragstart = () =>{
                 return false;
             };
 
