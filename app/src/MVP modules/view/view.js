@@ -22,6 +22,25 @@ Object.defineProperties(View.prototype, {
         enumerable : false
     },
 
+    movingHandler : {
+        set : function(handler) {
+            const handle = this.html.find('.jquery-slider-handle');
+            const horizontalArea = this.html.find('.jquery-slider');
+
+            handle.mousedown((e) => {
+
+                handler(handle[0], horizontalArea[0], e);
+
+            });
+
+            handle[0].ondragstart = () =>{
+                return false;
+            };
+
+        },
+        enumerable : false
+    }
+
 });
 
 

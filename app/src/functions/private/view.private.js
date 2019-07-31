@@ -59,11 +59,11 @@ export const setClasses = (classes, html) => {
 export const createEvent = (type, x, y) => {
   const e = $.Event(type);
 
-  if (!!x) {
+  if (x !== "empty") {
       e.pageX = x;
   }
 
-  if (!!y){
+  if (y !== "empty"){
       e.pageY = y;
   }
 

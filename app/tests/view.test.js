@@ -61,7 +61,7 @@ describe('View', () => {
     
     describe("slider events", () => {
         
-        it("move jquery-slider-handle to specific coordinates", () => {
+        it("move jquery-slider-handle to specific coordinates inside the slider", () => {
 
             const app = createInstance();
             $("body").append(app.view.html);
@@ -96,6 +96,39 @@ describe('View', () => {
             };
 
             expect(coordsObj).to.deep.equal(testcoordsObj);
+
+            app.view.html.remove();
+        });
+        
+        it("handle stays within the slider when the cursor goes outside", () => {
+
+            const app = createInstance();
+            $('body').append(app.view.html);
+
+            const handle = $('.jquery-slider-handle')[0];
+            const slider = $('.jquery-slider')[0];
+
+            const sliderCoords = getCoords(slider);
+            const handleCoords = getCoords(handle);
+
+            const mousedownEvent = createEvent('mousedown',
+                handleCoords.left, handleCoords.top);
+
+            $(handle).trigger(mousedownEvent);
+
+            const mousemoveEvent = createEvent('mousemove',
+                sliderCoords.left - 10, handleCoords.top);
+
+            $(document).trigger(mousemoveEvent);
+
+            $(document).trigger('mouseup');
+
+            const newHandleCoords = getCoords(handle);
+            const newSliderCoords = getCoords(slider);
+
+            const newLeft = newHandleCoords.left - newSliderCoords.left;
+
+            expect(newLeft).to.equal(0);
 
             app.view.html.remove();
         });
