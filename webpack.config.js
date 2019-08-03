@@ -3,13 +3,14 @@ const test = process.env.NODE_ENV;
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require('webpack-merge');
-const babel = require('./webpack/babel-v7');
+const babel = require('./webpack/babel');
 const pug = require('./webpack/pug');
 const styleExtract = require('./webpack/style.extract');
 const images = require('./webpack/images');
 const fonts = require('./webpack/fonts');
 const devserver = require('./webpack/devserver');
 const providePlugin = require('./webpack/provide-plugin');
+const typescript = require('./webpack/typescript');
 let glob = require("glob");
 
 const PATHS = {
@@ -20,7 +21,6 @@ const PATHS = {
 let entry = PATHS.src + 'jquery-slider.js';
 let outputPath = PATHS.dist;
 let outputFilename = './js/[name].js';
-let devtool = '';
 let htmlFilename = 'result.html';
 let htmlTemplate = PATHS.src + 'jquery-slider.pug';
 
@@ -28,7 +28,6 @@ if (process.env.TESTBUILD) {
     entry = glob.sync(__dirname + "/app/tests/**/*.test.js");
     outputPath = __dirname + '/tests-dist/';
     outputFilename = 'tests.js';
-    devtool = 'source-map';
     htmlTemplate = __dirname + '/app/tests/tests.pug';
     htmlFilename = 'tests.html'
 }
@@ -52,7 +51,7 @@ const common = merge([
 
         ],
 
-        devtool: devtool,
+        devtool: 'source-map',
         //For jsdom when I tried to run tests om Node.js
         // node: {
         //     net: 'empty',
@@ -67,7 +66,8 @@ const common = merge([
     styleExtract(),
     images(),
     fonts(),
-    providePlugin()
+    providePlugin(),
+    typescript()
 ]);
 
 

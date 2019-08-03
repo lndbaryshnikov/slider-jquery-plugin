@@ -7,8 +7,11 @@ import {createModel} from "../src/functions/private/model.private";
 import {defaultOptions} from '../src/MVP modules/model/model'
 
 describe('Model', () => {
+
     describe("Options object extension(getOptions method)", () => {
-        it("extends object when user changes classes",  () => {
+
+        test("extends object when user changes classes", () => {
+
             const modelOptions = (new Model({
                 classes: {
                     "jquery-slider-range": "my-slider-range"
@@ -20,10 +23,11 @@ describe('Model', () => {
                 "jquery-slider-range": "my-slider-range"
             };
 
-            expect(modelOptions).to.deep.equal(testOptions);
+            expect(modelOptions).toEqual(testOptions);
         });
 
-        it("extends object with max = 60 and min = 20",  () => {
+        test("extends object with max = 60 and min = 20", () => {
+
             const modelOptions = (new Model({min: 20, max: 60})).options;
 
             const testOptions = Object.assign({}, defaultOptions);
@@ -31,42 +35,49 @@ describe('Model', () => {
             testOptions.min = 20;
             testOptions.max = 60;
 
-            expect(modelOptions).to.deep.equal(testOptions);
+            expect(modelOptions).toEqual(testOptions);
         });
 
-        it("returns initial object when user changes nothing",  () => {
+        test("returns initial object when user changes nothing", () => {
+
             const modelOptions = (new Model()).options;
 
-            expect(modelOptions).to.deep.equal(defaultOptions);
+            expect(modelOptions).toEqual(defaultOptions);
         });
 
     });
 
     describe('Throwing exception when user passes incorrect options', () => {
-        it("throws error when userOptions isn't an object", () => {
-            expect(createModel('options')).to.throw('Options are incorrect' +
+        
+        test("throws error when userOptions isn't an object", () => {
+
+            expect(createModel('options')).toThrow('Options are incorrect' +
                 '(should be an object)');
         });
         
-        it("throws error when userOptions object doesn't correspond the required format", () => {
+        test("throws error when userOptions object doesn't correspond the required format", () => {
+
             const createWrongModel = createModel({
                 minimal: 100,
                 sweetness: 35
             });
 
-            expect(createWrongModel).to.throw('Options are incorrect' +
+            expect(createWrongModel).toThrow('Options are incorrect' +
                 '(should correspond the required format)');
         });
 
-        it("throws error when user passes wrong class options", () => {
+        test("throws error when user passes wrong class options", () => {
+
             const createWrongModel = createModel({
                 classes: {
                     'jquery-sl': 'my-slider'
                 }
             });
 
-            expect(createWrongModel).to.throw('Options are incorrect' +
+            expect(createWrongModel).toThrow('Options are incorrect' +
                 '(classes should correspond the required format)');
         });
+
     })
+
 });

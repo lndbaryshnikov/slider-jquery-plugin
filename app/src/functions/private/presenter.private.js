@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 import getCoords from "../common/getCoords";
 
 export const countShift = (event, elem) => {

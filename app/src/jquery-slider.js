@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 import Model from './MVP modules/model/model'
 import View from './MVP modules/view/view'
 import Presenter from './MVP modules/presenter/presenter'

@@ -1,7 +1,37 @@
+import * as $ from 'jquery';
+
 import Model from "../../MVP modules/model/model";
 import arrayEquals from "../common/arrayEquals"
 
-export const hasAnArrayElements = (array_checking, source) => {
+export interface Options {
+    min: number,
+    classes: {
+        "jquery-slider"?: string,
+        "jquery-slider-range"?: string,
+        "jquery-slider-handle"?: string
+    },
+    max: number,
+    step: number,
+    value: number,
+    orientation: string,
+    range: boolean,
+}
+
+export interface UserOptions {
+    min?: number,
+    classes?: {
+        "jquery-slider"?: string,
+        "jquery-slider-range"?: string,
+        "jquery-slider-handle"?: string
+    },
+    max?: number,
+    step?: number,
+    value?: number,
+    orientation?: string,
+    range?: boolean,
+}
+
+export const hasAnArrayElements = (array_checking: any[], source: any[]) => {
     let has = false;
 
     for (let i = 0; i < array_checking.length; i++) {
@@ -20,7 +50,7 @@ export const hasAnArrayElements = (array_checking, source) => {
     return has;
 };
 
-export const getSliderSettings = (userOptions, defaultOptions) => {
+export const getSliderSettings = (userOptions: UserOptions, defaultOptions: Options) => {
     let settings = Object.assign({}, defaultOptions);
 
     if ( userOptions ) {
@@ -48,7 +78,7 @@ export const getSliderSettings = (userOptions, defaultOptions) => {
     return settings;
 };
 
-export const createModel = (options) => {
+export const createModel = (options: Object) => {
     return () => {
         new Model(options);
     }

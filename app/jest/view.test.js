@@ -1,38 +1,40 @@
+import $ from 'jquery';
+
 //import {expect} from 'chai';
 import View from '../src/MVP modules/view/view'
 import {getClassList, createInstance, createEvent, moveHandleToCertainCoords} from "../src/functions/private/view.private";
 import {defaultOptions} from '../src/MVP modules/model/model';
 import getCoords from '../src/functions/common/getCoords'
 
-//styles here:
-import '../src/styles/jquery-slider.scss'
-import '../src/styles/jquery-slider-range.scss'
-import '../src/styles/jquery-slider-handle.scss'
-
 const defaultClasses = defaultOptions.classes;
 
+
 describe('View', () => {
-    it("should have html property", () => {
+    afterEach(() => {
+        document.getElementsByTagName('html')[0].innerHTML = '';
+    });
+   
+    test("should have html property", () => {
         const view = new View();
 
-        expect(!!view.html).to.be.true;
-        
+        expect(!!view.html).toBe(true);
     });
 
     describe("setModel method for setting classes", () => {
-        it("set classes when user passes no classes in model", () => {
+        test("set classes when user passes no classes in model", () => {
             const app = createInstance();
+
             app.createDom();
 
-            expect(getClassList($('div'))).to.deep.equal(defaultClasses);
-console.log(getClassList($('div')));
+            expect(getClassList($('div'))).toEqual(defaultClasses);
+
             app.removeDom();
         });
-        
-        it("set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
+
+        test("set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
             const app = createInstance({
                 classes: {
-                'jquery-slider': 'my-slider'
+                    'jquery-slider': 'my-slider'
                 }
             });
 
@@ -43,17 +45,17 @@ console.log(getClassList($('div')));
             const testClasses = Object.assign({}, defaultClasses);
             testClasses["jquery-slider"] = 'my-slider';
 
-            expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
-            expect(domClasses).to.deep.equal(testClasses);
+            expect($('.jquery-slider').hasClass('my-slider')).toBe(true);
+            expect(domClasses).toEqual(testClasses);
 
             app.removeDom();
         });
-
     });
     
     describe("slider events", () => {
-        it("move jquery-slider-handle to specific coordinates inside the slider", () => {
+        test("move jquery-slider-handle to specific coordinates inside the slider", () => {
             const app = createInstance();
+
             app.createDom();
 
             const slider = $('.jquery-slider')[0];
@@ -75,13 +77,17 @@ console.log(getClassList($('div')));
               left: sliderMiddleLeft
             };
 
-            expect(newCoords).to.deep.equal(testCoords);
+            console.log($('.jquery-slider').css("width"));
+            //expect($('.jquery-slider').css('width')).toBe(100);
+            //expect(newCoords).toEqual(testCoords);
+            expect(testCoords).toEqual(0);
 
             app.removeDom();
         });
         
-        it("handle stays within the slider when the cursor goes outside", () => {
+        test("handle stays within the slider when the cursor goes outside", () => {
             const app = createInstance();
+
             app.createDom();
 
             const slider = $('.jquery-slider')[0];
@@ -97,8 +103,8 @@ console.log(getClassList($('div')));
             const rightEdge = sliderCoords.width - newHandleCoordsRight.width;
 
 
-            expect(newLeft_1).to.equal(0);
-            expect(newLeft_2).to.equal(rightEdge);
+            expect(newLeft_1).toBe(0);
+            expect(newLeft_2).toBe(rightEdge);
 
             app.removeDom();
         });

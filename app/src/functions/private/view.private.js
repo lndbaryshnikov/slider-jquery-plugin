@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 import Model from "../../MVP modules/model/model";
 import Presenter from "../../MVP modules/presenter/presenter";
 import View from "../../MVP modules/view/view";
@@ -13,6 +15,28 @@ export const createInstance = (options, rootObj) => {
         if ( !rootObj ) rootObj = 'body';
 
         $(rootObj).append(presenter.view.html);
+
+        $($('.jquery-slider')[0]).css({
+            "width": 300 + "px",
+            "height": 15 + "px",
+            "background-color": "antiquewhite",
+            "margin": 100 + "px"
+        });
+
+        $($('.jquery-slider-range')[0]).css({
+            "width": 0,
+            "height": 15 + "px",
+            "background-color": "aqua",
+        });
+
+        $($('.jquery-slider-handle')[0]).css({
+            "height": 150 + "px",
+            "width": 15 + "px",
+            "background-color": "blueviolet",
+            "border-radius": 30 + "px",
+            "position": "relative",
+            "top": -25 + "px"
+        });
     };
 
     const removeDom = () => {
@@ -34,9 +58,7 @@ export const getClassList = (elements) => {
         const classesArray = classesString.split(' ');
 
         if(!!classesArray[1]) {
-            const mainClass = classesArray[0];
-
-            classesArray.shift();
+            const mainClass = classesArray.shift();
 
             classList[mainClass] = classesArray.join(' ');
         } else {
