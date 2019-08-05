@@ -78,7 +78,7 @@ export const getSliderSettings = (userOptions: UserOptions, defaultOptions: Opti
     return settings;
 };
 
-export const createModel = (options: Object) => {
+export const createModel = (options: any) => {
     return () => {
         new Model(options);
     }

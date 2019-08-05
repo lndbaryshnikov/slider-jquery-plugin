@@ -1,5 +1,13 @@
-const getCoords = (domElem) => {
+export interface Coords {
+    top: number,
+    bottom: number,
+    left: number,
+    right: number,
+    width: number,
+    height: number
+}
 
+const getCoords = (domElem: HTMLElement): Coords => {
   const box = domElem.getBoundingClientRect();
 
   return {

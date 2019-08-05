@@ -1,47 +1,38 @@
 import {getInitialHtml, setClasses} from "../../functions/private/view.private";
 import {defaultOptions} from '../model/model'
+import {Options} from "../../functions/private/model.private";
+import MouseDownEvent = JQuery.MouseDownEvent;
 
 const defaultClasses = defaultOptions.classes;
 
 
 
-export default function View() {
+class View {
+    html: any;
 
-    this.html = $(getInitialHtml(defaultClasses));
-}
+    constructor() {
+        this.html = $(getInitialHtml(defaultClasses));
+    }
 
-Object.defineProperties(View.prototype, {
-
-    modelOptions : {
-        set : function(modelOptions) {
-
+    set modelOptions(modelOptions: Options) {
             setClasses(modelOptions.classes, this.html);
+    }
 
-        },
-        enumerable : false
-    },
-
-    movingHandler : {
-        set : function(handler) {
+    set movingHandler(handler: any) {
             const handle = this.html.find('.jquery-slider-handle')[0];
             const horizontalArea = this.html.find('.jquery-slider')[0];
 
-            $(handle).mousedown((e) => {
-
+            $(handle).mousedown((e: MouseDownEvent) => {
                 handler(handle, horizontalArea, e);
-
             });
 
             handle.ondragstart = () =>{
                 return false;
             };
-
-        },
-        enumerable : false
     }
+}
 
-});
-
+export default View;
 
 
 

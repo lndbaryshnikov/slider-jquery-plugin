@@ -6,8 +6,14 @@
     "target": "es5",
     "jsx": "react",
     "allowJs": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2015",
+      "es2016",
+      "dom"
+    ],
+    "sourceMap": true
   },
 
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

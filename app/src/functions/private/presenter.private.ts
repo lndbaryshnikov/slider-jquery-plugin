@@ -1,8 +1,15 @@
-import $ from 'jquery'
+//import * as $ from 'jquery'
 
 import getCoords from "../common/getCoords";
+import MouseMoveEvent = JQuery.MouseMoveEvent;
+import MouseDownEvent = JQuery.MouseDownEvent;
 
-export const countShift = (event, elem) => {
+interface Shift {
+  x: number;
+  y: number;
+}
+
+export const countShift = (event: MouseDownEvent, elem: HTMLElement): Shift => {
     const elemCoords = getCoords(elem);
 
     return {
@@ -11,10 +18,11 @@ export const countShift = (event, elem) => {
     };
 };
 
-export const movingHandlerOnAxisX = (handle, horizontalArea, event) => {
+export const movingHandlerOnAxisX: (handle: HTMLElement, horizontalArea: HTMLElement, event: MouseDownEvent) => boolean =
+    (handle, horizontalArea, event) => {
     const shift = countShift(event, handle);
 
-    $(document).mousemove((event) => {
+    $(document).mousemove((event: MouseMoveEvent) => {
         const handleCoords = countHandleCoords(horizontalArea, handle, event, shift);
 
         $(handle).css('left', handleCoords + 'px');
@@ -28,7 +36,7 @@ export const movingHandlerOnAxisX = (handle, horizontalArea, event) => {
     return false;
 };
 
-const countHandleCoords = (horizontalArea, handle, event, shift) => {
+const countHandleCoords = (horizontalArea: HTMLElement, handle: HTMLElement, event: MouseMoveEvent, shift: Shift): number => {
     const handleCoords = getCoords(handle);
     const areaCoords = getCoords(horizontalArea);
 

@@ -18,14 +18,14 @@ const PATHS = {
     dist: path.join(__dirname, 'dist')
 };
 
-let entry = PATHS.src + 'jquery-slider.js';
+let entry = PATHS.src + 'jquery-slider.ts';
 let outputPath = PATHS.dist;
 let outputFilename = './js/[name].js';
 let htmlFilename = 'result.html';
 let htmlTemplate = PATHS.src + 'jquery-slider.pug';
 
 if (process.env.TESTBUILD) {
-    entry = glob.sync(__dirname + "/app/tests/**/*.test.js");
+    entry = glob.sync(__dirname + "/app/tests/**/*.test.ts");
     outputPath = __dirname + '/tests-dist/';
     outputFilename = 'tests.js';
     htmlTemplate = __dirname + '/app/tests/tests.pug';

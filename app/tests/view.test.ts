@@ -1,4 +1,4 @@
-//import {expect} from 'chai';
+import { expect } from 'chai';
 import View from '../src/MVP modules/view/view'
 import {getClassList, createInstance, createEvent, moveHandleToCertainCoords} from "../src/functions/private/view.private";
 import {defaultOptions} from '../src/MVP modules/model/model';
@@ -25,7 +25,7 @@ describe('View', () => {
             app.createDom();
 
             expect(getClassList($('div'))).to.deep.equal(defaultClasses);
-console.log(getClassList($('div')));
+
             app.removeDom();
         });
         

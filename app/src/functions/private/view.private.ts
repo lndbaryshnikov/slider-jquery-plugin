@@ -1,42 +1,24 @@
-import $ from 'jquery';
+//import $ from 'jquery';
 
 import Model from "../../MVP modules/model/model";
 import Presenter from "../../MVP modules/presenter/presenter";
 import View from "../../MVP modules/view/view";
-import getCoords from "../common/getCoords";
+import getCoords, {Coords} from "../common/getCoords";
+import {Options, UserOptions} from "./model.private";
 
-export const createInstance = (options, rootObj) => {
+interface Instance {
+    createDom: () => void,
+    removeDom: () => void
+    }
+
+export const createInstance = (options?: UserOptions, rootObj: string = 'body'): Instance => {
     const model = new Model(options);
     const presenter = new Presenter(new View());
 
     presenter.model = model;
 
     const createDom = () => {
-        if ( !rootObj ) rootObj = 'body';
-
         $(rootObj).append(presenter.view.html);
-
-        $($('.jquery-slider')[0]).css({
-            "width": 300 + "px",
-            "height": 15 + "px",
-            "background-color": "antiquewhite",
-            "margin": 100 + "px"
-        });
-
-        $($('.jquery-slider-range')[0]).css({
-            "width": 0,
-            "height": 15 + "px",
-            "background-color": "aqua",
-        });
-
-        $($('.jquery-slider-handle')[0]).css({
-            "height": 150 + "px",
-            "width": 15 + "px",
-            "background-color": "blueviolet",
-            "border-radius": 30 + "px",
-            "position": "relative",
-            "top": -25 + "px"
-        });
     };
 
     const removeDom = () => {
@@ -49,8 +31,8 @@ export const createInstance = (options, rootObj) => {
     };
 };
 
-export const getClassList = (elements) => {
-    const classList = {};
+export const getClassList = (elements: JQuery): Object => {
+    const classList: any = {};
 
     for (let i = 2; i < elements.length; i++) {
         //i = 2 cause first 'div' is mocha and second is empty - wrapper(view.private.js)
@@ -69,7 +51,7 @@ export const getClassList = (elements) => {
     return classList;
 };
 
-export const getInitialHtml = (defaultClasses) => {
+export const getInitialHtml = (defaultClasses: Options["classes"]): string => {
     const keys = Object.keys(defaultClasses);
 
     return `<div><div class=${keys[0]}>` +
@@ -78,27 +60,39 @@ export const getInitialHtml = (defaultClasses) => {
         `</div></div></div></div>`;
 };
 
-export const setClasses = (classes, html) => {
-    for (let key in classes) {
+interface IClasses {
+    [key: string]: string;
+}
+
+export const setClasses = (classes: IClasses, html: JQuery): void => {
+    let key: keyof IClasses;
+
+    for (key in classes) {
         html.find('.' + key).addClass(classes[key]);
     }
 };
 
-export const createEvent = (type, x, y) => {
+export const createEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
   const e = $.Event(type);
 
   if (x !== "empty") {
-      e.pageX = x;
+      if (typeof x === "number") {
+          e.pageX = x;
+      }
   }
 
   if (y !== "empty"){
-      e.pageY = y;
+      if (typeof y === "number") {
+          e.pageY = y;
+      }
   }
 
   return e;
 };
 
-export const moveHandleToCertainCoords = (X) => {
+
+
+export const moveHandleToCertainCoords = (X: number): Coords => {
     const handle = $('.jquery-slider-handle')[0];
     const handleCoords = getCoords(handle);
 

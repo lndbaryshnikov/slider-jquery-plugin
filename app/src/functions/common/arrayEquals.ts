@@ -1,4 +1,4 @@
-const arrayEquals = (array_1, array_2) => {
+const arrayEquals = (array_1: any[], array_2: any[]): boolean => {
 
     if (!array_1 || !array_2) return false;
 

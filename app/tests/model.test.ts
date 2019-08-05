@@ -1,10 +1,19 @@
-//import expect from 'chai'
+import { expect } from 'chai'
 import clone from '../src/functions/common/objectCopy'
+
+interface ObjectNew extends ObjectConstructor {
+    clone(obj: any): any
+}
+
+declare const Object: ObjectNew;
+
 Object.clone = clone;
 
 import Model from '../src/MVP modules/model/model'
-import {createModel} from "../src/functions/private/model.private";
+import {createModel, Options} from "../src/functions/private/model.private";
 import {defaultOptions} from '../src/MVP modules/model/model'
+
+
 
 describe('Model', () => {
     describe("Options object extension(getOptions method)", () => {
