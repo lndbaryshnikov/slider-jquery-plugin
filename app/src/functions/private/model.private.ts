@@ -14,7 +14,7 @@ export interface Options {
     step: number,
     value: number,
     orientation: string,
-    range: boolean,
+    range: boolean | string,
 }
 
 export interface UserOptions {
@@ -28,7 +28,7 @@ export interface UserOptions {
     step?: number,
     value?: number,
     orientation?: string,
-    range?: boolean,
+    range?: boolean | string,
 }
 
 export const hasAnArrayElements = (array_checking: any[], source: any[]) => {

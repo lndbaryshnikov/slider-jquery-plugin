@@ -91,8 +91,9 @@ export const createEvent = (type: string, x?: number | string, y?: number | stri
 };
 
 
+interface HandleCoords extends Coords{}
 
-export const moveHandleToCertainCoords = (X: number): Coords => {
+export const moveHandleToCertainCoords = (X: number): HandleCoords => {
     const handle = $('.jquery-slider-handle')[0];
     const handleCoords = getCoords(handle);
 

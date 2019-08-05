@@ -102,5 +102,54 @@ describe('View', () => {
 
             app.removeDom();
         });
+        
+        it("range div behaviour when options.range = min", () => {
+
+            const app = createInstance({range: "min"});
+            app.createDom();
+
+            const range = $(".jquery-slider-range")[0];
+            const rangeCoords = getCoords(range);
+
+            const leftRangeCoords = {
+                top: rangeCoords.top,
+                left: rangeCoords.left
+            };
+
+            const slider = $('.jquery-slider')[0];
+            const sliderCoords = getCoords(slider);
+
+            const expectedLeftRangeCoords = {
+                top: sliderCoords.top,
+                left: sliderCoords.left
+            };
+
+            expect(leftRangeCoords).to.equal(expectedLeftRangeCoords);
+
+            const shift = 0.5 * parseInt($(slider).css("width"));
+            const newHandleCoords = moveHandleToCertainCoords(sliderCoords.left + shift);
+
+            const newRangeCoords = getCoords(range);
+
+            const newRightRangeCoords = {
+                top: newRangeCoords.top,
+                left: newRangeCoords.left + newRangeCoords.width
+            };
+
+            const expectedNewRightRangeCoords = {
+                top: sliderCoords.top,
+                left: newHandleCoords.left
+            };
+
+            const newLeftRangeCoords = {
+                top: newRangeCoords.top,
+                left: newRangeCoords.left
+            };
+
+            expect(newLeftRangeCoords).to.equal(expectedLeftRangeCoords);
+            expect(newRightRangeCoords).to.equal(expectedNewRightRangeCoords);
+
+            app.removeDom();
+        });
     });
 });
