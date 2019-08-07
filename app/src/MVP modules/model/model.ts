@@ -14,7 +14,11 @@ export const defaultOptions: Options = {
     range: false,
 };
 
-class Model {
+interface SliderModel {
+    options: Options;
+}
+
+class Model implements SliderModel {
     options: Options;
 
     constructor( userOptions?: UserOptions ) {

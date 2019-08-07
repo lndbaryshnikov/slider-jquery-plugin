@@ -1,4 +1,4 @@
-import * as $ from 'jquery';
+//import * as $ from 'jquery';
 
 import Model from "../../MVP modules/model/model";
 import arrayEquals from "../common/arrayEquals"

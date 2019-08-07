@@ -8,9 +8,6 @@ import './styles/jquery-slider.scss'
 import './styles/jquery-slider-range.scss'
 import './styles/jquery-slider-handle.scss'
 
-const model = new Model();
-const presenter = new Presenter(new View());
-
-presenter.model = model;
+const presenter = new Presenter(new View(), new Model());
 
 $("body").append(presenter.view.html);

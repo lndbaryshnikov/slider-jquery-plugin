@@ -2,13 +2,17 @@ import {getInitialHtml, setClasses} from "../../functions/private/view.private";
 import {defaultOptions} from '../model/model'
 import {Options} from "../../functions/private/model.private";
 import MouseDownEvent = JQuery.MouseDownEvent;
+import MouseMoveEvent = JQuery.MouseMoveEvent;
+import {countShift, Shift} from "../../functions/private/presenter.private";
 
 const defaultClasses = defaultOptions.classes;
 
+interface SliderView {
+    html: JQuery;
+}
 
-
-class View {
-    html: any;
+class View implements SliderView {
+    html: JQuery;
 
     constructor() {
         this.html = $(getInitialHtml(defaultClasses));
@@ -18,12 +22,27 @@ class View {
             setClasses(modelOptions.classes, this.html);
     }
 
-    set movingHandler(handler: any) {
+    set whenUserMovesHandler(countHandlerCoords: (handle: HTMLElement, horizontalArea: HTMLElement,
+                                       handleShift: Shift, mousemoveEvent: MouseMoveEvent) => number) {
             const handle = this.html.find('.jquery-slider-handle')[0];
             const horizontalArea = this.html.find('.jquery-slider')[0];
 
-            $(handle).mousedown((e: MouseDownEvent) => {
-                handler(handle, horizontalArea, e);
+            //Drag'n'Drop code
+            $(handle).mousedown((mousedownEvent: MouseDownEvent) => {
+                const handleShift = countShift(mousedownEvent, handle);
+
+                $(document).mousemove((mousemoveEvent: MouseMoveEvent) => {
+                    const handleCoords = countHandlerCoords(handle, horizontalArea, handleShift, mousemoveEvent);
+
+                    $(handle).css('left', handleCoords + 'px');
+                });
+
+                $(document).mouseup(() => {
+                    $(document).unbind('mousemove');
+                    $(document).unbind('mouseup');
+                });
+
+                return false;
             });
 
             handle.ondragstart = () =>{

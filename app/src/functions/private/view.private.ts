@@ -12,10 +12,7 @@ interface Instance {
     }
 
 export const createInstance = (options?: UserOptions, rootObj: string = 'body'): Instance => {
-    const model = new Model(options);
-    const presenter = new Presenter(new View());
-
-    presenter.model = model;
+    const presenter = new Presenter(new View(), new Model(options));
 
     const createDom = () => {
         $(rootObj).append(presenter.view.html);
