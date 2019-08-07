@@ -23,11 +23,6 @@ describe("Observer", () => {
         });
 
         it("throws an errpr when observer already in the list", () => {
-
-
-            const observer_1 = () => { console.log('hello'); };
-            const observer_2 = () => {};
-
             const createFuncForTestErrors = (func_1: Function, func_2: Function = func_1): Function => {
 
                 return function() {
@@ -38,46 +33,32 @@ describe("Observer", () => {
                 }
             };
 
-            expect(createFuncForTestErrors(observer_1, observer_2)).to.not.throw("Observer already in the list");
-            expect(createFuncForTestErrors(observer_1)).to.throw("Observer already in the list");
-            expect(createFuncForTestErrors(observer_2)).to.throw("Observer already in the list");
+            expect(createFuncForTestErrors( () => { console.log('hello'); }, () => {} )).to.not.throw("Observer already in the list");
+            expect(createFuncForTestErrors( () => { console.log('hello'); } )).to.throw("Observer already in the list");
+            expect(createFuncForTestErrors( () => {} )).to.throw("Observer already in the list");
         });
     });
 
     describe("removeObserver method", () => {
         it("removeObserver method works", () => {
-
-            const observer_1 = () => {
-                const thing = 5;
-                console.log(thing);
-            };
-            const observer_2 = () => {
-                const thing = 1;
-                console.log(thing);
-            };
-
             const observer = new Observer();
 
+            observer.addObserver(function () {});
+
             observer.addObserver(function () {
-            });
-            observer.addObserver(function () {
-                console.log(5)
-            });
-            observer.addObserver(function () {
-                const item = "item";
+                console.log(5);
             });
 
+            observer.addObserver(function () { const item = "item"; });
+
             observer.removeObserver(function () {
-                console.log(5)
+                console.log(5);
             });
 
             expect(observer.observers.length).to.equal(2);
-            expect(observer.observers).to.deep.equal([
-                function () {
-                },
-                function () {
-                    const item = "item";
-                }
+            expect([observer.observers[0].toString(), observer.observers[1].toString()]).to.deep.equal([
+                function () {}.toString(),
+                function () { const item = "item"; }.toString()
             ]);
         });
 

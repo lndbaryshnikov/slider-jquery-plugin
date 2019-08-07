@@ -17,7 +17,7 @@ class Observer implements ObserversStorage{
         }
 
         for (let i = 0; i < this.observers.length; i++) {
-            if (this.observers[i] === observer) {
+            if (this.observers[i].toString() === observer.toString()) {
                 throw new Error('Observer already in the list');
             }
         }
@@ -26,6 +26,15 @@ class Observer implements ObserversStorage{
     }
 
     removeObserver(observer: Function): void {
+        for (let i = 0; i < this.observers.length; i++) {
+            if (this.observers[i].toString() === observer.toString()) {
+                this.observers.splice(i, 1);
+
+                return;
+            }
+        }
+
+        throw new Error('Could not find observer in list of observers');
     }
 
     notifyObservers(data: any): void {
