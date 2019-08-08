@@ -38,7 +38,14 @@ class Observer implements ObserversStorage{
     }
 
     notifyObservers(data?: any): void {
-    }
+        // Make a copy of observer list in case the list
+        // is mutated during the notifications.
+        const observersSnapshot = this.observers.slice(0);
+
+        for (let i = 0; i < observersSnapshot.length; i++) {
+            observersSnapshot[i](data);
+        }
+    };
 }
 
 export default Observer;
