@@ -1,6 +1,7 @@
 import Observer from "../src/MVP modules/observer";
 
 import {expect} from 'chai';
+import sinon from '../../node_modules/sinon/pkg/sinon-esm.js';
 
 describe("Observer", () => {
     describe("addObserver method", () => {
@@ -83,4 +84,53 @@ describe("Observer", () => {
             expect(createFuncForTestError).to.throw("Could not find observer in list of observers");
         });
     });
+
+    describe("notifyObservers", () => {
+        it("notifyObserver works", () => {
+
+            const observer1 = function () {
+                let y = 1;
+                y++;
+            };
+
+            const observer2 = function () {
+                console.log("hello")
+            };
+
+            const observer3 = function () {
+                let x = 1;
+                x++;
+            };
+
+            const createSpies = (...functions: Function[]): any[] => {
+                const spies = [];
+
+                for (let i = 0; i < functions.length; i++) {
+                    let spy = sinon.spy(functions[i]);
+
+                    spies.push(spy);
+                }
+
+                return spies;
+            };
+
+            const spies = createSpies(observer1, observer2, observer3);
+
+            const observer = new Observer();
+
+            const addObservers = (observer: Observer, ...observers: Function[]): void => {
+                for (let i = 0; i < observers.length; i++) {
+                    observer.addObserver(observers[i]);
+                }
+            };
+
+            addObservers(observer, spies[0], spies[1], spies[2]);
+
+            observer.notifyObservers();
+
+            expect(spies[0].called).to.be.true;
+            expect(spies[1].called).to.be.true;
+            expect(spies[2].called).to.be.true;
+        });
+    })
 });

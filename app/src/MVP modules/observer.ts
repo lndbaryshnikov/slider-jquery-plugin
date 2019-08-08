@@ -37,7 +37,7 @@ class Observer implements ObserversStorage{
         throw new Error('Could not find observer in list of observers');
     }
 
-    notifyObservers(data: any): void {
+    notifyObservers(data?: any): void {
     }
 }
 
