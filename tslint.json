@@ -1,0 +1,19 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "no-unnecessary-type-assertion": true,
+        "array-type": [true, "array"],
+        "no-double-space": true,
+        "no-var-keyword": true,
+        "semicolon": [true, "always", "ignore-bound-class-methods"],
+        "whitespace": [true, "check-branch", "check-decl", "check-operator",
+                             "check-module", "check-separator", "check-rest-spread",
+                             "check-type", "check-typecast", "check-type-operator",
+                             "check-preblock", "check-postbrace"]
+    },
+    "rulesDirectory": []
+}
