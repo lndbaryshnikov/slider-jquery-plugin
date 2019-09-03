@@ -1,4 +1,4 @@
-//import $ from 'jquery';
+import * as $ from 'jquery';
 
 import Model from "../../MVP modules/model/model";
 import Presenter from "../../MVP modules/presenter/presenter";
@@ -31,7 +31,7 @@ export const createInstance = (options?: UserOptions, rootObj: string = 'body'):
 export const getClassList = (elements: JQuery): Object => {
     const classList: any = {};
 
-    for (let i = 2; i < elements.length; i++) {
+    for (let i = 1; i < elements.length; i++) {
         //i = 2 cause first 'div' is mocha and second is empty - wrapper(view.private.js)
         const classesString = $(elements[i]).attr('class');
         const classesArray = classesString.split(' ');

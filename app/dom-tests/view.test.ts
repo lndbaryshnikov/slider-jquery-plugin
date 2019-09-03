@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import View from '../src/MVP modules/view/view'
-import {getClassList, createInstance, createEvent, moveHandleToCertainCoords} from "../src/functions/private/view.private";
+import {getClassList, createInstance, moveHandleToCertainCoords} from "../src/functions/private/view.private";
 import {defaultOptions} from '../src/MVP modules/model/model';
 import getCoords from '../src/functions/common/getCoords'
 

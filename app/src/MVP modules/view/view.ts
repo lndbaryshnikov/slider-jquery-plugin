@@ -1,3 +1,5 @@
+import * as $ from 'jquery';
+
 import {getInitialHtml, setClasses} from "../../functions/private/view.private";
 import {defaultOptions} from '../model/model'
 import {Options} from "../../functions/private/model.private";

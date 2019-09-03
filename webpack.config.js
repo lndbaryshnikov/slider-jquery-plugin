@@ -25,10 +25,10 @@ let htmlFilename = 'result.html';
 let htmlTemplate = PATHS.src + 'jquery-slider.pug';
 
 if (process.env.TESTBUILD) {
-    entry = glob.sync(__dirname + "/app/tests/**/*.test.ts");
-    outputPath = __dirname + '/tests-dist/';
+    entry = glob.sync(__dirname + "/app/dom-tests/**/*.test.ts");
+    outputPath = __dirname + '/dom-tests-dist/';
     outputFilename = 'tests.js';
-    htmlTemplate = __dirname + '/app/tests/tests.pug';
+    htmlTemplate = __dirname + '/app/dom-tests/dom-tests.pug';
     htmlFilename = 'tests.html'
 }
 
@@ -52,7 +52,7 @@ const common = merge([
         ],
 
         devtool: 'source-map',
-        //For jsdom when I tried to run tests om Node.js
+        //For jsdom when I tried to run dom-tests om Node.js
         // node: {
         //     net: 'empty',
         //     tls: 'empty',
