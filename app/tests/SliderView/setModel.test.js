@@ -1,12 +1,12 @@
 import {createInstance, getClassList} from "../../src/functions/private/view.private";
 import $ from "jquery";
 
-import {defaultOptions} from '../../src/MVP modules/model/model';
+import {defaultOptions} from '../../src/MVP modules/Slider/_model';
 
 const defaultClasses = defaultOptions.classes;
 
 describe("setModel method for setting classes", () => {
-    test("set classes when user passes no classes in model", () => {
+    test("set classes when user passes no classes in _model", () => {
         const app = createInstance();
 
         app.createDom();

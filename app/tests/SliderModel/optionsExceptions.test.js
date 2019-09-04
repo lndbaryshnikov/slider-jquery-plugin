@@ -1,10 +1,10 @@
 import {createModel} from "../../src/functions/private/model.private";
 
-describe('Throwing exception when user passes incorrect options', () => {
+describe('Throwing exception when user passes incorrect _options', () => {
 
     test("throws error when userOptions isn't an object", () => {
 
-        expect(createModel('options')).toThrow('Options are incorrect' +
+        expect(createModel('_options')).toThrow('Options are incorrect' +
             '(should be an object)');
     });
 
@@ -19,7 +19,7 @@ describe('Throwing exception when user passes incorrect options', () => {
             '(should correspond the required format)');
     });
 
-    test("throws error when user passes wrong class options", () => {
+    test("throws error when user passes wrong class _options", () => {
 
         const createWrongModel = createModel({
             classes: {

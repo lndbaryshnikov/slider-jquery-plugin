@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 
-import Presenter from '../src/MVP modules/presenter/presenter'
-import View from '../src/MVP modules/view/view'
-import Model from "../src/MVP modules/model/model";
+import SliderPresenter from '../src/MVP modules/Slider/presenter'
+import SliderView from '../src/MVP modules/Slider/_view'
+import SliderModel from "../src/MVP modules/Slider/_model";
 
-describe('Presenter', () => {
-    it("view property should return an object", () => {
-        const view = new Presenter(new View(), new Model()).view;
+describe('SliderPresenter', () => {
+    it("_view property should return an object", () => {
+        const view = new SliderPresenter(new SliderView(), new SliderModel())._view;
 
         expect(view).to.be.an('object');
 

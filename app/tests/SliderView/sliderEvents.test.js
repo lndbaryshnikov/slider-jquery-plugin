@@ -1,7 +1,7 @@
 // import puppeteer from "puppeteer";
-// import Presenter from "../../src/MVP modules/presenter/presenter";
-// import View from "../../src/MVP modules/view/view";
-// import Model from "../../src/MVP modules/model/model";
+// import SliderPresenter from "../../src/MVP modules/presenter/presenter";
+// import SliderView from "../../src/MVP modules/_view/_view";
+// import SliderModel from "../../src/MVP modules/_model/_model";
 //
 // describe("slider events", () => {
 //     let browser, page;
@@ -26,9 +26,9 @@
 //
 //             const presenter = new P(new V(), new M());
 //
-//             document.body.append(presenter.view.html[0]);
+//             document.body.append(presenter._view.html[0]);
 //
-//         }, Presenter.toString(), View.toString(), Model.toString());
+//         }, SliderPresenter.toString(), SliderView.toString(), SliderModel.toString());
 //
 //         const size = await page.evaluate(() => {
 //             const slider = document.getElementsByClassName('jquery-slider')[0];
@@ -42,7 +42,7 @@
 //         expect(size).toBe(300);
 
         // const sliderCoords = await page.evaluate(() =>  {
-        //     // document.body.append(presenter.view.html);
+        //     // document.body.append(presenter._view.html);
         //
         //     const slider = document.getElementsByClassName('jquery-slider')[0];
         //     console.log(slider);
@@ -79,7 +79,7 @@
         // //expect(newCoords).toEqual(testCoords);
         // expect(testCoords).toEqual(0);
         //
-        // presenter.view.html[0].remove();
+        // presenter._view.html[0].remove();
 
     // }, 30000);
 
@@ -89,7 +89,7 @@
     //     app.createDom();
     //
     //     const slider = $('.jquery-slider')[0];
-    //     const sliderCoords = getCoords(slider);
+    //     const sliderCoords = _getCoords(slider);
     //
     //     const newHandleCoordsLeft = moveHandleToCertainCoords(sliderCoords.left - 10);
     //

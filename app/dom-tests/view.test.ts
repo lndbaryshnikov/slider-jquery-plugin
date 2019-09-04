@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import View from '../src/MVP modules/view/view'
+import SliderView from '../src/MVP modules/Slider/_view'
 import {getClassList, createInstance, moveHandleToCertainCoords} from "../src/functions/private/view.private";
-import {defaultOptions} from '../src/MVP modules/model/model';
+import {defaultOptions} from '../src/MVP modules/Slider/_model';
 import getCoords from '../src/functions/common/getCoords'
 
 //styles here:
@@ -11,16 +11,16 @@ import '../src/styles/jquery-slider-handle.scss'
 
 const defaultClasses = defaultOptions.classes;
 
-describe('View', () => {
+describe('SliderView', () => {
     it("should have html property", () => {
-        const view = new View();
+        const view = new SliderView();
 
         expect(!!view.html).to.be.true;
         
     });
 
     describe("setModel method for setting classes", () => {
-        it("set classes when user passes no classes in model", () => {
+        it("set classes when user passes no classes in _model", () => {
             const app = createInstance();
             app.createDom();
 
@@ -103,7 +103,7 @@ describe('View', () => {
             app.removeDom();
         });
         
-        it("range div behaviour when options.range = min", () => {
+        it("range div behaviour when _options.range = min", () => {
 
             const app = createInstance({range: "min"});
             app.createDom();

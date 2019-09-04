@@ -1,4 +1,4 @@
-import Model, {defaultOptions} from "../../src/MVP modules/model/model";
+import SliderModel, {defaultOptions} from "../../src/MVP modules/Slider/_model";
 
 import clone from '../../src/functions/common/objectCopy';
 Object.clone = clone;
@@ -7,11 +7,11 @@ describe("Options object extension(getOptions method)", () => {
 
     test("extends object when user changes classes", () => {
 
-        const modelOptions = (new Model({
+        const modelOptions = (new SliderModel({
             classes: {
                 "jquery-slider-range": "my-slider-range"
             }
-        })).options;
+        }))._options;
 
         const testOptions = Object.clone(defaultOptions);
         testOptions.classes = {
@@ -23,7 +23,7 @@ describe("Options object extension(getOptions method)", () => {
 
     test("extends object with max = 60 and min = 20", () => {
 
-        const modelOptions = (new Model({min: 20, max: 60})).options;
+        const modelOptions = (new SliderModel({min: 20, max: 60}))._options;
 
         const testOptions = Object.assign({}, defaultOptions);
 
@@ -35,7 +35,7 @@ describe("Options object extension(getOptions method)", () => {
 
     test("returns initial object when user changes nothing", () => {
 
-        const modelOptions = (new Model()).options;
+        const modelOptions = (new SliderModel())._options;
 
         expect(modelOptions).toEqual(defaultOptions);
     });

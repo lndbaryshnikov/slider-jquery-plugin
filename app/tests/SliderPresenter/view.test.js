@@ -1,10 +1,10 @@
-import Presenter from "../../src/MVP modules/presenter/presenter";
-import View from "../../src/MVP modules/view/view";
-import Model from "../../src/MVP modules/model/model";
+import SliderPresenter from "../../src/MVP modules/Slider/presenter";
+import SliderView from "../../src/MVP modules/Slider/_view";
+import SliderModel from "../../src/MVP modules/Slider/_model";
 
-test("view property should return an object", () => {
+test("_view property should return an object", () => {
 
-    const view = new Presenter(new View(), new Model()).view;
+    const view = new SliderPresenter(new SliderView(), new SliderModel())._view;
     expect(typeof view).toBe('object');
 
 });

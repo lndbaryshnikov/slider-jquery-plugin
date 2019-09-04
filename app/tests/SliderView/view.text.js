@@ -1,7 +1,7 @@
-import View from "../../src/MVP modules/view/view";
+import SliderView from "../../src/MVP modules/Slider/_view";
 
 test("should have html property", () => {
-    const view = new View();
+    const view = new SliderView();
 
     expect(!!view.html).toBe(true);
 });

@@ -1,8 +1,8 @@
 import * as $ from 'jquery';
 
-import Model from "../../MVP modules/model/model";
-import Presenter from "../../MVP modules/presenter/presenter";
-import View from "../../MVP modules/view/view";
+import SliderModel from "../../MVP modules/Slider/_model";
+import SliderPresenter from "../../MVP modules/Slider/presenter";
+import SliderView from "../../MVP modules/Slider/_view";
 import getCoords, {Coords} from "../common/getCoords";
 import {Options, UserOptions} from "./model.private";
 
@@ -12,14 +12,14 @@ interface Instance {
     }
 
 export const createInstance = (options?: UserOptions, rootObj: string = 'body'): Instance => {
-    const presenter = new Presenter(new View(), new Model(options));
+    const presenter = new SliderPresenter(new SliderView(), new SliderModel(options));
 
     const createDom = () => {
-        $(rootObj).append(presenter.view.html);
+        $(rootObj).append(presenter._view.html);
     };
 
     const removeDom = () => {
-        presenter.view.html.remove();
+        presenter._view.html.remove();
     };
 
     return {
@@ -32,7 +32,7 @@ export const getClassList = (elements: JQuery): Object => {
     const classList: any = {};
 
     for (let i = 1; i < elements.length; i++) {
-        //i = 2 cause first 'div' is mocha and second is empty - wrapper(view.private.js)
+        //i = 2 cause first 'div' is mocha and second is empty - wrapper(_view.private.js)
         const classesString = $(elements[i]).attr('class');
         const classesArray = classesString.split(' ');
 
@@ -57,16 +57,10 @@ export const getInitialHtml = (defaultClasses: Options["classes"]): string => {
         `</div></div></div></div>`;
 };
 
-interface IClasses {
-    [key: string]: string;
-}
+
 
 export const setClasses = (classes: IClasses, html: JQuery): void => {
-    let key: keyof IClasses;
 
-    for (key in classes) {
-        html.find('.' + key).addClass(classes[key]);
-    }
 };
 
 export const createEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
