@@ -1,5 +1,5 @@
-import {hasAnArrayElements} from '../../functions/common/hasAnArrayElement'
-import * as $ from "jquery";
+// import * as $ from "jquery";
+
 import arrayEquals from "../../functions/common/arrayEquals";
 import Observer from "../Observer";
 
@@ -17,7 +17,7 @@ export interface Options {
     range: boolean | string,
 }
 
-export interface OptionsDefault {
+interface OptionsDefault {
     min: number,
     classes: {
         "jquery-slider": string,
@@ -31,7 +31,7 @@ export interface OptionsDefault {
     range: boolean | string,
 }
 
-interface UserOptions {
+export interface UserOptions {
     min?: number,
     classes?: {
         "jquery-slider"?: string,
@@ -45,13 +45,8 @@ interface UserOptions {
     range?: boolean | string,
 }
 
-interface SliderModel {
-    _options: Options;
-}
-
-class SliderModel implements SliderModel {
-    _options: Options;
-
+class SliderModel {
+    private _options: Options | undefined = undefined;
     private _defaultOptions: OptionsDefault = {
         min: 0,
         classes: {
@@ -65,14 +60,21 @@ class SliderModel implements SliderModel {
         orientation: "horizontal",
         range: false,
     };
-
     private _handlePositionInPercents: number;
 
     private _incorrectOptionsReceivedSubject = new Observer();
     private _optionsSetSubject = new Observer();
 
-    constructor( userOptions?: UserOptions ) {
-        this.setOptions(userOptions);
+    constructor(userOptions?: UserOptions) {
+        if ( userOptions ) this.setOptions(userOptions);
+    }
+
+    getOptions(): Options {
+        return this._options;
+    }
+
+    destroy() {
+        this._options = null;
     }
 
     whenOptionsAreIncorrect(callback: (error: string) => void) {
@@ -91,16 +93,12 @@ class SliderModel implements SliderModel {
         this._handlePositionInPercents = positionInPercents;
     }
 
-    getOptions(): Options {
-        return this._options;
+    get defaultOptions(): OptionsDefault {
+        return this._defaultOptions;
     }
 
-    getDefaultClasses(): OptionsDefault["classes"] {
-        return this._defaultOptions.classes;
-    }
-
-    setOptions(options: UserOptions) {
-        let _options = Object.assign({}, this._defaultOptions);
+    setOptions(options?: UserOptions) {
+        let _options = $.extend(true, {}, this._defaultOptions);
 
         if ( options ) {
             if(typeof options !== 'object') {
@@ -108,7 +106,7 @@ class SliderModel implements SliderModel {
                     .notifyObservers('Options are incorrect(should be an object)');
             }
 
-            _options = $.extend(_options, options);
+            $.extend(true, _options, options);
 
             if (!arrayEquals(Object.keys(_options), Object.keys(this._defaultOptions))) {
                 this._incorrectOptionsReceivedSubject
@@ -116,11 +114,11 @@ class SliderModel implements SliderModel {
             }
 
             if (options.classes) {
-                if (!hasAnArrayElements(Object.keys(options.classes),
+                if (!arrayEquals(Object.keys(_options.classes),
                     Object.keys(this._defaultOptions.classes))) {
 
                     this._incorrectOptionsReceivedSubject
-                        .notifyObservers('Options are incorrect (classes should ' +
+                        .notifyObservers('Options are incorrect(classes should ' +
                             'correspond the required format)');
                 }
             }
@@ -128,7 +126,22 @@ class SliderModel implements SliderModel {
 
         this._options = _options;
 
+        this._deleteWSFromUserCLasses();
+
         this._optionsSetSubject.notifyObservers();
+    }
+
+    private _deleteWSFromUserCLasses() {
+        const _this = this;
+        let key: keyof typeof _this._options.classes;
+
+        for ( key in this._options.classes ) {
+            if ( this._options.classes[key] !== '' ) {
+                this._options.classes[key] = this._options.classes[key]
+                    .trim()
+                    .replace(/\s+/g, ' ');
+            }
+        }
     }
 
 }

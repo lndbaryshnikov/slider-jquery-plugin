@@ -8,7 +8,7 @@ const arrayEquals = (array_1: any[], array_2: any[]): boolean => {
         // Check if we have nested arrays
         if (array_1[i] instanceof Array && array_2[i] instanceof Array) {
             // recurse into the nested arrays
-            if (!array_1[i].equals(array_2[i])) return false;
+            if (!arrayEquals(array_1[i], array_2[i])) return false;
         }
         else if (array_1[i] !== array_2[i]) {
             // Warning - two different object instances

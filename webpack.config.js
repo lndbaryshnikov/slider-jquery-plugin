@@ -20,16 +20,12 @@ const PATHS = {
 
 let entry = PATHS.src + 'jquery-slider.ts';
 let outputPath = PATHS.dist;
-let outputFilename = './js/[name].js';
-let htmlFilename = 'result.html';
-let htmlTemplate = PATHS.src + 'jquery-slider.pug';
+let outputFilename = './js/index.js';
 
 if (process.env.TESTBUILD) {
     entry = glob.sync(__dirname + "/app/dom-tests/**/*.test.ts");
     outputPath = __dirname + '/dom-tests-dist/';
     outputFilename = 'tests.js';
-    htmlTemplate = __dirname + '/app/dom-tests/dom-tests.pug';
-    htmlFilename = 'tests.html'
 }
 
 
@@ -42,14 +38,9 @@ const common = merge([
             filename: outputFilename
         },
 
-        plugins: [
-            new HtmlWebpackPlugin({
-                filename: htmlFilename,
-                //chunks: ['jquery-slider'],
-                template: htmlTemplate,
-            }),
-
-        ],
+        externals: {
+            jquery: 'jQuery'
+        },
 
         devtool: 'source-map',
         //For jsdom when I tried to run dom-tests om Node.js
@@ -62,7 +53,6 @@ const common = merge([
         // }
     },
     babel(),
-    pug(),
     styleExtract(),
     images(),
     fonts(),
