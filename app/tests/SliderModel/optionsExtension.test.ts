@@ -5,7 +5,8 @@ describe("Options object extension(getOptions method)", () => {
 
     test("extends object when user changes classes", () => {
 
-        model = new SliderModel({
+        model = new SliderModel();
+        model.setOptions({
             classes: {
                 "jquery-slider-range": "my-slider-range"
             }
@@ -18,7 +19,8 @@ describe("Options object extension(getOptions method)", () => {
     });
 
     test("extends object with max = 60 and min = 20", () => {
-        model = new SliderModel({min: 20, max: 60});
+        model = new SliderModel();
+        model.setOptions({min: 20, max: 60});
 
         const testOptions = $.extend(true, {}, model.defaultOptions);
 

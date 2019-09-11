@@ -65,10 +65,6 @@ class SliderModel {
     private _incorrectOptionsReceivedSubject = new Observer();
     private _optionsSetSubject = new Observer();
 
-    constructor(userOptions?: UserOptions) {
-        if ( userOptions ) this.setOptions(userOptions);
-    }
-
     getOptions(): Options {
         return this._options;
     }
@@ -111,6 +107,15 @@ class SliderModel {
             if (!arrayEquals(Object.keys(_options), Object.keys(this._defaultOptions))) {
                 this._incorrectOptionsReceivedSubject
                     .notifyObservers('Options are incorrect(should correspond the required format)');
+            }
+
+            let mainClass: keyof Options['classes'];
+
+            for (mainClass in _options.classes) {
+                if ( mainClass.trim() !== mainClass ) {
+                    this._incorrectOptionsReceivedSubject
+                        .notifyObservers('Options are incorrect(main classes shouldn\'t have extra whitespaces)');
+                }
             }
 
             if (options.classes) {
