@@ -16,7 +16,6 @@ export default class SliderView {
     private _handlePositionInPixels: number | undefined;
 
     private _handlePositionChangedSubject = new Observer();
-    private _sliderAlreadyExistsSubject = new Observer();
 
     get html() {
         return this._html;
@@ -37,12 +36,6 @@ export default class SliderView {
         this._setHandleMovingHandler();
     }
 
-    whenSliderAlreadyExists(callback: () => void): void {
-        this._sliderAlreadyExistsSubject.addObserver(() => {
-            callback();
-        });
-    }
-
     destroy(): void {
         this._html = undefined;
         this._root = undefined;
@@ -51,7 +44,9 @@ export default class SliderView {
     }
 
     cleanDom() {
-        this._html.wrapper.remove();
+        if ( !!this._root || this._root.contains(this._html.wrapper) ) {
+            this._html.wrapper.remove();
+        }
     }
 
     setOptions(options: Options): void {

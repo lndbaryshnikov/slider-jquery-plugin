@@ -22,7 +22,7 @@ export const getClassList = (elements: JQuery): Object => {
     return classList;
 };
 
-export const getInitialHtml = (defaultClasses: Options["classes"]): string => {
+const getInitialHtml = (defaultClasses: Options["classes"]): string => {
     const keys = Object.keys(defaultClasses);
 
     return `<div><div class=${keys[0]}>` +
@@ -31,7 +31,7 @@ export const getInitialHtml = (defaultClasses: Options["classes"]): string => {
         `</div></div></div></div>`;
 };
 
-export const createEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
+const createEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
   const e = $.Event(type);
 
   if (x !== "empty") {
@@ -52,7 +52,7 @@ export const createEvent = (type: string, x?: number | string, y?: number | stri
 
 interface HandleCoords extends Coords{}
 
-export const moveHandleToCertainCoords = (X: number): HandleCoords => {
+const moveHandleToCertainCoords = (X: number): HandleCoords => {
     const handle = $('.jquery-slider-handle')[0];
     const handleCoords = getCoords(handle);
 

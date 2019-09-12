@@ -31,9 +31,6 @@ class SliderPresenter {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
         this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
         this._view.whenHandlePositionChanged(this.passHandlePositionToModelCallback());
-        this._view.whenSliderAlreadyExists(() => {
-            throw new Error('Slider already exists');
-        });
 
         this._view.setUp();
 
@@ -60,7 +57,8 @@ class SliderPresenter {
             throw new Error('Slider isn\'t initialized yet');
         }
 
-        this._view.cleanDom();
+        if ( this._data.rendered !== false ) this._view.cleanDom();
+
         this._view.destroy();
         this._model.destroy();
 
