@@ -22,6 +22,7 @@ describe("slider events", () => {
     let browser: Browser, page: Page;
     const width = 1920;
     const height = 1080;
+    const timeout = 30000;
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -85,13 +86,13 @@ describe("slider events", () => {
         };
 
         expect(newCoords).toEqual(testCoords);
-    }, 30000);
+    }, timeout);
 
     test("handle stays within the slider when the cursor goes outside", async () => {
 
         await page.mouse.move(handleCoords.left + 1, handleCoords.top + 1);
         await page.mouse.down();
-        await page.mouse.move(sliderCoords.left - 10 - 1, handleCoords.top + 1);
+        await page.mouse.move(sliderCoords.left - 50 - 1, handleCoords.top + 1);
         await page.mouse.up();
 
         const newHandleCoordsLeft = await getCoordinates(page, handle);
@@ -100,7 +101,7 @@ describe("slider events", () => {
 
         await page.mouse.move(newHandleCoordsLeft.left + 1, newHandleCoordsLeft.top + 1);
         await page.mouse.down();
-        await page.mouse.move(sliderCoords.right + 10 + 1, newHandleCoordsLeft.top + 1);
+        await page.mouse.move(sliderCoords.right + 50 + 1, newHandleCoordsLeft.top + 1);
         await page.mouse.up();
 
         const newHandleCoordsRight = await getCoordinates(page, handle);
@@ -113,5 +114,5 @@ describe("slider events", () => {
 
         expect(newLeft_1).toBe(0);
         expect(newLeft_2).toBe(rightEdge);
-    }, 30000);
+    }, timeout);
 });

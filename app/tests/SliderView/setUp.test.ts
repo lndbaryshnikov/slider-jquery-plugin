@@ -14,5 +14,4 @@ test("setUp works", () => {
     expect(sliderView.html.wrapper.contains(sliderView.html.range)).toBe(true);
     expect(sliderView.html.wrapper.contains(sliderView.html.handle)).toBe(true);
     expect(sliderView.html.range.contains(sliderView.html.handle)).toBe(true);
-    // expect().
 });

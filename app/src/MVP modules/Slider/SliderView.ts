@@ -22,7 +22,7 @@ export default class SliderView {
     }
 
     get handlePositionInPercents() {
-        return this._handlePositionInPixels / this._getCoords().wrapper.width;
+        return this._handlePositionInPixels / this._getCoords().wrapper.width * 100;
     }
 
     render(root: HTMLElement): void {
@@ -63,17 +63,19 @@ export default class SliderView {
                 document.onmousemove = (mouseMoveEvent: MouseEvent) => {
                     const shiftX = handleShift.x;
 
-                    let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
+                    let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left +
+                        this._getCoords().handle.width / 2;
 
                     if (newLeft < 0) newLeft = 0;
 
-                    const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
+                    const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width +
+                        this._getCoords().handle.width / 2;
 
                     if (newLeft > rightEdge) newLeft = rightEdge;
 
                     this._html.handle.style.left = newLeft + 'px';
 
-                    this._handlePositionInPixels = newLeft + this._getCoords().handle.width / 2;
+                    this._handlePositionInPixels = newLeft;
 
                     this._handlePositionChangedSubject.notifyObservers();
                 };
