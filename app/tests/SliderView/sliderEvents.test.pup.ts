@@ -1,5 +1,6 @@
 import puppeteer, {Browser, ElementHandle, Page} from "puppeteer";
 import {JQueryElementWithSlider} from "../../src/jquery-slider";
+import * as pup from './pup';
 
 interface Coords {
     left: number,
@@ -10,13 +11,7 @@ interface Coords {
     height: number
 
 }
-const getCoordinates =  async (page: Page, dom: ElementHandle): Promise<Coords>  => {
-    return await page.evaluate((dom) => {
-        const {left, top, right, bottom, width, height} = dom.getBoundingClientRect();
 
-        return {left, top, right, bottom, width, height};
-    }, dom);
-};
 
 describe("slider events", () => {
     let browser: Browser, page: Page;
@@ -37,7 +32,7 @@ describe("slider events", () => {
     afterAll(() => {
         browser.close();
     });
-
+    let root: ElementHandle;
     let slider: ElementHandle, sliderCoords: Coords;
     let sliderMiddleLeft: number;
     let range: ElementHandle, rangeCoords: Coords;
@@ -52,32 +47,28 @@ describe("slider events", () => {
             root.slider();
         });
 
+        root = await page.$('.slider');
         slider = await page.$('.jquery-slider');
         range = await page.$('.jquery-slider-range');
         handle = await page.$('.jquery-slider-handle');
 
-        sliderCoords = await getCoordinates(page, slider);
-        rangeCoords = await getCoordinates(page, range);
-        handleCoords = await getCoordinates(page, handle);
+        sliderCoords = await pup.getCoordinates(page, slider);
+        rangeCoords = await pup.getCoordinates(page, range);
+        handleCoords = await pup.getCoordinates(page, handle);
 
         sliderMiddleLeft = sliderCoords.left + sliderCoords.width / 2;
     });
 
     afterEach(async () => {
-        const root: ElementHandle = await page.$('.slider');
-
         await page.evaluate((root) => {
             root.remove();
         }, root);
     });
 
     test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
-        await page.mouse.move(handleCoords.left + 1, handleCoords.top + 1);
-        await page.mouse.down();
-        await page.mouse.move(sliderMiddleLeft + 1, handleCoords.top + 1);
-        await page.mouse.up();
+        await pup.moveHandleToCoords(page, handle, sliderMiddleLeft, handleCoords.top);
 
-        const newHandleCoords = await getCoordinates(page, handle);
+        const newHandleCoords = await pup.getCoordinates(page, handle);
 
         const newCoords = {
           top: newHandleCoords.top,
@@ -93,22 +84,15 @@ describe("slider events", () => {
     }, timeout);
 
     test("handle stays within the slider when the cursor goes outside", async () => {
+        await pup.moveHandleToCoords(page, handle, sliderCoords.left - 50, handleCoords.top);
 
-        await page.mouse.move(handleCoords.left + 1, handleCoords.top + 1);
-        await page.mouse.down();
-        await page.mouse.move(sliderCoords.left - 50 - 1, handleCoords.top + 1);
-        await page.mouse.up();
-
-        const newHandleCoordsLeft = await getCoordinates(page, handle);
+        const newHandleCoordsLeft = await pup.getCoordinates(page, handle);
 
         const newLeft_1 = newHandleCoordsLeft.left - sliderCoords.left;
 
-        await page.mouse.move(newHandleCoordsLeft.left + 1, newHandleCoordsLeft.top + 1);
-        await page.mouse.down();
-        await page.mouse.move(sliderCoords.right + 50 + 1, newHandleCoordsLeft.top + 1);
-        await page.mouse.up();
+        await pup.moveHandleToCoords(page, handle, sliderCoords.right + 50, newHandleCoordsLeft.top);
 
-        const newHandleCoordsRight = await getCoordinates(page, handle);
+        const newHandleCoordsRight = await pup.getCoordinates(page, handle);
 
         const newLeft_2 = newHandleCoordsRight.left - sliderCoords.left;
 
@@ -121,26 +105,46 @@ describe("slider events", () => {
     }, timeout);
 
     test("range changes correctly when options.range = 'min'", async () => {
-        const root: ElementHandle = await page.$('.slider');
-
         await page.evaluate((root) => {
             ($(root) as JQueryElementWithSlider).slider('options', { range: 'min' } );
         }, root);
 
-        expect(rangeCoords.width).toBe(0);
-        expect(rangeCoords.left).toBe(sliderCoords.left);
+        const newModeRangeCoords = await pup.getCoordinates(page, range);
 
-        await page.mouse.move(handleCoords.left + 1, handleCoords.top + 1);
-        await page.mouse.down();
-        await page.mouse.move(sliderMiddleLeft + 1, handleCoords.top + 1);
-        await page.mouse.up();
+        await expect(newModeRangeCoords.width).toBe(0);
+        await expect(newModeRangeCoords.left).toBe(sliderCoords.left);
 
-        const newHandleCoords = await getCoordinates(page, handle);
-        const newRangeCoords = await getCoordinates(page, range);
+        await pup.moveHandleToCoords(page, handle, sliderMiddleLeft, handleCoords.top);
+
+        const newHandleCoords = await pup.getCoordinates(page, handle);
+        const newRangeCoords = await pup.getCoordinates(page, range);
 
         expect(newRangeCoords.left).toBe(sliderCoords.left);
         expect(newRangeCoords.right).toBe(newHandleCoords.left + newHandleCoords.width / 2);
         expect(newRangeCoords.width).toBe(newHandleCoords.left + newHandleCoords.width / 2
             - sliderCoords.left);
+    }, timeout);
+
+    test("range changes correctly when options.range = 'max'", async () => {
+        await page.evaluate((root) => {
+            ($(root) as JQueryElementWithSlider).slider('options', {range: 'max'});
+        }, root);
+
+        const newModeRangeCoords = await pup.getCoordinates(page, range);
+
+        expect(newModeRangeCoords.width).toBe(0);
+        expect(newModeRangeCoords.right).toBe(sliderCoords.right);
+
+        await pup.moveHandleToCoords(page, handle, sliderMiddleLeft, handleCoords.top);
+
+        const newHandleCoords = await pup.getCoordinates(page, handle);
+        const newRangeCoords = await pup.getCoordinates(page, range);
+
+        expect(newRangeCoords.right).toBe(sliderCoords.right);
+        expect(newRangeCoords.left).toBe(newHandleCoords.left + newHandleCoords.width / 2);
+        expect(newRangeCoords.width).toBe(sliderCoords.right - newHandleCoords.left
+            - newHandleCoords.width / 2);
+
+        // expect().
     }, timeout);
 });
