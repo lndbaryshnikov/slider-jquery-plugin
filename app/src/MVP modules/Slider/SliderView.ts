@@ -14,8 +14,16 @@ export default class SliderView {
     private _root: HTMLElement | undefined;
     private _options: Options | undefined;
     private _handlePositionInPixels: number | undefined;
+    private _data = {
+        rendered: false
+    };
 
     private _handlePositionChangedSubject = new Observer();
+
+    constructor() {
+        this._setSliderElements();
+        this._setHandleMovingHandler();
+    }
 
     get html() {
         return this._html;
@@ -27,13 +35,11 @@ export default class SliderView {
 
     render(root: HTMLElement): void {
         this._root = root;
-
         this._root.append(this._html.wrapper);
-    }
 
-    setUp() {
-        this._setSliderElements();
-        this._setHandleMovingHandler();
+        this._data.rendered = true;
+
+        this._renderOptions();
     }
 
     destroy(): void {
@@ -41,21 +47,37 @@ export default class SliderView {
         this._root = undefined;
         this._options = undefined;
         this._handlePositionInPixels = undefined;
-    }
+
+        this._data.rendered = false;
+    }  
 
     cleanDom() {
         if ( !!this._root || this._root.contains(this._html.wrapper) ) {
             this._html.wrapper.remove();
         }
+
+        this._data.rendered = false;
     }
 
     setOptions(options: Options): void {
         this._options = options;
 
-        this._setOptionsToSlider();
+        this._handlePositionInPixels = 0;
+
+        this._setSliderClasses();
+
+        if ( this._data.rendered ) {
+            this._renderOptions();
+        }
     }
 
-    _setHandleMovingHandler() {
+    private _renderOptions() {
+        this._renderHandlePosition();
+
+        this._renderRange();
+    }
+
+    private _setHandleMovingHandler() {
             //Drag'n'Drop code
             this._html.handle.onmousedown = (mouseDownEvent: MouseEvent) => {
                 const handleShift = this._countHandleShift(mouseDownEvent);
@@ -63,19 +85,25 @@ export default class SliderView {
                 document.onmousemove = (mouseMoveEvent: MouseEvent) => {
                     const shiftX = handleShift.x;
 
-                    let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left +
-                        this._getCoords().handle.width / 2;
+                    let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
+                        // + this._getCoords().handle.width / 2;
 
-                    if (newLeft < 0) newLeft = 0;
+                    if (newLeft < 0 - this._getCoords().handle.width / 2) {
+                        newLeft = 0 - this._getCoords().handle.width / 2;
+                    }
 
-                    const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width +
-                        this._getCoords().handle.width / 2;
+                    const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
+                        // + this._getCoords().handle.width / 2;
 
-                    if (newLeft > rightEdge) newLeft = rightEdge;
+                    if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
+                        newLeft = rightEdge + this._getCoords().handle.width / 2;
+                    }
 
-                    this._html.handle.style.left = newLeft + 'px';
+                    this._handlePositionInPixels = newLeft + this._getCoords().handle.width / 2;
 
-                    this._handlePositionInPixels = newLeft;
+                    this._renderHandlePosition();
+
+                    this._renderRange();
 
                     this._handlePositionChangedSubject.notifyObservers();
                 };
@@ -98,8 +126,15 @@ export default class SliderView {
         })
     }
 
-    private _setOptionsToSlider() {
-        this._setSliderClasses();
+    private _renderHandlePosition() {
+        this._html.handle.style.left = this._handlePositionInPixels - this._getCoords().handle.width / 2 + 'px';
+    }
+
+    private _renderRange() {
+        if ( this._options.range === 'min' ) {
+            this._html.range.style.left = 0 + 'px';
+            this._html.range.style.width = this._handlePositionInPixels + 'px';
+        }
     }
 
     private _setSliderClasses() {
@@ -112,6 +147,8 @@ export default class SliderView {
         this._html.range.setAttribute('class', range);
         this._html.handle.setAttribute('class', handle);
 
+        this._html.range.style.position = 'relative';
+        this._html.handle.style.position = 'relative';
 
         $(this._html.wrapper).addClass(this._options.classes[wrapper as "jquery-slider"]);
         $(this._html.range).addClass(this._options.classes[range as "jquery-slider-range"]);

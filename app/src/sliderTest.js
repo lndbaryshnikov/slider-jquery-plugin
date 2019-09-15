@@ -1,1 +1,1 @@
-$('.slider').slider();
+$('.slider').slider({range: 'min'});

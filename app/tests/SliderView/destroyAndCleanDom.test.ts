@@ -10,7 +10,6 @@ describe('destroy and cleanDom methods', () => {
     beforeEach(() => {
         sliderView = new SliderView();
 
-        sliderView.setUp();
         sliderView.setOptions(defaultOptions);
 
         root = document.body;

@@ -15,9 +15,9 @@ describe('initialize exceptions', () => {
     });
 
     test("throws exception when setUp when slider already setUp", () => {
-        slider.setUp();
+        slider.initialize(document.body);
 
-        expect(() => { slider.setUp() }).toThrow('Slider is already setUp');
+        expect(() => { slider.initialize(document.body) }).toThrow('Slider is already initialized');
     });
 
     test("throws exception when destroy without initialize", () => {

@@ -5,7 +5,7 @@ import SliderView from "../../src/MVP modules/Slider/SliderView";
 const createSetOptionsCallback = (options: any) => {
     return () => {
         const model  = new SliderPresenter(new SliderView(), new SliderModel());
-        model.setUp(options);
+        model.setOptions(options);
     };
 };
 

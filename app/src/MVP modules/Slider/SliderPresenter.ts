@@ -7,7 +7,11 @@ class SliderPresenter {
         rendered: false
     };
 
-    constructor(private _view: SliderView, private _model: SliderModel) { }
+    constructor(private _view: SliderView, private _model: SliderModel) {
+        this._model.whenOptionsSet(this.setOptionsToViewCallback());
+        this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
+        this._view.whenHandlePositionChanged(this.passHandlePositionToModelCallback());
+    }
 
     get view() {
         return this._view;
@@ -18,22 +22,18 @@ class SliderPresenter {
     }
 
     initialize(root: HTMLElement, userOptions?: UserOptions) {
-        this.setUp(userOptions);
-
-        this.render(root);
-    }
-
-    setUp(userOptions?: UserOptions) {
-        if ( !!this._data.setUp ) {
-            throw new Error('Slider is already setUp');
+        if ( !!this._data.rendered ) {
+            throw new Error('Slider is already initialized');
         }
 
-        this._model.whenOptionsSet(this.setOptionsToViewCallback());
-        this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
-        this._view.whenHandlePositionChanged(this.passHandlePositionToModelCallback());
+        if ( !this._data.setUp ) this.setOptions(userOptions);
 
-        this._view.setUp();
+        if ( !this._data.rendered ) this.render(root);
 
+
+    }
+
+    setOptions(userOptions?: UserOptions) {
         this._model.setOptions(userOptions);
 
         this._data.setUp = true;

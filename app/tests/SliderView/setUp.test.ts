@@ -1,11 +1,9 @@
 import SliderView from "../../src/MVP modules/Slider/SliderView";
 
-test("setUp works", () => {
+test("SliderView initialization", () => {
     const sliderView = new SliderView();
 
-    expect(sliderView.html).toBe(undefined);
-
-    sliderView.setUp();
+    expect(typeof sliderView.html).toBe('object');
 
     expect(sliderView.html.wrapper.tagName).toBe('DIV');
     expect(sliderView.html.range.tagName).toBe('DIV');
