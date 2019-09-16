@@ -9,7 +9,7 @@ import './styles/jquery-slider-range.scss'
 import './styles/jquery-slider-handle.scss'
 
 export interface JQueryElementWithSlider extends JQuery<HTMLElement> {
-    slider: (method?: Options | keyof SliderMethods, ...options: (UserOptions | string)[]) => void;
+    slider: (method?: UserOptions | keyof SliderMethods, ...options: (UserOptions | string)[]) => void;
 }
 
 interface SliderMethods {
@@ -76,12 +76,12 @@ interface SliderMethods {
         }
     };
 
-    ($.fn as JQueryElementWithSlider).slider = function (method?: Options | keyof SliderMethods, ...options: (UserOptions | string)[]) {
+    ($.fn as JQueryElementWithSlider).slider = function (method?: UserOptions | keyof SliderMethods, ...options: (UserOptions | string)[]) {
         if ( sliderMethods[ method as keyof SliderMethods ] ) {
             return sliderMethods[ method as keyof SliderMethods ].apply( this, options );
 
         } else if ( typeof method === 'object' || ( !method && options.length === 0 ) ) {
-            return sliderMethods.init.call(this, method as Options);
+            return sliderMethods.init.call(this, method as UserOptions);
 
         } else {
             $.error( 'Method "' +  method + '" doesn\'t exist for jQuery.slider' );

@@ -135,6 +135,16 @@ export default class SliderView {
             this._html.range.style.left = 0 + 'px';
             this._html.range.style.width = this._handlePositionInPixels + 'px';
         }
+
+        if ( this._options.range === 'max' ) {
+            // this._html.range.style.left = this._getCoords().wrapper.width + 'px';
+            // this._html.range.style.width = this._getCoords().wrapper.width -
+            //     this._handlePositionInPixels + 'px';
+
+            this._html.range.style.right = 0 + 'px';
+            this._html.range.style.width = this._getCoords().wrapper.width -
+                this._handlePositionInPixels + 'px';
+        }
     }
 
     private _setSliderClasses() {
@@ -147,8 +157,9 @@ export default class SliderView {
         this._html.range.setAttribute('class', range);
         this._html.handle.setAttribute('class', handle);
 
-        this._html.range.style.position = 'relative';
-        this._html.handle.style.position = 'relative';
+        this._html.wrapper.style.position = 'relative';
+        this._html.range.style.position = 'absolute';
+        this._html.handle.style.position = 'absolute';
 
         $(this._html.wrapper).addClass(this._options.classes[wrapper as "jquery-slider"]);
         $(this._html.range).addClass(this._options.classes[range as "jquery-slider-range"]);
@@ -163,7 +174,7 @@ export default class SliderView {
         };
 
         this._html.wrapper.append(this._html.range);
-        this._html.range.append(this._html.handle);
+        this._html.wrapper.append(this._html.handle);
     }
 
     private _countHandleShift(mouseDownEvent: MouseEvent) {

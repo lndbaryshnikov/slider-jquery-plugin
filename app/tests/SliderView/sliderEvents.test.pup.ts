@@ -1,82 +1,54 @@
-import puppeteer, {Browser, ElementHandle, Page} from "puppeteer";
-import {JQueryElementWithSlider} from "../../src/jquery-slider";
-import * as pup from './pup';
-
-interface Coords {
-    left: number,
-    top: number,
-    right: number,
-    bottom: number,
-    width: number,
-    height: number
-
-}
-
+import puppeteer, {Browser, Page} from "puppeteer";
+import SliderPupPage, {Coords} from './SliderPupPage'
 
 describe("slider events", () => {
     let browser: Browser, page: Page;
-    const width = 1920;
-    const height = 1080;
+    let sliderPage: SliderPupPage;
+
     const timeout = 30000;
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
-        page = await browser.newPage();
-        await page.setViewport({ width, height });
+        sliderPage = new SliderPupPage(browser);
 
-        await page.addScriptTag({path: 'node_modules/jquery/dist/jquery.min.js'});
-        await page.addStyleTag({path: 'dist/css/main.css'});
-        await page.addScriptTag({path: 'dist/js/index.js'});
+        await sliderPage.createPage();
+
+        page = sliderPage.page;
     });
 
     afterAll(() => {
         browser.close();
     });
-    let root: ElementHandle;
-    let slider: ElementHandle, sliderCoords: Coords;
-    let sliderMiddleLeft: number;
-    let range: ElementHandle, rangeCoords: Coords;
-    let handle: ElementHandle, handleCoords: Coords;
+
+    let sliderCoords: Coords;
+    let rangeCoords: Coords;
+    let handleCoords: Coords;
 
     beforeEach(async () => {
-        await page.evaluate(() => {
-            const root = $('<div class="slider"></div>') as JQueryElementWithSlider;
+        await sliderPage.createSlider();
 
-            $('body').append(root);
-
-            root.slider();
-        });
-
-        root = await page.$('.slider');
-        slider = await page.$('.jquery-slider');
-        range = await page.$('.jquery-slider-range');
-        handle = await page.$('.jquery-slider-handle');
-
-        sliderCoords = await pup.getCoordinates(page, slider);
-        rangeCoords = await pup.getCoordinates(page, range);
-        handleCoords = await pup.getCoordinates(page, handle);
-
-        sliderMiddleLeft = sliderCoords.left + sliderCoords.width / 2;
+        sliderCoords = await sliderPage.getSliderCoords();
+        rangeCoords = await sliderPage.getRangeCoords();
+        handleCoords = await sliderPage.getHandleCoords();
     });
 
     afterEach(async () => {
-        await page.evaluate((root) => {
-            root.remove();
-        }, root);
+        await sliderPage.removeDom();
     });
 
     test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
-        await pup.moveHandleToCoords(page, handle, sliderMiddleLeft, handleCoords.top);
+        await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
+            handleCoords.top);
 
-        const newHandleCoords = await pup.getCoordinates(page, handle);
+        const newHandleCoords = await sliderPage.getHandleCoords();
 
         const newCoords = {
           top: newHandleCoords.top,
           left: newHandleCoords.left
         };
-        const testCoords = {
+        const testCoords = await {
           top: handleCoords.top,
-          left: sliderMiddleLeft
+          left: (await sliderPage.getSliderMiddle()).left
         };
 
         expect(newCoords.top).toBe(testCoords.top);
@@ -84,15 +56,17 @@ describe("slider events", () => {
     }, timeout);
 
     test("handle stays within the slider when the cursor goes outside", async () => {
-        await pup.moveHandleToCoords(page, handle, sliderCoords.left - 50, handleCoords.top);
+        await sliderPage.moveHandleToCoords(sliderCoords.left - 50,
+            handleCoords.top);
 
-        const newHandleCoordsLeft = await pup.getCoordinates(page, handle);
+        const newHandleCoordsLeft = await sliderPage.getHandleCoords();
 
         const newLeft_1 = newHandleCoordsLeft.left - sliderCoords.left;
 
-        await pup.moveHandleToCoords(page, handle, sliderCoords.right + 50, newHandleCoordsLeft.top);
+        await sliderPage.moveHandleToCoords(sliderCoords.right + 50,
+            newHandleCoordsLeft.top);
 
-        const newHandleCoordsRight = await pup.getCoordinates(page, handle);
+        const newHandleCoordsRight = await sliderPage.getHandleCoords();
 
         const newLeft_2 = newHandleCoordsRight.left - sliderCoords.left;
 
@@ -105,19 +79,18 @@ describe("slider events", () => {
     }, timeout);
 
     test("range changes correctly when options.range = 'min'", async () => {
-        await page.evaluate((root) => {
-            ($(root) as JQueryElementWithSlider).slider('options', { range: 'min' } );
-        }, root);
+        await sliderPage.setOptions({ range: 'min' });
 
-        const newModeRangeCoords = await pup.getCoordinates(page, range);
+        const newModeRangeCoords = await sliderPage.getRangeCoords();
 
-        await expect(newModeRangeCoords.width).toBe(0);
-        await expect(newModeRangeCoords.left).toBe(sliderCoords.left);
+        expect(newModeRangeCoords.width).toBe(0);
+        expect(newModeRangeCoords.left).toBe(sliderCoords.left);
 
-        await pup.moveHandleToCoords(page, handle, sliderMiddleLeft, handleCoords.top);
+        await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
+            handleCoords.top);
 
-        const newHandleCoords = await pup.getCoordinates(page, handle);
-        const newRangeCoords = await pup.getCoordinates(page, range);
+        const newHandleCoords = await sliderPage.getHandleCoords();
+        const newRangeCoords = await sliderPage.getRangeCoords();
 
         expect(newRangeCoords.left).toBe(sliderCoords.left);
         expect(newRangeCoords.right).toBe(newHandleCoords.left + newHandleCoords.width / 2);
@@ -126,25 +99,24 @@ describe("slider events", () => {
     }, timeout);
 
     test("range changes correctly when options.range = 'max'", async () => {
-        await page.evaluate((root) => {
-            ($(root) as JQueryElementWithSlider).slider('options', {range: 'max'});
-        }, root);
+        await sliderPage.setOptions({range: 'max'});
 
-        const newModeRangeCoords = await pup.getCoordinates(page, range);
+        const newModeRangeCoords = await sliderPage.getRangeCoords();
 
-        expect(newModeRangeCoords.width).toBe(0);
+        expect(newModeRangeCoords.width).toBe(sliderCoords.width);
         expect(newModeRangeCoords.right).toBe(sliderCoords.right);
+        expect(newModeRangeCoords.left).toBe(sliderCoords.left);
 
-        await pup.moveHandleToCoords(page, handle, sliderMiddleLeft, handleCoords.top);
+        await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
+            handleCoords.top);
 
-        const newHandleCoords = await pup.getCoordinates(page, handle);
-        const newRangeCoords = await pup.getCoordinates(page, range);
+        const newHandleCoords = await sliderPage.getHandleCoords();
+        const newRangeCoords = await sliderPage.getRangeCoords();
 
         expect(newRangeCoords.right).toBe(sliderCoords.right);
         expect(newRangeCoords.left).toBe(newHandleCoords.left + newHandleCoords.width / 2);
-        expect(newRangeCoords.width).toBe(sliderCoords.right - newHandleCoords.left
-            - newHandleCoords.width / 2);
+        expect(newRangeCoords.width).toBe(sliderCoords.right
+            - newHandleCoords.left - newHandleCoords.width / 2);
 
-        // expect().
     }, timeout);
 });
