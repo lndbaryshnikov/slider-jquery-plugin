@@ -1,8 +1,16 @@
 .jquery-slider-handle {
-  height: 150%;
-  width: 15px;
+
   background-color: blueviolet;
   border-radius: 30%;
-  //position: relative;
+}
+
+.jquery-slider-horizontal .jquery-slider-handle {
+  height: 1.4em;
+  width: 1em;
   top: -25%;
+}
+
+.jquery-slider-vertical .jquery-slider-handle {
+  height: 1em;
+  width: 1.4em;
 }

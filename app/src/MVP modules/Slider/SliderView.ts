@@ -149,7 +149,7 @@ export default class SliderView {
 
     private _setSliderClasses() {
         const defaultClasses = Object.keys(this._options.classes) as
-            (keyof (VerticalClasses<string> | HorizontalClasses<string>))[];
+            (keyof (VerticalClasses | HorizontalClasses))[];
         const wrapper = defaultClasses[0];
         const range = defaultClasses[1];
         const handle = defaultClasses[2];

@@ -5,6 +5,8 @@ import SliderView from './MVP modules/Slider/SliderView'
 import SliderPresenter from './MVP modules/Slider/SliderPresenter'
 
 import './styles/jquery-slider.scss'
+import './styles/jquery-slider-horizontal.scss'
+import './styles/jquery-slider-vertical.scss'
 import './styles/jquery-slider-range.scss'
 import './styles/jquery-slider-handle.scss'
 

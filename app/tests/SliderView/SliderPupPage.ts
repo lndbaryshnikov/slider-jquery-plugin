@@ -122,7 +122,8 @@ export default class SliderPupPage {
 
     async getSliderMiddle() {
         return {
-            left: (await this._getCoords(this._slider)).left + (await this._getCoords(this._slider)).width / 2
+            left: (await this._getCoords(this._slider)).left + (await this._getCoords(this._slider)).width / 2,
+            top: (await this._getCoords(this._slider)).top + (await this._getCoords(this._slider)).height / 2
         };
     }
 
