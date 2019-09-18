@@ -3,63 +3,69 @@
 import arrayEquals from "../../functions/common/arrayEquals";
 import Observer from "../Observer";
 
-export interface Options {
+type Optional<T> = {
+    [O in keyof T]?: T[O]
+};
+
+export type HorizontalClasses = {
+    "jquery-slider jquery-slider-horizontal": string,
+    "jquery-slider-range": string,
+    "jquery-slider-handle": string
+}
+
+export type VerticalClasses = {
+    "jquery-slider jquery-slider-vertical": string;
+    "jquery-slider-range": string,
+    "jquery-slider-handle": string
+}
+// type Classes = {
+//     "jquery-slider jquery-slider-horizontal": string;
+//     "jquery-slider-range": string,
+//     "jquery-slider-handle": string
+// } | {
+//     "jquery-slider jquery-slider-vertical": string;
+//     "jquery-slider-range": string,
+//     "jquery-slider-handle": string
+// }
+
+export type Options = {
     min: number,
-    classes: {
-        "jquery-slider"?: string,
-        "jquery-slider-range"?: string,
-        "jquery-slider-handle"?: string
-    },
     max: number,
     step: number,
     value: number,
-    orientation: string,
-    range: boolean | string,
-}
+    orientation: 'horizontal' | 'vertical',
+    range: 'min' | 'max' | boolean,
 
-interface OptionsDefault {
-    min: number,
-    classes: {
-        "jquery-slider": string,
-        "jquery-slider-range": string,
-        "jquery-slider-handle": string
-    },
-    max: number,
-    step: number,
-    value: number,
-    orientation: string,
-    range: boolean | string,
-}
+    classes: HorizontalClasses | VerticalClasses
+};
 
-export interface UserOptions {
+// export type OptionsDefault = {
+//     min: 0,
+//     max: 100,
+//     step: 1,
+//     value: 0,
+//     orientation: 'horizontal' | 'vertical',
+//     range: 'min' | 'max' | boolean,
+//
+//     classes: HorizontalClasses | VerticalClasses
+// };
+
+export type UserOptions = {
     min?: number,
+    max?: number,
+    step?: number,
+    value?: number,
+    orientation?: 'horizontal' | 'vertical',
+    range?: 'min' | 'max' | boolean,
     classes?: {
         "jquery-slider"?: string,
         "jquery-slider-range"?: string,
         "jquery-slider-handle"?: string
-    },
-    max?: number,
-    step?: number,
-    value?: number,
-    orientation?: string,
-    range?: boolean | string,
-}
+    }
+};
 
 class SliderModel {
     private _options: Options | undefined = undefined;
-    private _defaultOptions: OptionsDefault = {
-        min: 0,
-        classes: {
-            "jquery-slider": "",
-            "jquery-slider-range": "",
-            "jquery-slider-handle": ""
-        },
-        max: 100,
-        step: 1,
-        value: 1,
-        orientation: "horizontal",
-        range: false,
-    };
     private _handlePositionInPercents: number;
 
     private _incorrectOptionsReceivedSubject = new Observer();
@@ -89,49 +95,104 @@ class SliderModel {
         this._handlePositionInPercents = positionInPercents;
     }
 
-    get defaultOptions(): OptionsDefault {
-        return this._defaultOptions;
-    }
+    static getDefaultOptions(orientation: 'horizontal' | 'vertical'): Options {
+        let classes: Options['classes'];
+
+        if ( orientation === 'horizontal' ) {
+            classes = {
+                "jquery-slider jquery-slider-horizontal": "",
+                "jquery-slider-range": "",
+                "jquery-slider-handle": ""
+            }
+        }
+        if ( orientation === 'vertical' ) {
+            classes = {
+                "jquery-slider jquery-slider-vertical": "",
+                "jquery-slider-range": "",
+                "jquery-slider-handle": ""
+            }
+        }
+
+        return {
+            min: 0,
+            max: 100,
+            step: 1,
+            value: 0,
+            orientation: orientation,
+            range: false,
+            classes: classes
+        };
+    };
 
     setOptions(options?: UserOptions) {
-        let _options = $.extend(true, {}, this._defaultOptions);
-
         if ( options ) {
-            if(typeof options !== 'object') {
+            if ( typeof options !== 'object' ) {
                 this._incorrectOptionsReceivedSubject
                     .notifyObservers('Options are incorrect(should be an object)');
             }
 
-            $.extend(true, _options, options);
+            let _defaults: Options;
 
-            if (!arrayEquals(Object.keys(_options), Object.keys(this._defaultOptions))) {
+            if ( !options.orientation ) {
+                _defaults = SliderModel.getDefaultOptions('horizontal');
+            } else if ( options.orientation === 'vertical' || options.orientation === 'horizontal') {
+                _defaults = SliderModel.getDefaultOptions(options.orientation);
+            } else {
+                this._incorrectOptionsReceivedSubject.notifyObservers('Options are incorrect (for orientation only ' +
+                    '"vertical" and "horizontal" values are allowed)');
+            }
+
+            if ( options.classes && options.classes["jquery-slider"] ) {
+                if ( !options.orientation || options.orientation === 'horizontal' ) {
+                    (options.classes as HorizontalClasses)["jquery-slider jquery-slider-horizontal"] =
+                        options.classes["jquery-slider"];
+
+                    delete options.classes["jquery-slider"];
+                }
+
+                if ( options.orientation === 'vertical' ) {
+                    (options.classes as VerticalClasses)["jquery-slider jquery-slider-vertical"] =
+                        options.classes["jquery-slider"];
+
+                    delete options.classes["jquery-slider"];
+                }
+            }
+            let _defaultsClone: Options | null = $.extend(true, {}, _defaults);
+
+            const _options: Options = $.extend(true, _defaultsClone, options);
+
+            _defaultsClone = null;
+
+            if (!arrayEquals(Object.keys(_options), Object.keys(_defaults))) {
                 this._incorrectOptionsReceivedSubject
                     .notifyObservers('Options are incorrect(should correspond the required format)');
             }
 
-            let mainClass: keyof Options['classes'];
-
-            for (mainClass in _options.classes) {
-                if ( mainClass.trim() !== mainClass ) {
-                    this._incorrectOptionsReceivedSubject
-                        .notifyObservers('Options are incorrect(main classes shouldn\'t have extra whitespaces)');
-                }
-            }
-
             if (options.classes) {
+                let mainClass: keyof typeof  _options.classes;
+
+                for (mainClass in _options.classes) {
+                    if ( mainClass.trim() !== mainClass ) {
+                        this._incorrectOptionsReceivedSubject
+                            .notifyObservers('Options are incorrect(main classes shouldn\'t have extra whitespaces)');
+                    }
+                }
+
                 if (!arrayEquals(Object.keys(_options.classes),
-                    Object.keys(this._defaultOptions.classes))) {
+                    Object.keys(_defaults.classes))) {
 
                     this._incorrectOptionsReceivedSubject
                         .notifyObservers('Options are incorrect(classes should ' +
                             'correspond the required format)');
                 }
             }
+
+            this._options = _options;
+
+            this._deleteWSFromUserCLasses();
+        } else {
+            this._options = SliderModel.getDefaultOptions('horizontal');
         }
-
-        this._options = _options;
-
-        this._deleteWSFromUserCLasses();
 
         this._optionsSetSubject.notifyObservers();
     }

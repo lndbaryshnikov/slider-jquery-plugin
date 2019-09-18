@@ -5,7 +5,7 @@ import {getClassList} from "../../src/functions/private/view.private";
 describe('destroy and cleanDom methods', () => {
     let sliderView: SliderView, root: HTMLElement;
 
-    const defaultOptions = new SliderModel().defaultOptions;
+    const defaultOptions = SliderModel.getDefaultOptions('horizontal');
 
     beforeEach(() => {
         sliderView = new SliderView();

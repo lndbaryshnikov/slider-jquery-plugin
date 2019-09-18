@@ -1,7 +1,7 @@
 // import { expect } from 'chai';
 // import SliderView from '../src/MVP modules/Slider/_view'
 // import {getClassList, createInstance, moveHandleToCertainCoords} from "../src/functions/private/view.private";
-// import {defaultOptions} from '../src/MVP modules/Slider/_model';
+// import {getDefaultOptions} from '../src/MVP modules/Slider/_model';
 // import _getCoords from '../src/functions/common/_getCoords'
 //
 // //styles here:
@@ -9,7 +9,7 @@
 // import '../src/styles/jquery-slider-range.scss'
 // import '../src/styles/jquery-slider-handle.scss'
 //
-// const defaultClasses = defaultOptions.classes;
+// const defaultClasses = getDefaultOptions.classes;
 //
 // describe('SliderView', () => {
 //     it("should have html property", () => {

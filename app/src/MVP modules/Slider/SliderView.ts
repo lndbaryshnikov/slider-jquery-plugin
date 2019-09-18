@@ -1,4 +1,4 @@
-import {Options} from "./SliderModel";
+import {HorizontalClasses, Options, VerticalClasses} from "./SliderModel";
 import {countShift} from "../../functions/common/countShift";
 import getCoords from "../../functions/common/getCoords";
 import Observer from "../Observer";
@@ -148,7 +148,8 @@ export default class SliderView {
     }
 
     private _setSliderClasses() {
-        const defaultClasses = Object.keys(this._options.classes);
+        const defaultClasses = Object.keys(this._options.classes) as
+            (keyof (VerticalClasses<string> | HorizontalClasses<string>))[];
         const wrapper = defaultClasses[0];
         const range = defaultClasses[1];
         const handle = defaultClasses[2];
@@ -161,9 +162,9 @@ export default class SliderView {
         this._html.range.style.position = 'absolute';
         this._html.handle.style.position = 'absolute';
 
-        $(this._html.wrapper).addClass(this._options.classes[wrapper as "jquery-slider"]);
-        $(this._html.range).addClass(this._options.classes[range as "jquery-slider-range"]);
-        $(this._html.handle).addClass(this._options.classes[handle as "jquery-slider-handle"]);
+        $(this._html.wrapper).addClass(this._options.classes[wrapper]);
+        $(this._html.range).addClass(this._options.classes[range]);
+        $(this._html.handle).addClass(this._options.classes[handle]);
     }
 
     private _setSliderElements() {

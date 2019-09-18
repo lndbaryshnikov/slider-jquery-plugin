@@ -1,11 +1,9 @@
-// import $ from "jquery";
-
 import {getClassList} from "../../src/functions/private/view.private";
-import SliderModel from "../../src/MVP modules/Slider/SliderModel";
+import SliderModel, {HorizontalClasses} from "../../src/MVP modules/Slider/SliderModel";
 import SliderPresenter from "../../src/MVP modules/Slider/SliderPresenter";
 import SliderView from "../../src/MVP modules/Slider/SliderView";
 
-const defaultClasses = (new SliderModel()).defaultOptions.classes;
+const defaultClasses = SliderModel.getDefaultOptions('horizontal').classes as HorizontalClasses;
 
 describe("setModel method for setting classes", () => {
     let slider: SliderPresenter;
@@ -35,7 +33,7 @@ describe("setModel method for setting classes", () => {
 
         const testClasses = $.extend(true, {}, defaultClasses);
 
-        testClasses["jquery-slider"] = 'my-slider';
+        testClasses["jquery-slider jquery-slider-horizontal"] = 'my-slider';
 
         expect($('.jquery-slider').hasClass('my-slider')).toBe(true);
         expect(domClasses).toEqual(testClasses);

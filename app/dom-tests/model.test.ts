@@ -11,7 +11,7 @@
 //
 // import SliderModel from '../src/MVP modules/Slider/_model'
 // import {createModel, Options} from "../src/functions/private/model.private";
-// import {defaultOptions} from '../src/MVP modules/Slider/_model'
+// import {getDefaultOptions} from '../src/MVP modules/Slider/_model'
 //
 //
 //
@@ -24,7 +24,7 @@
 //                 }
 //             }))._options;
 //
-//             const testOptions = Object.clone(defaultOptions);
+//             const testOptions = Object.clone(getDefaultOptions);
 //             testOptions.classes = {
 //                 "jquery-slider-range": "my-slider-range"
 //             };
@@ -35,7 +35,7 @@
 //         it("extends object with max = 60 and min = 20",  () => {
 //             const modelOptions = (new SliderModel({min: 20, max: 60}))._options;
 //
-//             const testOptions = Object.assign({}, defaultOptions);
+//             const testOptions = Object.assign({}, getDefaultOptions);
 //
 //             testOptions.min = 20;
 //             testOptions.max = 60;
@@ -46,7 +46,7 @@
 //         it("returns initial object when user changes nothing",  () => {
 //             const modelOptions = (new SliderModel())._options;
 //
-//             expect(modelOptions).to.deep.equal(defaultOptions);
+//             expect(modelOptions).to.deep.equal(getDefaultOptions);
 //         });
 //
 //     });
