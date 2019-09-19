@@ -119,4 +119,9 @@ describe("slider events", () => {
             - newHandleCoords.left - newHandleCoords.width / 2);
 
     }, timeout);
+
+    // test("getHandlePosition", () => {
+    //
+    //     expect().
+    // });
 });

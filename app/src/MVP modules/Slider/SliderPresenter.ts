@@ -1,5 +1,5 @@
 import SliderView from './SliderView';
-import SliderModel, {UserOptions} from "./SliderModel";
+import SliderModel, {Options, UserOptions} from "./SliderModel";
 
 class SliderPresenter {
     private _data: { setUp: boolean; rendered: boolean; } = {
@@ -10,6 +10,7 @@ class SliderPresenter {
     constructor(private _view: SliderView, private _model: SliderModel) {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
         this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
+        this._model.whenIncorrectOptionRequested(this.showErrorMessageCallback());
         this._view.whenHandlePositionChanged(this.passHandlePositionToModelCallback());
     }
 
@@ -37,6 +38,14 @@ class SliderPresenter {
         this._model.setOptions(userOptions);
 
         this._data.setUp = true;
+    }
+
+    getOptions(option?: keyof Options, className?: keyof Options["classes"]) {
+        if ( !this._data.setUp ) {
+            throw new Error('Options are not set');
+        }
+
+        return this._model.getOptions(option, className);
     }
 
     render(root: HTMLElement) {
@@ -78,7 +87,7 @@ class SliderPresenter {
 
     setOptionsToViewCallback() {
         return () => {
-            this._view.setOptions(this._model.getOptions());
+            this._view.setOptions(this._model.getOptions() as Options);
         }
     }
 

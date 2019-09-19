@@ -69,6 +69,7 @@ class SliderModel {
     private _handlePositionInPercents: number;
 
     private _incorrectOptionsReceivedSubject = new Observer();
+    private _incorrectOptionRequested = new Observer();
     private _optionsSetSubject = new Observer();
 
     private _classes = {
@@ -87,8 +88,48 @@ class SliderModel {
         handle: "jquery-slider-handle" as keyof Options["classes"]
     };
 
-    getOptions(): Options {
-        return this._options;
+    getOptions(option?: keyof Options, className?: keyof Options['classes']): Options | Options[keyof Options] |
+        Options["classes"][keyof Options["classes"]] {
+
+        if ( !this._options ) {
+            this._incorrectOptionRequested.notifyObservers('Options are not set');
+        }
+        if ( !option || !className ) return this._options;
+
+        if ( option ) {
+            if ( option && !(option in this._options) ) {
+                this._incorrectOptionRequested.notifyObservers(`Option "${option}" doesn't exist`);
+
+                return;
+            }
+
+            const userClasses: (keyof UserOptions['classes'])[] = [
+                this._classes.slider.main,
+                this._classes.range,
+                this._classes.handle
+            ];
+
+            if ( className && !userClasses.includes(className) ) {
+                this._incorrectOptionRequested.notifyObservers(`Class "${className}" does not exist`);
+
+                return;
+            }
+
+            if ( option && className && option !== 'classes') {
+                this._incorrectOptionRequested.notifyObservers('Only option "classes" contains classes');
+
+                return;
+            }
+
+            if (option && !className) {
+                return this._options[option];
+            } else {
+                if ( className === this._classes.slider.main ) {
+                    className = this._classes.slider.complete(this._options.orientation);
+                }
+                return this._options.classes[className]
+            }
+        }
     }
 
     destroy() {
@@ -98,7 +139,13 @@ class SliderModel {
     whenOptionsAreIncorrect(callback: (error: string) => void) {
         this._incorrectOptionsReceivedSubject.addObserver((error: string) => {
             callback(error);
-        })
+        });
+    }
+
+    whenIncorrectOptionRequested(callback: (error: string) => void) {
+        this._incorrectOptionRequested.addObserver((error: string) => {
+           callback(error);
+        });
     }
 
     whenOptionsSet(callback: () => void) {
