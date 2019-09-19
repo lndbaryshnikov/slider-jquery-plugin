@@ -69,8 +69,6 @@ describe("slider events", () => {
 
         const bottomEdge = sliderCoords.height - newHandleCoordsBottom.height;
 
-        console.log(newHandleCoordsBottom, newHandleCoordsTop);
-
         expect(newTop_1).toBe(0 - handleCoords.height / 2);
         expect(newTop_2).toBe(bottomEdge + handleCoords.height / 2);
     }, timeout);
@@ -79,6 +77,9 @@ describe("slider events", () => {
         await sliderPage.setOptions({ range: 'min' });
 
         const newModeRangeCoords = await sliderPage.getRangeCoords();
+
+        console.log(newModeRangeCoords, handleCoords);
+
 
         expect(newModeRangeCoords.height).toBe(0);
         expect(newModeRangeCoords.bottom).toBe(sliderCoords.bottom);
@@ -92,7 +93,7 @@ describe("slider events", () => {
         expect(newRangeCoords.bottom).toBe(sliderCoords.bottom);
         expect(newRangeCoords.top).toBe(newHandleCoords.top + newHandleCoords.height / 2);
         expect(newRangeCoords.height).toBe(sliderCoords.bottom -  newHandleCoords.bottom
-            + newHandleCoords.width / 2);
+            + newHandleCoords.height / 2);
     }, timeout);
 
     test("range changes correctly when options.range = 'max'", async () => {
@@ -111,7 +112,7 @@ describe("slider events", () => {
 
         expect(newRangeCoords.top).toBe(sliderCoords.top);
         expect(newRangeCoords.bottom).toBe(newHandleCoords.top + newHandleCoords.height / 2);
-        expect(newRangeCoords.height).toBe(newHandleCoords.top + newHandleCoords.width / 2
+        expect(newRangeCoords.height).toBe(newHandleCoords.top + newHandleCoords.height / 2
             - sliderCoords.top);
 
     }, timeout);

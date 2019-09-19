@@ -16,13 +16,13 @@ describe("setModel method for setting classes", () => {
         slider.destroy();
     });
 
-    test("set classes when user passes no classes in _model", () => {
+    test("set classes when main passes no classes in _model", () => {
         slider.initialize(document.body);
 
         expect(getClassList($('div'))).toEqual(defaultClasses);
     });
 
-    test("set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
+    test("set classes when main adds extra class 'my-slider' to 'jquery-slider' class", () => {
         slider.initialize(document.body, {
             classes: {
                 'jquery-slider': 'my-slider'

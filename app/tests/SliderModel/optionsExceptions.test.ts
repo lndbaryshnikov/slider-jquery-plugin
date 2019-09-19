@@ -4,7 +4,7 @@ import SliderView from "../../src/MVP modules/Slider/SliderView";
 
 const model = new SliderPresenter(new SliderView(), new SliderModel());
 
-describe('Throwing exception when user passes incorrect _options', () => {
+describe('Throwing exception when main passes incorrect _options', () => {
 
     test("throws error when userOptions isn't an object", () => {
         expect(( ) => { model.setOptions('options' as UserOptions); }).toThrow('Options are incorrect' +
@@ -16,12 +16,12 @@ describe('Throwing exception when user passes incorrect _options', () => {
             .toThrow('Options are incorrect(should correspond the required format)');
     });
 
-    test("throws error when user passes wrong class _options", () => {
+    test("throws error when main passes wrong class _options", () => {
         expect(( ) => { model.setOptions( {classes: { 'jquery-sl': 'my-slider' }} as UserOptions); })
             .toThrow('Options are incorrect(classes should correspond the required format)');
     });
 
-    test("throws error when user adds whitespaces in slider's main classes", () => {
+    test("throws error when main adds whitespaces in slider's main classes", () => {
         expect(( ) => { model.setOptions( {classes: {
                 'jquery-slider  ': 'slider',
                 '  jquery-slider-range  ': 'range'

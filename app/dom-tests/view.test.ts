@@ -20,7 +20,7 @@
 //     });
 //
 //     describe("setModel method for setting classes", () => {
-//         it("set classes when user passes no classes in _model", () => {
+//         it("set classes when main passes no classes in _model", () => {
 //             const app = createInstance();
 //             app.createDom();
 //
@@ -29,7 +29,7 @@
 //             app.removeDom();
 //         });
 //
-//         it("set classes when user adds extra class 'my-slider' to 'jquery-slider' class", () => {
+//         it("set classes when main adds extra class 'my-slider' to 'jquery-slider' class", () => {
 //             const app = createInstance({
 //                 classes: {
 //                 'jquery-slider': 'my-slider'

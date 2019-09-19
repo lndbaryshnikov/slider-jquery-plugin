@@ -82,31 +82,54 @@ export default class SliderView {
             this._html.handle.onmousedown = (mouseDownEvent: MouseEvent) => {
                 const handleShift = this._countHandleShift(mouseDownEvent);
 
-                document.onmousemove = (mouseMoveEvent: MouseEvent) => {
-                    const shiftX = handleShift.x;
+                    document.onmousemove = (mouseMoveEvent: MouseEvent) => {
+                        if ( this._options.orientation === 'horizontal' ) {
+                            const shiftX = handleShift.x;
 
-                    let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
-                        // + this._getCoords().handle.width / 2;
+                            let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
+                            // + this._getCoords().handle.width / 2;
 
-                    if (newLeft < 0 - this._getCoords().handle.width / 2) {
-                        newLeft = 0 - this._getCoords().handle.width / 2;
-                    }
+                            if (newLeft < 0 - this._getCoords().handle.width / 2) {
+                                newLeft = 0 - this._getCoords().handle.width / 2;
+                            }
 
-                    const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
-                        // + this._getCoords().handle.width / 2;
+                            const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
+                            // + this._getCoords().handle.width / 2;
 
-                    if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
-                        newLeft = rightEdge + this._getCoords().handle.width / 2;
-                    }
+                            if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
+                                newLeft = rightEdge + this._getCoords().handle.width / 2;
+                            }
 
-                    this._handlePositionInPixels = newLeft + this._getCoords().handle.width / 2;
+                            this._handlePositionInPixels = newLeft + this._getCoords().handle.width / 2;
+                        }
 
-                    this._renderHandlePosition();
+                        if ( this._options.orientation === 'vertical' ) {
+                            const shiftY = handleShift.y;
 
-                    this._renderRange();
+                            let newTop = mouseMoveEvent.pageY - shiftY - this._getCoords().wrapper.top;
+                            // + this._getCoords().handle.width / 2;
 
-                    this._handlePositionChangedSubject.notifyObservers();
-                };
+                            if (newTop < 0 - this._getCoords().handle.height / 2) {
+                                newTop = 0 - this._getCoords().handle.height / 2;
+                            }
+
+                            const rightEdge = this._getCoords().wrapper.height - this._getCoords().handle.height;
+                            // + this._getCoords().handle.width / 2;
+
+                            if (newTop > rightEdge + this._getCoords().handle.height / 2) {
+                                newTop = rightEdge + this._getCoords().handle.height / 2;
+                            }
+
+                            this._handlePositionInPixels = this._getCoords().wrapper.height
+                                - newTop - this._getCoords().handle.height / 2;
+                        }
+
+                        this._renderHandlePosition();
+
+                        this._renderRange();
+
+                        this._handlePositionChangedSubject.notifyObservers();
+                    };
 
                 document.onmouseup = () => {
                     document.onmousemove = document.onmouseup = null;
@@ -118,6 +141,7 @@ export default class SliderView {
             this._html.handle.ondragstart = () => {
                 return false;
             };
+
     }
 
     whenHandlePositionChanged(callback: () => void): void {
@@ -127,23 +151,38 @@ export default class SliderView {
     }
 
     private _renderHandlePosition() {
-        this._html.handle.style.left = this._handlePositionInPixels - this._getCoords().handle.width / 2 + 'px';
+        if ( this._options.orientation === 'horizontal' ) {
+            this._html.handle.style.left = this._handlePositionInPixels - this._getCoords().handle.width / 2 + 'px';
+        }
+        if ( this._options.orientation === 'vertical' ) {
+            this._html.handle.style.bottom = this._handlePositionInPixels - this._getCoords().handle.height / 2 + 'px';
+        }
     }
 
     private _renderRange() {
-        if ( this._options.range === 'min' ) {
-            this._html.range.style.left = 0 + 'px';
-            this._html.range.style.width = this._handlePositionInPixels + 'px';
+        if ( this._options.orientation === 'horizontal' ) {
+            if (this._options.range === 'min') {
+                this._html.range.style.left = 0 + 'px';
+                this._html.range.style.width = this._handlePositionInPixels + 'px';
+            }
+
+            if (this._options.range === 'max') {
+                this._html.range.style.right = 0 + 'px';
+                this._html.range.style.width = this._getCoords().wrapper.width -
+                    this._handlePositionInPixels + 'px';
+            }
         }
+        if ( this._options.orientation === 'vertical' ) {
+            if (this._options.range === 'min') {
+                this._html.range.style.bottom = 0 + 'px';
+                this._html.range.style.height = this._handlePositionInPixels + 'px';
+            }
 
-        if ( this._options.range === 'max' ) {
-            // this._html.range.style.left = this._getCoords().wrapper.width + 'px';
-            // this._html.range.style.width = this._getCoords().wrapper.width -
-            //     this._handlePositionInPixels + 'px';
-
-            this._html.range.style.right = 0 + 'px';
-            this._html.range.style.width = this._getCoords().wrapper.width -
-                this._handlePositionInPixels + 'px';
+            if (this._options.range === 'max') {
+                this._html.range.style.top = 0 + 'px';
+                this._html.range.style.height = this._getCoords().wrapper.height -
+                    this._handlePositionInPixels + 'px';
+            }
         }
     }
 

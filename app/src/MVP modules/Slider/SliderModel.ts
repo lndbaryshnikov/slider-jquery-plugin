@@ -65,11 +65,27 @@ export type UserOptions = {
 };
 
 class SliderModel {
-    private _options: Options | undefined = undefined;
+    private _options: Options | null = null;
     private _handlePositionInPercents: number;
 
     private _incorrectOptionsReceivedSubject = new Observer();
     private _optionsSetSubject = new Observer();
+
+    private _classes = {
+        slider: {
+            main: "jquery-slider" as keyof UserOptions["classes"],
+            orientation: (orientation: 'horizontal' | 'vertical') => {
+                return `jquery-slider-${orientation}` as keyof Options['classes'];
+            },
+            complete: (orientation: 'horizontal' | 'vertical') => {
+                return `jquery-slider jquery-slider-${orientation}` as keyof Options['classes'];
+            },
+            horizontal: "jquery-slider-horizontal" as keyof Options["classes"],
+            vertical: "jquery-slider-vertical" as keyof Options["classes"]
+        },
+        range: "jquery-slider-range" as keyof Options["classes"],
+        handle: "jquery-slider-handle" as keyof Options["classes"]
+    };
 
     getOptions(): Options {
         return this._options;
@@ -95,7 +111,9 @@ class SliderModel {
         this._handlePositionInPercents = positionInPercents;
     }
 
-    static getDefaultOptions(orientation: 'horizontal' | 'vertical'): Options {
+    static getDefaultOptions(orientation: 'horizontal' | 'vertical' | undefined): Options {
+
+        if ( orientation === undefined ) orientation = 'horizontal';
         let classes: Options['classes'];
 
         if ( orientation === 'horizontal' ) {
@@ -131,39 +149,30 @@ class SliderModel {
                     .notifyObservers('Options are incorrect(should be an object)');
             }
 
-            let _defaults: Options;
+            let _currentOptions: Options;
 
-            if ( !options.orientation ) {
-                _defaults = SliderModel.getDefaultOptions('horizontal');
-            } else if ( options.orientation === 'vertical' || options.orientation === 'horizontal') {
-                _defaults = SliderModel.getDefaultOptions(options.orientation);
+            if ( this._options ) {
+                _currentOptions = $.extend(true, {}, this._options);
+
+                if ( options.orientation && options.orientation !== this._options.orientation ) {
+                    this._changeOrientationClass(_currentOptions, 'result', options.orientation);
+                }
+
+                this._changeOrientationClass(options, 'user',
+                    options.orientation ? options.orientation : this._options.orientation);
             } else {
-                this._incorrectOptionsReceivedSubject.notifyObservers('Options are incorrect (for orientation only ' +
-                    '"vertical" and "horizontal" values are allowed)');
+                _currentOptions = SliderModel.getDefaultOptions(options.orientation);
+
+                this._changeOrientationClass(options, 'user', options.orientation);
             }
 
-            if ( options.classes && options.classes["jquery-slider"] ) {
-                if ( !options.orientation || options.orientation === 'horizontal' ) {
-                    (options.classes as HorizontalClasses)["jquery-slider jquery-slider-horizontal"] =
-                        options.classes["jquery-slider"];
+            let _defaultOptions: Options | null = $.extend(true, {}, _currentOptions);
 
-                    delete options.classes["jquery-slider"];
-                }
+            const _options: Options = $.extend(true, _defaultOptions, options);
 
-                if ( options.orientation === 'vertical' ) {
-                    (options.classes as VerticalClasses)["jquery-slider jquery-slider-vertical"] =
-                        options.classes["jquery-slider"];
+            _defaultOptions = null;
 
-                    delete options.classes["jquery-slider"];
-                }
-            }
-            let _defaultsClone: Options | null = $.extend(true, {}, _defaults);
-
-            const _options: Options = $.extend(true, _defaultsClone, options);
-
-            _defaultsClone = null;
-
-            if (!arrayEquals(Object.keys(_options), Object.keys(_defaults))) {
+            if (!arrayEquals(Object.keys(_options), Object.keys(_currentOptions))) {
                 this._incorrectOptionsReceivedSubject
                     .notifyObservers('Options are incorrect(should correspond the required format)');
             }
@@ -179,7 +188,7 @@ class SliderModel {
                 }
 
                 if (!arrayEquals(Object.keys(_options.classes),
-                    Object.keys(_defaults.classes))) {
+                    Object.keys(_currentOptions.classes))) {
 
                     this._incorrectOptionsReceivedSubject
                         .notifyObservers('Options are incorrect(classes should ' +
@@ -195,6 +204,40 @@ class SliderModel {
         }
 
         this._optionsSetSubject.notifyObservers();
+    }
+
+    private _changeOrientationClass(options: Options | UserOptions, type: 'user' | 'result',
+                                  orientation: 'horizontal' | 'vertical' | undefined): Options | UserOptions {
+
+        if ( orientation !==  undefined && orientation !== 'horizontal' && orientation !== 'vertical' )  {
+            this._incorrectOptionsReceivedSubject.notifyObservers('Options are incorrect (for orientation only ' +
+                '"vertical" and "horizontal" values are allowed)');
+        }
+        if ( orientation === undefined ) orientation = 'horizontal';
+
+        if ( type === 'user' && options.classes && (options as UserOptions).classes[this._classes.slider.main] ) {
+                options.classes[this._classes.slider.complete(orientation)] =
+                    (options as UserOptions).classes[this._classes.slider.main];
+
+            delete (options as UserOptions).classes[this._classes.slider.main];
+        }
+
+        if ( type === "result" ) {
+            let mainClass: keyof Options['classes'];
+            const values: string[] = [];
+
+            for (mainClass in options.classes) {
+                values.push(options.classes[mainClass]);
+
+                delete options.classes[mainClass];
+            }
+
+            options.classes[this._classes.slider.complete(orientation)] = values[0];
+            options.classes[this._classes.range] = values[1];
+            options.classes[this._classes.handle] = values[2];
+        }
+
+        return options;
     }
 
     private _deleteWSFromUserCLasses() {

@@ -1,6 +1,13 @@
 .jquery-slider-range {
-  width: 0;
-  height: 100%;
+  //width: 0;
+  //height: 100%;
   background-color: aqua;
-  //position: relative;
+}
+
+.jquery-slider-horizontal .jquery-slider-range {
+  height: 100%;
+}
+
+.jquery-slider-vertical .jquery-slider-range {
+  width: 100%;
 }

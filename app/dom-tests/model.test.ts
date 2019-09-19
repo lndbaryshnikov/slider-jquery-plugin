@@ -17,7 +17,7 @@
 //
 // describe('SliderModel', () => {
 //     describe("Options object extension(getOptions method)", () => {
-//         it("extends object when user changes classes",  () => {
+//         it("extends object when main changes classes",  () => {
 //             const modelOptions = (new SliderModel({
 //                 classes: {
 //                     "jquery-slider-range": "my-slider-range"
@@ -43,7 +43,7 @@
 //             expect(modelOptions).to.deep.equal(testOptions);
 //         });
 //
-//         it("returns initial object when user changes nothing",  () => {
+//         it("returns initial object when main changes nothing",  () => {
 //             const modelOptions = (new SliderModel())._options;
 //
 //             expect(modelOptions).to.deep.equal(getDefaultOptions);
@@ -51,7 +51,7 @@
 //
 //     });
 //
-//     describe('Throwing exception when user passes incorrect _options', () => {
+//     describe('Throwing exception when main passes incorrect _options', () => {
 //         it("throws error when userOptions isn't an object", () => {
 //             expect(createModel('_options')).to.throw('Options are incorrect' +
 //                 '(should be an object)');
@@ -67,7 +67,7 @@
 //                 '(should correspond the required format)');
 //         });
 //
-//         it("throws error when user passes wrong class _options", () => {
+//         it("throws error when main passes wrong class _options", () => {
 //             const createWrongModel = createModel({
 //                 classes: {
 //                     'jquery-sl': 'my-slider'

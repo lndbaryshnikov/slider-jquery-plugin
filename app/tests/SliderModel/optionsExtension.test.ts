@@ -1,11 +1,13 @@
 import SliderModel from "../../src/MVP modules/Slider/SliderModel";
 
 describe("Options object extension(getOptions method)", () => {
-    let model;
+    let model: SliderModel;
 
-    test("extends object when user changes classes", () => {
+    beforeEach(() => {
+       model = new SliderModel();
+    });
 
-        model = new SliderModel();
+    test("extends object when main changes classes", () => {
         model.setOptions({
             classes: {
                 "jquery-slider-range": "my-slider-range"
@@ -19,7 +21,6 @@ describe("Options object extension(getOptions method)", () => {
     });
 
     test("extends object with max = 60 and min = 20", () => {
-        model = new SliderModel();
         model.setOptions({min: 20, max: 60});
 
         const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions('horizontal'));
@@ -30,15 +31,11 @@ describe("Options object extension(getOptions method)", () => {
         expect(model.getOptions()).toEqual(testOptions);
     });
 
-    test("options are undefined when user passes no options", () => {
-        model = new SliderModel();
-
-        expect(model.getOptions()).toEqual(undefined);
+    test("options are undefined when main passes no options", () => {
+        expect(model.getOptions()).toEqual(null);
     });
 
     test("options.classes and options.orientation depending on orientation", () => {
-        const model = new SliderModel();
-
         const check = (model: SliderModel, orientation: 'horizontal' | 'vertical' = 'horizontal') => {
             model.setOptions({ orientation: orientation });
 
@@ -53,8 +50,6 @@ describe("Options object extension(getOptions method)", () => {
     });
     
     test("options.classes go in order", () => {
-        const model = new SliderModel();
-
         model.setOptions({
             classes: {
                 "jquery-slider-range": "my-range",
@@ -78,5 +73,29 @@ describe("Options object extension(getOptions method)", () => {
         for ( let i = 0; i < classesKeys.length; i++ ) {
             expect(classesKeys[i]).toBe(defaultClassesKeys[i]);
         }
+    });
+
+    test("extension when options are already set", () => {
+        model.setOptions({
+            min: 30,
+            range: "min"
+        });
+
+        expect(model.getOptions().min).toBe(30);
+        expect(model.getOptions().range).toBe('min');
+        expect(model.getOptions().classes).toEqual(SliderModel.getDefaultOptions('horizontal').classes);
+
+        model.setOptions({
+            max: 154,
+            min: 13,
+            range: "max",
+            orientation: "vertical"
+        });
+
+        expect(model.getOptions().min).toBe(13);
+        expect(model.getOptions().max).toBe(154);
+        expect(model.getOptions().range).toBe('max');
+        expect(model.getOptions().orientation).toBe('vertical');
+        expect(model.getOptions().classes).toEqual(SliderModel.getDefaultOptions('vertical').classes);
     });
 });
