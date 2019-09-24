@@ -34,8 +34,9 @@ class SliderPresenter {
 
     }
 
-    setOptions(userOptions?: UserOptions) {
-        this._model.setOptions(userOptions);
+    setOptions(options?: UserOptions | keyof Options, ...restOptions:
+        (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]])[]) {
+        this._model.setOptions(options, ...restOptions);
 
         this._data.setUp = true;
     }

@@ -67,11 +67,16 @@ interface SliderMethods {
             if ( !!data ) {
                 const slider = data.slider;
 
-                if ( userOptions.length === 1 || typeof userOptions[0] === "object" ) {
+                if ( userOptions.length === 1 && typeof userOptions[0] === "object" ) {
                     slider.setOptions(userOptions[0] as UserOptions);
 
                     return $this;
                 }
+
+                // if ( userOptions.length == 2 && typeof userOptions[0] === "string"
+                //     && typeof  userOptions[1] === "string") {
+                //     slider.setOptions(userOptions[0], userOptions[1]);
+                // }
             } else {
                 sliderMethods.throwErr(false);
             }

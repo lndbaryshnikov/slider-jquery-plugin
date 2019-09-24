@@ -24,15 +24,15 @@ describe('getOptions method', () => {
     test("return single option when only option name is provided", () => {
        slider.setOptions();
 
-       expect(slider.getOptions('max')).toEqual(SliderModel.getDefaultOptions('horizontal').max);
+       expect(slider.getOptions('max')).toBe(SliderModel.getDefaultOptions('horizontal').max);
        expect(slider.getOptions('classes')).toEqual(SliderModel.getDefaultOptions('horizontal').classes)
     });
 
     test("throws exception when incorrect options name provided", () => {
         slider.setOptions();
 
-        expect(() => {
-            slider.getOptions('minimal' as keyof Options)
+        expect(( ) => {
+            slider.getOptions('minimal' as keyof Options);
         }).toThrow('Option "minimal" doesn\'t exist');
     });
 
