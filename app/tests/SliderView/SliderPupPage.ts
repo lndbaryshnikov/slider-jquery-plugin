@@ -1,6 +1,6 @@
 import {Browser, ElementHandle, Page} from "puppeteer";
 import {JQueryElementWithSlider} from "../../src/jquery-slider";
-import {UserOptions} from "../../src/MVP modules/Slider/SliderModel";
+import {Options, RestOptionsToSet, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
 
 export interface Coords {
     left: number,
@@ -51,11 +51,20 @@ export default class SliderPupPage {
         this._handle = await this._page.$('.jquery-slider-handle');
     }
 
-    async setOptions(options: UserOptions) {
-        await this._page.evaluate((root: HTMLElement, options: UserOptions) => {
-            ($(root) as JQueryElementWithSlider).slider('options', options);
+    async setOptions(...options: (UserOptions | RestOptionsToSet)[]){
+        await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
+
+            ($(root) as JQueryElementWithSlider).slider('options', ...options);
             // @ts-ignore
-        }, this._root, options);
+        }, this._root, ...options);
+    }
+
+    async getOptions(...options: (UserOptions | RestOptionsToSet)[]){
+        return await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
+
+            return ($(root) as JQueryElementWithSlider).slider('options', ...options);
+            // @ts-ignore
+        }, this._root, ...options);
     }
 
     get elements() {

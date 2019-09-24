@@ -42,6 +42,8 @@ export type UserOptions = {
     }
 };
 
+export type RestOptionsToSet = (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]]);
+
 class SliderModel {
     private _options: Options | null = null;
     private _handlePositionInPercents: number;
@@ -66,7 +68,7 @@ class SliderModel {
         handle: "jquery-slider-handle" as keyof Options["classes"]
     };
 
-    getOptions(option?: keyof Options, className?: keyof Options['classes']): Options | Options[keyof Options] |
+    getOptions(option?: keyof Options, className?: keyof UserOptions['classes']): Options | Options[keyof Options] |
         Options["classes"][keyof Options["classes"]] {
 
         if ( !this._options ) {
@@ -105,7 +107,8 @@ class SliderModel {
                 if ( className === this._classes.slider.main ) {
                     className = this._classes.slider.complete(this._options.orientation);
                 }
-                return this._options.classes[className] as Options["classes"][keyof Options["classes"]];
+                return this._options.classes[className as keyof Options["classes"]] as
+                    Options["classes"][keyof Options["classes"]];
             }
         }
     }
@@ -167,9 +170,7 @@ class SliderModel {
         };
     };
 
-    setOptions(options?: UserOptions | keyof Options, ...restOptions:
-        (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]])[]) {
-
+    setOptions(options?: UserOptions | keyof Options, ...restOptions: RestOptionsToSet[]) {
         if ( restOptions.length !== 0 && typeof options === "string" ) {
             if ( !this._options ) {
                 this._incorrectOptionsReceivedSubject

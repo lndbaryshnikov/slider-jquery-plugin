@@ -41,7 +41,7 @@ class SliderPresenter {
         this._data.setUp = true;
     }
 
-    getOptions(option?: keyof Options, className?: keyof Options["classes"]) {
+    getOptions(option?: keyof Options, className?: keyof UserOptions["classes"]) {
         if ( !this._data.setUp ) {
             throw new Error('Options are not set');
         }

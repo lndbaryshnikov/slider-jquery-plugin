@@ -1,4 +1,4 @@
-import SliderModel from "../../src/MVP modules/Slider/SliderModel";
+import SliderModel, {Options} from "../../src/MVP modules/Slider/SliderModel";
 
 test('Model\'s setOptions deletes whitespaces from classes', () => {
     const model = new SliderModel();
@@ -10,7 +10,7 @@ test('Model\'s setOptions deletes whitespaces from classes', () => {
         }
     });
 
-    expect(model.getOptions().classes).toEqual({
+    expect((model.getOptions() as Options).classes).toEqual({
         'jquery-slider jquery-slider-horizontal': 'my-class another-class',
         'jquery-slider-range': '',
         'jquery-slider-handle': 'my-handle-class another-handle-class'
