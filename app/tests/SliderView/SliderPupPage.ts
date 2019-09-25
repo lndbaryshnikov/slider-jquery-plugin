@@ -129,9 +129,10 @@ export default class SliderPupPage {
     async moveHandleToCoords (X: number, Y: number) {
         const handleCoords = await this._getCoords(this._handle);
 
-        await this._page.mouse.move(handleCoords.left + 1, handleCoords.top + 1);
+        await this._page.mouse.move(handleCoords.left + handleCoords.width / 2,
+            handleCoords.top + handleCoords.height / 2);
         await this._page.mouse.down();
-        await this._page.mouse.move(X + 1, Y + 1);
+        await this._page.mouse.move(X, Y);
         await this._page.mouse.up();
     }
 

@@ -24,12 +24,16 @@ describe("slider events", () => {
     let rangeCoords: Coords;
     let handleCoords: Coords;
 
+    let sliderMiddle: { left: number; top: number; };
+
     beforeEach(async () => {
         await sliderPage.createSlider({ orientation: "vertical" });
 
         sliderCoords = await sliderPage.getSliderCoords();
         rangeCoords = await sliderPage.getRangeCoords();
         handleCoords = await sliderPage.getHandleCoords();
+
+        sliderMiddle = await sliderPage.getSliderMiddle();
     });
 
     afterEach(async () => {
@@ -37,7 +41,7 @@ describe("slider events", () => {
     });
 
     test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
-        await sliderPage.moveHandleToCoords(handleCoords.left, (await sliderPage.getSliderMiddle()).top);
+        await sliderPage.moveHandleToCoords(handleCoords.left, sliderMiddle.top);
 
         const newHandleCoords = await sliderPage.getHandleCoords();
 
@@ -46,7 +50,7 @@ describe("slider events", () => {
             left: newHandleCoords.left
         };
         const testCoords = await {
-            top: (await sliderPage.getSliderMiddle()).top,
+            top: sliderMiddle.top - handleCoords.height / 2,
             left: handleCoords.left
         };
 
