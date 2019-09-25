@@ -62,7 +62,7 @@ export default class SliderPupPage {
 
             return ($(root) as JQueryElementWithSlider).slider('options', ...options);
             // @ts-ignore
-        }, this._root, ...options);
+        }, this._root, ...options) as unknown as (Options[keyof Options] | Options["classes"][keyof Options["classes"]]);
     }
 
     get elements() {

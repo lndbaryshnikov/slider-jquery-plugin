@@ -1,5 +1,6 @@
 import puppeteer, {Browser, Page} from "puppeteer";
 import SliderPupPage, {Coords} from './SliderPupPage'
+import {Options} from "../../src/MVP modules/Slider/SliderModel";
 
 describe("slider events", () => {
     let browser: Browser, page: Page;
@@ -115,6 +116,30 @@ describe("slider events", () => {
         expect(newRangeCoords.bottom).toBe(newHandleCoords.top + newHandleCoords.height / 2);
         expect(newRangeCoords.height).toBe(newHandleCoords.top + newHandleCoords.height / 2
             - sliderCoords.top);
+
+    }, timeout);
+
+    test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
+        let value: Options["value"];
+
+        const getValue = async() => {
+            return await sliderPage.getOptions("value") as Options["value"];
+        };
+
+        value = await getValue();
+        expect(value).toBe(0);
+
+        await sliderPage.moveHandleToCoords(handleCoords.left, sliderMiddle.top);
+
+        value = await getValue();
+        expect(value).toBe(50);
+
+        const positionForValueOfThirty = sliderCoords.top + sliderCoords.height - sliderCoords.height * 0.3;
+
+        await sliderPage.moveHandleToCoords(handleCoords.left, positionForValueOfThirty);
+
+        value = await getValue();
+        expect(value).toBe(30);
 
     }, timeout);
 });
