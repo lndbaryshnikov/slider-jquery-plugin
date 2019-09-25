@@ -26,7 +26,7 @@
 //
 //             expect(getClassList($('div'))).to.deep.equal(defaultClasses);
 //
-//             app.removeDom();
+//             app.remove();
 //         });
 //
 //         it("set classes when main adds extra class 'my-slider' to 'jquery-slider' class", () => {
@@ -46,7 +46,7 @@
 //             expect($('.jquery-slider').hasClass('my-slider')).to.be.true;
 //             expect(domClasses).to.deep.equal(testClasses);
 //
-//             app.removeDom();
+//             app.remove();
 //         });
 //
 //     });
@@ -77,7 +77,7 @@
 //
 //             expect(newCoords).to.deep.equal(testCoords);
 //
-//             app.removeDom();
+//             app.remove();
 //         });
 //
 //         it("handle stays within the slider when the cursor goes outside", () => {
@@ -100,7 +100,7 @@
 //             expect(newLeft_1).to.equal(0);
 //             expect(newLeft_2).to.equal(rightEdge);
 //
-//             app.removeDom();
+//             app.remove();
 //         });
 //
 //         it("range div behaviour when _options.range = min", () => {
@@ -149,7 +149,7 @@
 //             expect(newLeftRangeCoords).to.equal(expectedLeftRangeCoords);
 //             expect(newRightRangeCoords).to.equal(expectedNewRightRangeCoords);
 //
-//             app.removeDom();
+//             app.remove();
 //         });
 //     });
 // });

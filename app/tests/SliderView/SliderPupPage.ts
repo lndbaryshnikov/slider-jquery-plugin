@@ -18,8 +18,6 @@ export default class SliderPupPage {
     private _range: ElementHandle;
     private _handle: ElementHandle;
 
-    private _timeout: number = 30000;
-
     constructor(private _browser: Browser) { }
 
     async createPage() {
@@ -59,7 +57,7 @@ export default class SliderPupPage {
         }, this._root, ...options);
     }
 
-    async getOptions(...options: (UserOptions | RestOptionsToSet)[]){
+    async getOptions(...options: (UserOptions | RestOptionsToSet)[]) {
         return await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
 
             return ($(root) as JQueryElementWithSlider).slider('options', ...options);
@@ -76,14 +74,6 @@ export default class SliderPupPage {
         }
     }
 
-    // async getCoords() {
-    //     return {
-    //         slider: await this._getCoords(this._slider),
-    //         range: await this._getCoords(this._range),
-    //         handle: await this._getCoords(this._handle)
-    //     }
-    // }
-
     async getSliderCoords() {
         return await this._getCoords(this._slider);
     }
@@ -97,8 +87,8 @@ export default class SliderPupPage {
     }
 
 
-    get timeout() {
-        return this._timeout;
+    static get timeout() {
+        return 50000;
     }
 
     get page() {
@@ -145,9 +135,14 @@ export default class SliderPupPage {
         await this._page.mouse.up();
     }
 
-    async removeDom() {
+    async remove() {
         await this._page.evaluate((root) => {
             root.remove();
         }, this._root);
+
+        this._root = null;
+        this._slider = null;
+        this._range = null;
+        this._handle = null;
     }
 }

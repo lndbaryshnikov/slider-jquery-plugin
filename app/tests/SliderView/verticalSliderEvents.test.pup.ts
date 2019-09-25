@@ -5,7 +5,7 @@ describe("slider events", () => {
     let browser: Browser, page: Page;
     let sliderPage: SliderPupPage;
 
-    const timeout = 30000;
+    const timeout = SliderPupPage.timeout;
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -16,8 +16,8 @@ describe("slider events", () => {
         page = sliderPage.page;
     });
 
-    afterAll(() => {
-        browser.close();
+    afterAll(async () => {
+        await browser.close();
     });
 
     let sliderCoords: Coords;
@@ -33,7 +33,7 @@ describe("slider events", () => {
     });
 
     afterEach(async () => {
-        await sliderPage.removeDom();
+        await sliderPage.remove();
     });
 
     test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
@@ -77,9 +77,6 @@ describe("slider events", () => {
         await sliderPage.setOptions({ range: 'min' });
 
         const newModeRangeCoords = await sliderPage.getRangeCoords();
-
-        console.log(newModeRangeCoords, handleCoords);
-
 
         expect(newModeRangeCoords.height).toBe(0);
         expect(newModeRangeCoords.bottom).toBe(sliderCoords.bottom);

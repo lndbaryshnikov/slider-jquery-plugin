@@ -2,11 +2,11 @@ import puppeteer, {Browser, Page} from "puppeteer";
 import SliderPupPage from "../SliderView/SliderPupPage";
 import SliderModel from "../../src/MVP modules/Slider/SliderModel";
 
-describe("slider events", () => {
+describe("slider API", () => {
     let browser: Browser, page: Page;
     let sliderPage: SliderPupPage;
 
-    const timeout = 30000;
+    const timeout = SliderPupPage.timeout;
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -17,8 +17,8 @@ describe("slider events", () => {
         page = sliderPage.page;
     });
 
-    afterAll(() => {
-        browser.close();
+    afterAll( async() => {
+        await browser.close();
     });
 
     beforeEach(async () => {
@@ -26,7 +26,7 @@ describe("slider events", () => {
     });
 
     afterEach(async () => {
-        await sliderPage.removeDom();
+        await sliderPage.remove();
     });
 
     test("options method works", async() => {

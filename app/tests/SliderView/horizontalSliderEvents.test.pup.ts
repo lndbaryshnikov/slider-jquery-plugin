@@ -5,7 +5,7 @@ describe("slider events", () => {
     let browser: Browser, page: Page;
     let sliderPage: SliderPupPage;
 
-    const timeout = 30000;
+    const timeout = SliderPupPage.timeout;
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -16,8 +16,8 @@ describe("slider events", () => {
         page = sliderPage.page;
     });
 
-    afterAll(() => {
-        browser.close();
+    afterAll( async () => {
+        await browser.close();
     });
 
     let sliderCoords: Coords;
@@ -33,7 +33,7 @@ describe("slider events", () => {
     });
 
     afterEach(async () => {
-        await sliderPage.removeDom();
+        await sliderPage.remove();
     });
 
     test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
@@ -71,8 +71,6 @@ describe("slider events", () => {
         const newLeft_2 = newHandleCoordsRight.left - sliderCoords.left;
 
         const rightEdge = sliderCoords.width - newHandleCoordsRight.width;
-
-        console.log(newHandleCoordsRight, newHandleCoordsLeft);
 
         expect(newLeft_1).toBe(0 - handleCoords.width / 2);
         expect(newLeft_2).toBe(rightEdge + handleCoords.width / 2);
@@ -119,9 +117,4 @@ describe("slider events", () => {
             - newHandleCoords.left - newHandleCoords.width / 2);
 
     }, timeout);
-
-    // test("getHandlePosition", () => {
-    //
-    //     expect().
-    // });
 });

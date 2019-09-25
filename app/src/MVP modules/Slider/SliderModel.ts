@@ -263,33 +263,12 @@ class SliderModel {
             this._options = optionsCopy;
 
         } else if ( typeof options === "object" && restOptions.length === 0 ) {
-            let _currentOptions: Options;
 
-            if ( this._options ) {
-                _currentOptions = $.extend(true, {}, this._options);
+            const optionsObject = this._extendOptionsObject(options);
 
-                if ( (options as Options).orientation && (options as UserOptions).orientation !== this._options.orientation ) {
-                    this._changeOrientationClass(_currentOptions, 'result', (options as UserOptions).orientation);
-                }
+            if ( !optionsObject.result ) return;
 
-                this._changeOrientationClass(options as UserOptions, 'user',
-                    (options as UserOptions).orientation ? (options as UserOptions).orientation :
-                        this._options.orientation);
-            } else {
-                _currentOptions = SliderModel.getDefaultOptions((options as UserOptions).orientation);
-
-                this._changeOrientationClass(options as UserOptions, 'user', (options as UserOptions).orientation);
-            }
-
-            let _defaultOptions: Options | null = $.extend(true, {}, _currentOptions);
-
-            const _options: Options = $.extend(true, _defaultOptions, options);
-
-            _defaultOptions = null;
-
-            if ( !this._checkOptions(_options) ) return;
-
-            this._options = _options;
+            this._options = optionsObject.options;
 
             this._deleteWSFromUserCLasses();
 
@@ -310,6 +289,57 @@ class SliderModel {
         }
 
         this._optionsSetSubject.notifyObservers();
+    }
+
+    private _extendOptionsObject(options: UserOptions) {
+        let _currentOptions: Options;
+
+        if ( this._options ) {
+            _currentOptions = $.extend(true, {}, this._options);
+
+            if ( (options as Options).orientation && (options).orientation !== this._options.orientation ) {
+                const optionsObject =
+                    this._changeOrientationClass(_currentOptions, 'result', (options).orientation);
+
+                optionsObject.options = null;
+
+                if ( !optionsObject.result ) return { result: false };
+            }
+
+            const optionsObject =
+                this._changeOrientationClass(options, 'user',
+                (options).orientation ? (options).orientation :
+                           this._options.orientation);
+
+            optionsObject.options = null;
+
+            if ( !optionsObject.result ) return { result: false };
+
+        } else {
+            _currentOptions = SliderModel.getDefaultOptions((options).orientation);
+
+            const optionsObject =
+                this._changeOrientationClass(options, 'user', (options).orientation);
+
+            optionsObject.options = null;
+
+            if ( !optionsObject.result ) return { result: false };
+        }
+
+        let _defaultOptions: Options | null = $.extend(true, {}, _currentOptions);
+
+        const _options: Options = $.extend(true, _defaultOptions, options);
+
+        _defaultOptions = null;
+
+        if ( !this._checkOptions(_options) ) {
+            return { result: false };
+        } else {
+            return {
+                options: _options,
+                result: true
+            };
+        }
     }
 
     private _checkOptions(options: Options): boolean {
@@ -389,11 +419,13 @@ class SliderModel {
     }
 
     private _changeOrientationClass(options: Options | UserOptions, type: 'user' | 'result',
-                                  orientation: 'horizontal' | 'vertical' | undefined): Options | UserOptions {
+                                  orientation: 'horizontal' | 'vertical' | undefined) {
 
         if ( orientation !==  undefined && orientation !== 'horizontal' && orientation !== 'vertical' )  {
             this._incorrectOptionsReceivedSubject.notifyObservers('Options are incorrect (for orientation only ' +
                 '"vertical" and "horizontal" values are allowed)');
+
+            return { result: false };
         }
         if ( orientation === undefined ) orientation = 'horizontal';
 
@@ -419,7 +451,10 @@ class SliderModel {
             options.classes[this._classes.handle] = values[2];
         }
 
-        return options;
+        return {
+            result: true,
+            options: options
+        };
     }
 
     private _deleteWSFromUserCLasses() {
