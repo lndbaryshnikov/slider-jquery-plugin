@@ -68,6 +68,10 @@ class SliderModel {
         handle: "jquery-slider-handle" as keyof Options["classes"]
     };
 
+    set value(value: number) {
+        this._options.value = value;
+    }
+
     getOptions(option?: keyof Options, className?: keyof UserOptions['classes']): Options | Options[keyof Options] |
         Options["classes"][keyof Options["classes"]] {
 

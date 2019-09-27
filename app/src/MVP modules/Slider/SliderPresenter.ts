@@ -11,7 +11,7 @@ class SliderPresenter {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
         this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
         this._model.whenIncorrectOptionRequested(this.showErrorMessageCallback());
-        this._view.whenHandlePositionChanged(this.passHandlePositionToModelCallback());
+        this._view.whenValueChanged(this.passValueToModelCallback());
     }
 
     get view() {
@@ -98,9 +98,9 @@ class SliderPresenter {
         };
     }
 
-    passHandlePositionToModelCallback() {
+    passValueToModelCallback() {
         return () => {
-            this._model.handlePositionInPercents = this._view.handlePositionInPercents;
+            this._model.value = this._view.value;
         }
     }
 }
