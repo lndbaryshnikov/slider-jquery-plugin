@@ -21,18 +21,15 @@ describe("When options object is passed", () => {
     });
 
     test("extends object with max = 60 and min = 20", () => {
-        model.setOptions({min: 20, max: 60});
+        model.setOptions({min: 20, max: 60, value: 30});
 
         const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions('horizontal'));
 
         testOptions.min = 20;
         testOptions.max = 60;
+        testOptions.value = 30;
 
         expect(model.getOptions()).toEqual(testOptions);
-    });
-
-    test("options are undefined when main passes no options", () => {
-        expect(model.getOptions()).toEqual(null);
     });
 
     test("options.classes and options.orientation depending on orientation", () => {
@@ -78,11 +75,13 @@ describe("When options object is passed", () => {
 
     test("extension when options are already set", () => {
         model.setOptions({
+            value: 50,
             min: 30,
             range: "min"
         });
 
         expect((model.getOptions() as Options).min).toBe(30);
+        expect((model.getOptions() as Options).value).toBe(50);
         expect((model.getOptions() as Options).range).toBe('min');
         expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions('horizontal').classes);
 

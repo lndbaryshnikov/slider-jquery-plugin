@@ -43,7 +43,7 @@ class SliderPresenter {
 
     getOptions(option?: keyof Options, className?: keyof UserOptions["classes"]) {
         if ( !this._data.setUp ) {
-            throw new Error('Options are not set');
+            throw new Error(SliderModel.optionsErrors.notSet);
         }
 
         return this._model.getOptions(option, className);
