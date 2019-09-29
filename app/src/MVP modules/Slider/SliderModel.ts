@@ -213,6 +213,44 @@ class SliderModel {
 
                         optionsCopy[options] = restOptions[0] as Options["orientation"];
                     }
+                } else if ( options === "value" ) {
+                    if ( typeof restOptions[0] !== "number" ) {
+                        this._incorrectOptionsReceivedSubject
+                            .notifyObservers("Options are incorrect (option 'value' should be of type 'number')");
+
+                        return;
+                    }
+
+                    if ( +restOptions[0] < +this._options.min || +restOptions[0] > +this._options.max ) {
+                        this._incorrectOptionsReceivedSubject
+                            .notifyObservers("Options are incorrect ('value' cannot go beyond 'min' and 'max')");
+
+                        return;
+                    }
+
+                    optionsCopy[options] = restOptions[0] as Options["value"];
+
+                } else if ( options === "min" || options === "max" ) {
+                    if ( typeof restOptions[0] !== "number" ) {
+                        this._incorrectOptionsReceivedSubject
+                            .notifyObservers(`Options are incorrect (option '${options}' should be of type 'number')`);
+
+                        return;
+                    }
+
+                    if ( (options === "min" && restOptions[0] > this._options.value) ||
+                          options === "max" && restOptions[0] < this._options.value) {
+
+                        const lessOrMore = options === "min" ? 'more' : 'less';
+
+                        this._incorrectOptionsReceivedSubject
+                            .notifyObservers(`Options are incorrect (option '${options}' cannot be ${lessOrMore} than 'value')`);
+
+                        return;
+                    }
+
+                    optionsCopy[options] = restOptions[0] as Options["min" | "max"];
+
                 } else {
                     let optionObj: any = {};
                     optionObj[options] = restOptions[0];
@@ -417,6 +455,11 @@ class SliderModel {
                     "can only be 'min', 'max' or typeof 'boolean')");
 
             return false;
+        }
+
+        if ( !(options.min <= options.value && options.max >= options.value) ) {
+            this._incorrectOptionsReceivedSubject
+                .notifyObservers("Options are incorrect ('value' should be between 'min' and 'max' values)");
         }
 
         return true;

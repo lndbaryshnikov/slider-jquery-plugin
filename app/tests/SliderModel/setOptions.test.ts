@@ -99,24 +99,16 @@ describe("When options object is passed", () => {
         expect((model.getOptions() as Options).orientation).toBe('vertical');
         expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions('vertical').classes);
     });
-});
-
-describe("When one options is passed", () => {
-    let model: SliderModel;
-
-    beforeEach(() => {
-        model = new SliderModel();
-    });
 
     test("extension when one option passed", () => {
         model.setOptions();
-        model.setOptions('min', 34);
+        model.setOptions('value', 34);
 
         const customDefaults = SliderModel.getDefaultOptions('horizontal');
-        customDefaults.min = 34;
+        customDefaults.value = 34;
 
         expect(model.getOptions()).toEqual(customDefaults);
-        expect((model.getOptions() as Options).min).toBe(34);
+        expect((model.getOptions() as Options).value).toBe(34);
 
         model.setOptions("classes", {
             'jquery-slider': 'my-slider'
@@ -129,7 +121,7 @@ describe("When one options is passed", () => {
         });
     });
 
-    test("classes extension", () => {
+    test("classes extension by one-options extension", () => {
         model.setOptions();
         model.setOptions("classes", "jquery-slider", "my-slider");
 
@@ -191,4 +183,10 @@ describe("When one options is passed", () => {
             'jquery-slider-handle': 'my-handle'
         });
     });
+
+    // test("value sets correctly when options are not default (equals 'min')", () => {
+    //     model.setOptions( { min: 34, max: 156 } );
+    //
+    //     expect(model.getOptions("value")).toBe(34);
+    // });
 });

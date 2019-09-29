@@ -104,4 +104,45 @@ describe("One option extension when options are set", () => {
         checkStringType("step");
         checkStringType("value");
     });
+    
+    test("throws exception when value, as single option passes, goes beyond min and max", () => {
+        expect(( ) => {
+            sliderPresenter.setOptions( { min: 30, max: 120, value: 40 } );
+            sliderPresenter.setOptions("value", 20);
+        }).toThrow("Options are incorrect ('value' cannot go beyond 'min' and 'max')");
+    });
+
+    test("throws exception when 'max', as single option passes, less that 'value'", () => {
+        expect(( ) => {
+            sliderPresenter.setOptions( { value: 40 } );
+            sliderPresenter.setOptions("max", 30);
+        }).toThrow("Options are incorrect (option 'max' cannot be less than 'value')");
+    });
+
+    test("throws exception when 'min', as single option passes, more than 'value'", () => {
+        expect(( ) => {
+            sliderPresenter.setOptions( { value: 50, max: 120 } );
+            sliderPresenter.setOptions("min", 60);
+        }).toThrow("Options are incorrect (option 'min' cannot be more than 'value')");
+    });
+    
+    test("throws exception when 'value', 'min' or 'max' are incorrect", () => {
+        const error = "Options are incorrect ('value' should be between 'min' and 'max' values)";
+
+        expect( ( ) => {
+            sliderPresenter.setOptions( { value: 150 } );
+        }).toThrow(error);
+
+        expect( ( ) => {
+            sliderPresenter.setOptions( { min: 10 } );
+        }).toThrow(error);
+
+        expect( ( ) => {
+            sliderPresenter.setOptions( { value: 50, min: 10, max: 45 } );
+        }).toThrow(error);
+
+        expect( ( ) => {
+            sliderPresenter.setOptions( { value: 50, max: 100, min: 60 } );
+        }).toThrow(error);
+    });
 });
