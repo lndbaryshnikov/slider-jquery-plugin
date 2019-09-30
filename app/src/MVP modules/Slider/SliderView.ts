@@ -27,6 +27,12 @@ export default class SliderView {
         this._setHandleMovingHandler();
     }
 
+    whenValueChanged(callback: (value: Options["value"]) => void): void {
+        this._valueChangedSubject.addObserver((value: Options["value"]) => {
+            callback(value);
+        })
+    }
+
     get html() {
         return this._html;
     }
@@ -72,6 +78,15 @@ export default class SliderView {
         this._renderOptions();
     }
 
+
+    updateHandlePosition(value: Options["value"]) {
+        this._options.value = value;
+
+        this._setHandlePositionInPixels();
+        this._renderHandlePosition();
+        this._renderRange();
+    }
+
     private _renderOptions() {
         if ( !this._data.rendered ) return;
 
@@ -90,14 +105,12 @@ export default class SliderView {
                             const shiftX = handleShift.x;
 
                             let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
-                            // + this._getCoords().handle.width / 2;
 
                             if (newLeft < 0 - this._getCoords().handle.width / 2) {
                                 newLeft = 0 - this._getCoords().handle.width / 2;
                             }
 
                             const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
-                            // + this._getCoords().handle.width / 2;
 
                             if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
                                 newLeft = rightEdge + this._getCoords().handle.width / 2;
@@ -106,24 +119,18 @@ export default class SliderView {
                             const currentHandlePositionInPercents = newLeft + this._getCoords().handle.width / 2;
 
                             this._refreshValue(currentHandlePositionInPercents);
-
-                            this._setHandlePositionInPixels();
-
-                            // this._handlePositionInPixels = newLeft + this._getCoords().handle.width / 2;
                         }
 
                         if ( this._options.orientation === 'vertical' ) {
                             const shiftY = handleShift.y;
 
                             let newTop = mouseMoveEvent.pageY - shiftY - this._getCoords().wrapper.top;
-                            // + this._getCoords().handle.width / 2;
 
                             if (newTop < 0 - this._getCoords().handle.height / 2) {
                                 newTop = 0 - this._getCoords().handle.height / 2;
                             }
 
                             const rightEdge = this._getCoords().wrapper.height - this._getCoords().handle.height;
-                            // + this._getCoords().handle.width / 2;
 
                             if (newTop > rightEdge + this._getCoords().handle.height / 2) {
                                 newTop = rightEdge + this._getCoords().handle.height / 2;
@@ -133,18 +140,7 @@ export default class SliderView {
                                 - newTop - this._getCoords().handle.height / 2;
 
                             this._refreshValue(currentHandlePositionInPercents);
-
-                            this._setHandlePositionInPixels();
-
-                            // this._handlePositionInPixels = this._getCoords().wrapper.height
-                            //     - newTop - this._getCoords().handle.height / 2;
                         }
-
-                        this._renderHandlePosition();
-
-                        this._renderRange();
-
-                        this._valueChangedSubject.notifyObservers();
                     };
 
                 document.onmouseup = () => {
@@ -158,12 +154,6 @@ export default class SliderView {
                 return false;
             };
 
-    }
-
-    whenValueChanged(callback: () => void): void {
-        this._valueChangedSubject.addObserver(() => {
-            callback();
-        })
     }
 
     private _renderHandlePosition() {
@@ -226,23 +216,6 @@ export default class SliderView {
         this._classesHash = $.extend({}, this._options.classes);
     }
 
-    private _hasClassesChanged() {
-        if ( !this._classesHash ) return true;
-
-        const classes = this._options.classes;
-        const hash = this._classesHash;
-
-        let mainClass: keyof Options["classes"];
-
-        for (mainClass in this._options.classes ) {
-            if ( !( mainClass in hash && classes[mainClass] === hash[mainClass] ) ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private _setHandlePositionInPixels() {
         if ( !this._data.rendered ) return;
 
@@ -255,6 +228,7 @@ export default class SliderView {
     }
 
     private _refreshValue(currentsHandlePositionInPixels: number) {
+        // console.log(currentsHandlePositionInPixels);
         const range = this._options.max - this._options.min;
 
         const getValuesArray = () => {
@@ -291,11 +265,9 @@ export default class SliderView {
             }
         }
 
-        console.log(value);
+        // console.log(typeof value);
 
-        this._options.value = value;
-
-        // this._valueChangedSubject.notifyObservers();
+        this._valueChangedSubject.notifyObservers(value);
     }
 
     private _setSliderElements() {
@@ -311,6 +283,23 @@ export default class SliderView {
 
     private _countHandleShift(mouseDownEvent: MouseEvent) {
         return countShift(mouseDownEvent, this._html.handle);
+    }
+
+    private _hasClassesChanged() {
+        if ( !this._classesHash ) return true;
+
+        const classes = this._options.classes;
+        const hash = this._classesHash;
+
+        let mainClass: keyof Options["classes"];
+
+        for (mainClass in this._options.classes ) {
+            if ( !( mainClass in hash && classes[mainClass] === hash[mainClass] ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private _getCoords() {

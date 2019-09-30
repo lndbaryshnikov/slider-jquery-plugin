@@ -10,7 +10,11 @@ class SliderPresenter {
     constructor(private _view: SliderView, private _model: SliderModel) {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
         this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
-        this._view.whenValueChanged(this.passValueToModelCallback());
+
+        this._view.whenValueChanged(this.validateValueCallback());
+
+        this._model.whenValueUpdated(this.renderHandlePositionCallback());
+
     }
 
     get view() {
@@ -29,8 +33,6 @@ class SliderPresenter {
         if ( !this._data.setUp ) this.setOptions(userOptions);
 
         if ( !this._data.rendered ) this.render(root);
-
-
     }
 
     setOptions(options?: UserOptions | keyof Options, ...restOptions:
@@ -97,9 +99,15 @@ class SliderPresenter {
         };
     }
 
-    passValueToModelCallback() {
+    validateValueCallback() {
+        return (value: Options["value"]) => {
+            this._model.refreshValue(value);
+        }
+    }
+
+    renderHandlePositionCallback() {
         return () => {
-            this._model.value = this._view.value;
+            this._view.updateHandlePosition((this._model.getOptions() as Options).value);
         }
     }
 }

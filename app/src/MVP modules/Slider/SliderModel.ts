@@ -49,6 +49,7 @@ class SliderModel {
 
     private _incorrectOptionsReceivedSubject = new Observer();
     private _optionsSetSubject = new Observer();
+    private _valueUpdatedSubject = new Observer();
 
     private _options: Options | null = null;
 
@@ -118,6 +119,12 @@ class SliderModel {
         });
     }
 
+    whenValueUpdated(callback: () => void) {
+       this._valueUpdatedSubject.addObserver(() => {
+           callback();
+       }) ;
+    };
+
     static get optionsErrors() {
         return SliderModel._optionsErrors;
     }
@@ -153,11 +160,20 @@ class SliderModel {
         };
     };
 
-    set value(value: number) {
+    refreshValue(value: Options["value"]) {
+        if ( value < this._options.min ) value = this._options.min;
+        if ( value > this._options.max ) value = this._options.max;
+
         this._options.value = value;
+
+        this._valueUpdatedSubject.notifyObservers();
     }
 
     destroy() {
+        if ( !this._options ) {
+            this._throw(SliderModel._optionsErrors.notSet);
+        }
+
         this._options = null;
     }
 
