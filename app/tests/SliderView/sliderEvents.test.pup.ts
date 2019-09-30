@@ -413,6 +413,6 @@ describe("slider events", () => {
             await testPosition(0.73, 0.8);
             await testPosition(0.84, 0.8);
             await testPosition(0.9, 1);
-        });
+        }, timeout);
     });
 });

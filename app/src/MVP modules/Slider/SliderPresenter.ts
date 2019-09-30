@@ -10,7 +10,6 @@ class SliderPresenter {
     constructor(private _view: SliderView, private _model: SliderModel) {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
         this._model.whenOptionsAreIncorrect(this.showErrorMessageCallback());
-        this._model.whenIncorrectOptionRequested(this.showErrorMessageCallback());
         this._view.whenValueChanged(this.passValueToModelCallback());
     }
 

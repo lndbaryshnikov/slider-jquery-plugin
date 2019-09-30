@@ -48,7 +48,6 @@ class SliderModel {
     private _handlePositionInPercents: number;
 
     private _incorrectOptionsReceivedSubject = new Observer();
-    private _incorrectOptionRequested = new Observer();
     private _optionsSetSubject = new Observer();
 
     private _options: Options | null = null;
@@ -101,8 +100,27 @@ class SliderModel {
         },
         range: {
             incorrect: "Options are incorrect (option 'range' can only be 'min', 'max' or typeof 'boolean')"
+        },
+        step: {
+            incorrect: "Options are incorrect (option 'step' value should be between 'min' and 'max')"
         }
     };
+
+    whenOptionsAreIncorrect(callback: (error: string) => void) {
+        this._incorrectOptionsReceivedSubject.addObserver((error: string) => {
+            callback(error);
+        });
+    }
+
+    whenOptionsSet(callback: () => void) {
+        this._optionsSetSubject.addObserver(() => {
+            callback();
+        });
+    }
+
+    static get optionsErrors() {
+        return SliderModel._optionsErrors;
+    }
 
     static getDefaultOptions(orientation: 'horizontal' | 'vertical' | undefined): Options {
 
@@ -134,10 +152,6 @@ class SliderModel {
             classes: classes
         };
     };
-
-    static get optionsErrors() {
-        return SliderModel._optionsErrors;
-    }
 
     set value(value: number) {
         this._options.value = value;
@@ -222,7 +236,7 @@ class SliderModel {
 
         } else if ( typeof options === "object" && restOptions.length === 0 ) {
 
-            const optionsObject = this._extendOptionsObject(options);
+            const optionsObject = this._extendByOptionsObject(options);
 
             if ( !optionsObject.result ) return;
 
@@ -231,7 +245,11 @@ class SliderModel {
             this._deleteWSFromUserCLasses();
 
         } else if ( !options && restOptions.length === 0 ) {
-            if ( this._options ) return this._throw(errors.alreadySet);
+            if ( this._options ) {
+                this._throw(errors.alreadySet);
+
+                return;
+            }
 
             this._options = SliderModel.getDefaultOptions('horizontal');
         } else {
@@ -242,7 +260,7 @@ class SliderModel {
         this._optionsSetSubject.notifyObservers();
     }
 
-    private _extendOptionsObject(options: UserOptions) {
+    private _extendByOptionsObject(options: UserOptions) {
         let _currentOptions: Options;
 
         if ( this._options ) {
@@ -359,6 +377,13 @@ class SliderModel {
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["min" | "max"];
+
+            } else if ( option === "step" ) {
+                if ( restOptions[0] > (this._options.max - this._options.min) || restOptions[0] <= 0 ) {
+                    this._throw(errors.step.incorrect);
+                }
+
+                optionsCopy[option] = restOptions[0] as Options["step"];
 
             } else {
                 let optionObj: any = {};
@@ -489,7 +514,13 @@ class SliderModel {
         if ( !(options.min <= options.value && options.max >= options.value) ) {
             this._throw(errors.value.beyond);
 
-            return;
+            return false;
+        }
+
+        if ( options.step > (options.max - options.min) || options.step <= 0 ) {
+            this._throw(errors.step.incorrect);
+
+            return false;
         }
 
         return true;
@@ -546,32 +577,12 @@ class SliderModel {
         }
     }
 
-
-
-    whenOptionsAreIncorrect(callback: (error: string) => void) {
-        this._incorrectOptionsReceivedSubject.addObserver((error: string) => {
-            callback(error);
-        });
-    }
-
-    whenIncorrectOptionRequested(callback: (error: string) => void) {
-        this._incorrectOptionRequested.addObserver((error: string) => {
-           callback(error);
-        });
-    }
-
-    whenOptionsSet(callback: () => void) {
-        this._optionsSetSubject.addObserver(() => {
-           callback();
-        });
-    }
-
     set handlePositionInPercents(positionInPercents: number) {
         this._handlePositionInPercents = positionInPercents;
     }
 
     private _throw(error: string) {
-        this._incorrectOptionsReceivedSubject.notifyObservers(error)
+        this._incorrectOptionsReceivedSubject.notifyObservers(error);
     }
 }
 
