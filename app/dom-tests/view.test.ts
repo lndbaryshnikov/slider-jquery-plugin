@@ -2,7 +2,7 @@
 // import SliderView from '../src/MVP modules/Slider/_view'
 // import {getClassList, createInstance, moveHandleToCertainCoords} from "../src/functions/private/view.private";
 // import {getDefaultOptions} from '../src/MVP modules/Slider/_model';
-// import _getCoords from '../src/functions/common/_getCoords'
+// import getCoords from '../src/functions/common/getCoords'
 //
 // //styles here:
 // import '../src/styles/jquery-slider.scss'
@@ -57,12 +57,12 @@
 //             app.createDom();
 //
 //             const slider = $('.jquery-slider')[0];
-//             const sliderCoords = _getCoords(slider);
+//             const sliderCoords = getCoords(slider);
 //
 //             const sliderMiddleLeft = sliderCoords.left + sliderCoords.width/2;
 //
 //             const handle = $('.jquery-slider-handle')[0];
-//             const handleCoords = _getCoords(handle);
+//             const handleCoords = getCoords(handle);
 //
 //             const newHandleCoords = moveHandleToCertainCoords(sliderMiddleLeft);
 //
@@ -85,7 +85,7 @@
 //             app.createDom();
 //
 //             const slider = $('.jquery-slider')[0];
-//             const sliderCoords = _getCoords(slider);
+//             const sliderCoords = getCoords(slider);
 //
 //             const newHandleCoordsLeft = moveHandleToCertainCoords(sliderCoords.left - 10);
 //
@@ -109,7 +109,7 @@
 //             app.createDom();
 //
 //             const range = $(".jquery-slider-range")[0];
-//             const rangeCoords = _getCoords(range);
+//             const rangeCoords = getCoords(range);
 //
 //             const leftRangeCoords = {
 //                 top: rangeCoords.top,
@@ -117,7 +117,7 @@
 //             };
 //
 //             const slider = $('.jquery-slider')[0];
-//             const sliderCoords = _getCoords(slider);
+//             const sliderCoords = getCoords(slider);
 //
 //             const expectedLeftRangeCoords = {
 //                 top: sliderCoords.top,
@@ -129,7 +129,7 @@
 //             const shift = 0.5 * parseInt($(slider).css("width"));
 //             const newHandleCoords = moveHandleToCertainCoords(sliderCoords.left + shift);
 //
-//             const newRangeCoords = _getCoords(range);
+//             const newRangeCoords = getCoords(range);
 //
 //             const newRightRangeCoords = {
 //                 top: newRangeCoords.top,

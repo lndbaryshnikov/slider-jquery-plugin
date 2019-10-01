@@ -75,15 +75,15 @@ export default class SliderPupPage {
     }
 
     async getSliderCoords() {
-        return await this._getCoords(this._slider);
+        return await this.getCoords(this._slider);
     }
 
     async getRangeCoords() {
-        return await this._getCoords(this._range);
+        return await this.getCoords(this._range);
     }
 
     async getHandleCoords() {
-        return await this._getCoords(this._handle);
+        return await this.getCoords(this._handle);
     }
 
 
@@ -111,7 +111,7 @@ export default class SliderPupPage {
         await this._page.setViewport({ width, height });
     }
 
-    async _getCoords(dom: ElementHandle): Promise<Coords> {
+    async getCoords(dom: ElementHandle): Promise<Coords> {
         return await this._page.evaluate((dom) => {
             const {left, top, right, bottom, width, height} = dom.getBoundingClientRect();
 
@@ -121,13 +121,13 @@ export default class SliderPupPage {
 
     async getSliderMiddle() {
         return {
-            left: (await this._getCoords(this._slider)).left + (await this._getCoords(this._slider)).width / 2,
-            top: (await this._getCoords(this._slider)).top + (await this._getCoords(this._slider)).height / 2
+            left: (await this.getCoords(this._slider)).left + (await this.getCoords(this._slider)).width / 2,
+            top: (await this.getCoords(this._slider)).top + (await this.getCoords(this._slider)).height / 2
         };
     }
 
     async moveHandleToCoords (X: number, Y: number) {
-        const handleCoords = await this._getCoords(this._handle);
+        const handleCoords = await this.getCoords(this._handle);
 
         await this._page.mouse.move(handleCoords.left + handleCoords.width / 2,
             handleCoords.top + handleCoords.height / 2);

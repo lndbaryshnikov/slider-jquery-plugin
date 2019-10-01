@@ -220,6 +220,35 @@ describe("slider events", () => {
             await testPosition(0.84, 0.8);
             await testPosition(0.9, 1);
         });
+
+        test("tooltip moves correctly", async () => {
+            await sliderPage.setOptions("tooltip", true);
+
+            const getTooltipValue = async () => {
+                return await page.evaluate(() => {
+                    return document.querySelector(".jquery-slider-tooltip").innerHTML;
+                });
+            };
+
+            const tooltip = await page.$(".jquery-slider-tooltip");
+
+            const tooltipCoords = await sliderPage.getCoords(tooltip);
+            const tooltipText = await getTooltipValue();
+
+            await sliderPage.moveHandleToCoords(handleCoords.left, sliderMiddle.top);
+
+            const newHandleCoords = await sliderPage.getHandleCoords();
+            const newTooltipCoords = await sliderPage.getCoords(tooltip);
+            const newTooltipText = await getTooltipValue();
+
+            const handleRangeY = newHandleCoords.top - handleCoords.top;
+            const tooltipRangeY = newTooltipCoords.top - tooltipCoords.top;
+
+            expect(tooltipRangeY).toBe(handleRangeY);
+            expect(tooltipCoords.left).toBe(newTooltipCoords.left);
+            expect(tooltipText).toBe(0);
+            expect(newTooltipText).toBe(50);
+        }, timeout);
     });
 
     describe("horizontal slider events", () => {
@@ -415,4 +444,33 @@ describe("slider events", () => {
             await testPosition(0.9, 1);
         }, timeout);
     });
+
+    test("tooltip moves correctly", async () => {
+        await sliderPage.setOptions("tooltip", true);
+
+        const getTooltipValue = async () => {
+            return await page.evaluate(() => {
+                return document.querySelector(".jquery-slider-tooltip").innerHTML;
+            });
+        };
+
+        const tooltip = await page.$(".jquery-slider-tooltip");
+
+        const tooltipCoords = await sliderPage.getCoords(tooltip);
+        const tooltpText = await getTooltipValue();
+
+        await sliderPage.moveHandleToCoords(sliderMiddle.left, handleCoords.top);
+
+        const newHandleCoords = await sliderPage.getHandleCoords();
+        const newTooltipCoords = await sliderPage.getCoords(tooltip);
+        const newTooltipText = await getTooltipValue();
+
+        const handleRangeX = newHandleCoords.left - handleCoords.left;
+        const tooltipRangeX = newTooltipCoords.left - tooltipCoords.left;
+
+        expect(tooltipRangeX).toBe(handleRangeX);
+        expect(tooltipCoords.top).toBe(newTooltipCoords.top);
+        expect(tooltpText).toBe(0);
+        expect(newTooltipText).toBe(50);
+    }, timeout);
 });

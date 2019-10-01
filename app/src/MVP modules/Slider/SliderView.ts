@@ -78,7 +78,6 @@ export default class SliderView {
         this._renderOptions();
     }
 
-
     updateHandlePosition(value: Options["value"]) {
         this._options.value = value;
 
