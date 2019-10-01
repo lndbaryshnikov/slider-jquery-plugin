@@ -2,6 +2,7 @@ import {HorizontalClasses, Options, VerticalClasses} from "./SliderModel";
 import {countShift} from "../../functions/common/countShift";
 import getCoords from "../../functions/common/getCoords";
 import Observer from "../Observer";
+import SliderTooltipView from "../SliderTooltipView";
 
 interface Html {
     wrapper: HTMLDivElement | null;
@@ -13,6 +14,7 @@ export default class SliderView {
 
     private _root: HTMLElement | null = null;
     private _options: Options | null = null;
+    private _tooltip: SliderTooltipView | null = null;
     private _classesHash: Options["classes"] | null = null;
     private _handlePositionInPixels: number | null = null;
 
@@ -69,11 +71,18 @@ export default class SliderView {
         this._data.rendered = false;
     }
 
-    setOptions(options: Options): void {
+    setOptions(options: Options, tooltip?: SliderTooltipView): void {
         this._options = options;
 
         this._setSliderClasses();
         this._setHandlePositionInPixels();
+
+        if ( tooltip ) {
+            this._tooltip = tooltip;
+
+            this._renderTooltip();
+
+        } else this._destroyTooltip();
 
         this._renderOptions();
     }
@@ -306,6 +315,19 @@ export default class SliderView {
             wrapper: getCoords(this._html.wrapper),
             range: getCoords(this._html.range),
             handle: getCoords(this._html.handle)
+        }
+    }
+
+    private _renderTooltip() {
+        if ( !this._html.handle.contains(this._tooltip.html) ) {
+            this._tooltip.render(this._html.handle);
+        }
+    }
+
+    private _destroyTooltip() {
+        if ( this._tooltip ) {
+            this._tooltip.destroy();
+            this._tooltip = null;
         }
     }
 }

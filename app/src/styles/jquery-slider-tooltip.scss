@@ -1,31 +1,48 @@
 .jquery-slider-tooltip {
-    position: absolute;
-    top: -35px;
-    left: -7px;
-    width: 35px;
-    height: 28px;
-    background-color: #e75735;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 28px;
-    letter-spacing: 0.65px;
-    color: #ffffff;
+    background-color: orangered;
+    font-size: 1em;
     text-align: center;
     border-radius: 20%;
+    line-height: 28px;
+    color: whitesmoke;
+
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
+.jquery-slider-tooltip-horizontal {
+    top: -40px;
+    left: -8px;
+    width: 35px;
+    height: 28px;
+}
+
+.jquery-slider-tooltip-vertical {
+    top: -8px;
+    left: -50px;
+    width: 35px;
+    height: 28px;
+}
+
 .jquery-slider-tooltip::after {
     content: "";
     position: absolute;
+    border-width: 5px;
+    border-style: solid;
+}
+
+.jquery-slider-tooltip-horizontal::after {
     top: 100%;
     left: 50%;
-    border-width: 5px;
     margin-left: -5.5px;
-    border-style: solid;
-    border-color: #e75735 transparent transparent transparent;
+    border-color: orangered transparent transparent transparent;
+}
 
+.jquery-slider-tooltip-vertical::after {
+    top: 50%;
+    left: 100%;
+    margin-top: -4px;
+    border-color: transparent transparent transparent orangered;
 }

@@ -9,6 +9,7 @@ import './styles/jquery-slider-horizontal.scss'
 import './styles/jquery-slider-vertical.scss'
 import './styles/jquery-slider-range.scss'
 import './styles/jquery-slider-handle.scss'
+import './styles/jquery-slider-tooltip.scss'
 
 export interface JQueryElementWithSlider extends JQuery<HTMLElement> {
     slider: (method?: UserOptions | keyof SliderMethods,

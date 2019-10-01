@@ -1,11 +1,14 @@
 import SliderView from './SliderView';
 import SliderModel, {Options, UserOptions} from "./SliderModel";
+import SliderTooltipView from "../SliderTooltipView";
 
 class SliderPresenter {
     private _data: { setUp: boolean; rendered: boolean; } = {
         setUp: false,
         rendered: false
     };
+
+    private _tooltipView: SliderTooltipView = new SliderTooltipView();
 
     constructor(private _view: SliderView, private _model: SliderModel) {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
@@ -89,7 +92,17 @@ class SliderPresenter {
 
     setOptionsToViewCallback() {
         return () => {
-            this._view.setOptions(this._model.getOptions() as Options);
+            const options = this._model.getOptions() as Options;
+
+            let tooltip: SliderTooltipView | null = null;
+
+            if ( options.tooltip ) {
+                this._tooltipView.init(options.value, options.orientation);
+
+                tooltip = this._tooltipView;
+            } else if ( this._tooltipView.state.isRendered ) this._tooltipView.destroy();
+
+            this._view.setOptions(options, tooltip);
         }
     }
 
@@ -107,7 +120,9 @@ class SliderPresenter {
 
     renderHandlePositionCallback() {
         return () => {
-            this._view.updateHandlePosition((this._model.getOptions() as Options).value);
+            const value = (this._model.getOptions() as Options).value;
+            this._view.updateHandlePosition(value);
+            if ( this._tooltipView.state.isRendered ) this._tooltipView.setText(value);
         }
     }
 }

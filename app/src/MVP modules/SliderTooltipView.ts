@@ -16,6 +16,13 @@ export default class SliderTooltipView {
         return this._text;
     }
 
+    get state() {
+        return {
+            isRendered: (() => !!this._root)(),
+            isSet: (() => !!(this._root && this._orientation && this._text))()
+        };
+    }
+
     init(text: string | number, orientation: "horizontal" | "vertical" ) {
         this.setText(text);
         this.setOrientation(orientation);
@@ -47,6 +54,8 @@ export default class SliderTooltipView {
 
     remove() {
         this._root.removeChild(this._html);
+
+        this._root = null;
     }
 
     destroy() {
@@ -61,6 +70,7 @@ export default class SliderTooltipView {
     private _create() {
         const tooltip = document.createElement("div");
         tooltip.setAttribute("class", "jquery-slider-tooltip");
+        tooltip.style.position = "absolute";
 
         this._html = tooltip;
     }

@@ -1,17 +1,24 @@
 import SliderView from "../../src/MVP modules/Slider/SliderView";
 import SliderModel from "../../src/MVP modules/Slider/SliderModel";
+import SliderTooltipView from "../../src/MVP modules/SliderTooltipView";
 
 describe("tooltip exists on dom and contains 'value'", () => {
    let view: SliderView;
+   let tooltipView = new SliderTooltipView();
 
     beforeEach(() => {
         view = new SliderView();
+    });
 
+    test("tooltip rendered correctly", () => {
         const defaultsWithTooltip = SliderModel.getDefaultOptions("horizontal");
 
         defaultsWithTooltip.tooltip = true;
 
-        view.setOptions(defaultsWithTooltip);
+        tooltipView.init(defaultsWithTooltip.value,
+            defaultsWithTooltip.orientation);
+
+        view.setOptions(defaultsWithTooltip, tooltipView);
 
         view.render(document.body);
 
@@ -20,13 +27,16 @@ describe("tooltip exists on dom and contains 'value'", () => {
 
         expect(!!tooltip).toBeTruthy();
         expect(handle.contains(tooltip)).toBeTruthy();
-        expect(tooltip.innerHTML).toBe(0);
+        expect(tooltip.innerHTML).toBe("0");
 
         const defaultsWIthAnotherValue = SliderModel.getDefaultOptions("horizontal");
         defaultsWIthAnotherValue.value = 50;
 
-        view.setOptions(defaultsWIthAnotherValue);
+        tooltipView.init(defaultsWIthAnotherValue.value,
+            defaultsWithTooltip.orientation);
 
-        expect(tooltip.innerHTML).toBe(50);
+        view.setOptions(defaultsWIthAnotherValue, tooltipView);
+
+        expect(tooltip.innerHTML).toBe("50");
     });
 });
