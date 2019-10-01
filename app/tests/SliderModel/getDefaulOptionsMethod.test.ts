@@ -8,6 +8,8 @@ describe("getDefaultOptions method", () => {
         value: 0,
         orientation: 'horizontal',
         range: false,
+        tooltip: false,
+
         classes: {
             "jquery-slider jquery-slider-horizontal": "",
             "jquery-slider-range": "",
@@ -22,6 +24,8 @@ describe("getDefaultOptions method", () => {
        value: 0,
        orientation: 'vertical',
        range: false,
+       tooltip: false,
+
        classes: {
            "jquery-slider jquery-slider-vertical": "",
            "jquery-slider-range": "",

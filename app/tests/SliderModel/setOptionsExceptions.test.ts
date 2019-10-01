@@ -194,4 +194,16 @@ describe("setOptionsMethod exceptions", () => {
             model.setOptions("step", 103);
         }).toThrow(error);
     });
+
+    test("throws exceptions when option tooltip is not true or false", () => {
+        expect(( ) => {
+            model.setOptions({ tooltip: "true" } as unknown as UserOptions);
+        }).toThrow(errors.tooltip.incorrect);
+
+        model.setOptions();
+
+        expect(( ) => {
+            model.setOptions("tooltip", 34);
+        }).toThrow(errors.tooltip.incorrect);
+    });
 });

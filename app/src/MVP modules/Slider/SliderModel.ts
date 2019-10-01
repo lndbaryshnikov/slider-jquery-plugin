@@ -24,6 +24,7 @@ export type Options = {
     value: number,
     orientation: 'horizontal' | 'vertical',
     range: 'min' | 'max' | boolean,
+    tooltip: boolean,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -35,6 +36,8 @@ export type UserOptions = {
     value?: number,
     orientation?: 'horizontal' | 'vertical',
     range?: 'min' | 'max' | boolean,
+    tooltip?: boolean,
+
     classes?: {
         "jquery-slider"?: string,
         "jquery-slider-range"?: string,
@@ -104,6 +107,9 @@ class SliderModel {
         },
         step: {
             incorrect: "Options are incorrect (option 'step' value should be between 'min' and 'max')"
+        },
+        tooltip: {
+            incorrect: "Options are incorrect (options 'tooltip' should be boolean true or false)"
         }
     };
 
@@ -156,6 +162,8 @@ class SliderModel {
             value: 0,
             orientation: orientation,
             range: false,
+            tooltip: false,
+
             classes: classes
         };
     };
@@ -397,10 +405,20 @@ class SliderModel {
             } else if ( option === "step" ) {
                 if ( restOptions[0] > (this._options.max - this._options.min) || restOptions[0] <= 0 ) {
                     this._throw(errors.step.incorrect);
+
+                    return { result: false };
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["step"];
 
+            } else if ( option === "tooltip" ) {
+                if ( typeof restOptions[0] !== "boolean" ) {
+                  this._throw(errors.tooltip.incorrect);
+
+                  return { result: false };
+                }
+
+                optionsCopy[option] = restOptions[0] as Options["tooltip"];
             } else {
                 let optionObj: any = {};
                 optionObj[option] = restOptions[0];
@@ -535,6 +553,12 @@ class SliderModel {
 
         if ( options.step > (options.max - options.min) || options.step <= 0 ) {
             this._throw(errors.step.incorrect);
+
+            return false;
+        }
+
+        if ( typeof options.tooltip !== "boolean" ) {
+            this._throw(errors.tooltip.incorrect);
 
             return false;
         }
