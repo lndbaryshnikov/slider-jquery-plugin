@@ -1,0 +1,31 @@
+.jquery-slider-tooltip {
+    position: absolute;
+    top: -35px;
+    left: -7px;
+    width: 35px;
+    height: 28px;
+    background-color: #e75735;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0.65px;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 20%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.jquery-slider-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    border-width: 5px;
+    margin-left: -5.5px;
+    border-style: solid;
+    border-color: #e75735 transparent transparent transparent;
+
+}
