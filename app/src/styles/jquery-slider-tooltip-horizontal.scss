@@ -1,0 +1,13 @@
+.jquery-slider-tooltip-horizontal::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -5.5px;
+  border-color: orangered transparent transparent transparent;
+}
+
+.jquery-slider-tooltip-horizontal {
+  top: -40px;
+  left: -8px;
+  width: 35px;
+  height: 28px;
+}

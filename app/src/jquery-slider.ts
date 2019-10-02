@@ -1,15 +1,8 @@
-//import $ from 'jquery'
-
 import SliderModel, {Options, RestOptionsToSet, UserOptions} from './MVP modules/Slider/SliderModel'
 import SliderView from './MVP modules/Slider/SliderView'
 import SliderPresenter from './MVP modules/Slider/SliderPresenter'
 
-import './styles/jquery-slider.scss'
-import './styles/jquery-slider-horizontal.scss'
-import './styles/jquery-slider-vertical.scss'
-import './styles/jquery-slider-range.scss'
-import './styles/jquery-slider-handle.scss'
-import './styles/jquery-slider-tooltip.scss'
+import "./styles/styles"
 
 export interface JQueryElementWithSlider extends JQuery<HTMLElement> {
     slider: (method?: UserOptions | keyof SliderMethods,

@@ -17,6 +17,7 @@ export default class SliderPupPage {
     private _slider: ElementHandle;
     private _range: ElementHandle;
     private _handle: ElementHandle;
+    private _tooltip: ElementHandle = null;
 
     constructor(private _browser: Browser) { }
 
@@ -47,6 +48,10 @@ export default class SliderPupPage {
         this._slider = await this._page.$('.jquery-slider');
         this._range = await this._page.$('.jquery-slider-range');
         this._handle = await this._page.$('.jquery-slider-handle');
+
+        if ( options && options.tooltip ) {
+            this._tooltip = await this._page.$('.jquery-slider-tooltip');
+        }
     }
 
     async setOptions(...options: (UserOptions | RestOptionsToSet)[]){
@@ -55,6 +60,10 @@ export default class SliderPupPage {
             ($(root) as JQueryElementWithSlider).slider('options', ...options);
             // @ts-ignore
         }, this._root, ...options);
+
+        if ( !!(await this.getOptions("tooltip")) ) {
+            this._tooltip = await this._page.$('.jquery-slider-tooltip');
+        } else this._tooltip = null;
     }
 
     async getOptions(...options: (UserOptions | RestOptionsToSet)[]) {
@@ -70,7 +79,8 @@ export default class SliderPupPage {
             root: this._root,
             slider: this._slider,
             range: this._range,
-            handle: this._handle
+            handle: this._handle,
+            tooltip: this._tooltip
         }
     }
 
@@ -86,6 +96,18 @@ export default class SliderPupPage {
         return await this.getCoords(this._handle);
     }
 
+    async getTooltipCoords() {
+        if ( !this._tooltip ) throw new Error("tooltip doesn't set");
+        return await this.getCoords(this._tooltip);
+    }
+
+    async getTooltipValue() {
+        if ( !this._tooltip ) throw new Error("tooltip doesn't set");
+
+        return await this._page.evaluate((tooltip: ElementHandle) => {
+            return (tooltip as unknown as HTMLElement).innerHTML;
+        }, this._tooltip);
+    }
 
     static get timeout() {
         return 50000;

@@ -224,22 +224,14 @@ describe("slider events", () => {
         test("tooltip moves correctly", async () => {
             await sliderPage.setOptions("tooltip", true);
 
-            const getTooltipValue = async () => {
-                return await page.evaluate(() => {
-                    return document.querySelector(".jquery-slider-tooltip").innerHTML;
-                });
-            };
-
-            const tooltip = await page.$(".jquery-slider-tooltip");
-
-            const tooltipCoords = await sliderPage.getCoords(tooltip);
-            const tooltipText = await getTooltipValue();
+            const tooltipCoords = await sliderPage.getTooltipCoords();
+            const tooltipText = await sliderPage.getTooltipValue();
 
             await sliderPage.moveHandleToCoords(handleCoords.left, sliderMiddle.top);
 
             const newHandleCoords = await sliderPage.getHandleCoords();
-            const newTooltipCoords = await sliderPage.getCoords(tooltip);
-            const newTooltipText = await getTooltipValue();
+            const newTooltipCoords = await sliderPage.getTooltipCoords();
+            const newTooltipText = await sliderPage.getTooltipValue();
 
             const handleRangeY = newHandleCoords.top - handleCoords.top;
             const tooltipRangeY = newTooltipCoords.top - tooltipCoords.top;
@@ -447,22 +439,14 @@ describe("slider events", () => {
         test("tooltip moves correctly", async () => {
             await sliderPage.setOptions("tooltip", true);
 
-            const getTooltipValue = async () => {
-                return await page.evaluate(() => {
-                    return document.querySelector(".jquery-slider-tooltip").innerHTML;
-                });
-            };
-
-            const tooltip = await page.$(".jquery-slider-tooltip");
-
-            const tooltipCoords = await sliderPage.getCoords(tooltip);
-            const tooltipText = await getTooltipValue();
+            const tooltipCoords = await sliderPage.getTooltipCoords();
+            const tooltipText = await sliderPage.getTooltipValue();
 
             await sliderPage.moveHandleToCoords(sliderMiddle.left, handleCoords.top);
 
             const newHandleCoords = await sliderPage.getHandleCoords();
-            const newTooltipCoords = await sliderPage.getCoords(tooltip);
-            const newTooltipText = await getTooltipValue();
+            const newTooltipCoords = await sliderPage.getTooltipCoords();
+            const newTooltipText = await sliderPage.getTooltipValue();
 
             const handleRangeX = newHandleCoords.left - handleCoords.left;
             const tooltipRangeX = newTooltipCoords.left - tooltipCoords.left;
