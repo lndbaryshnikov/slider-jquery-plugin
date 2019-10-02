@@ -195,7 +195,7 @@ describe("setOptionsMethod exceptions", () => {
         }).toThrow(error);
     });
 
-    test("throws exceptions when option tooltip is not true or false", () => {
+    test("throws exceptions when option tooltip is not true, false or function", () => {
         expect(( ) => {
             model.setOptions({ tooltip: "true" } as unknown as UserOptions);
         }).toThrow(errors.tooltip.incorrect);
@@ -205,5 +205,25 @@ describe("setOptionsMethod exceptions", () => {
         expect(( ) => {
             model.setOptions("tooltip", 34);
         }).toThrow(errors.tooltip.incorrect);
+    });
+
+    test("throws exceptions when tooltip function is incorrect", () => {
+        expect(( ) => {
+            model.setOptions({ tooltip: () => { console.log(34); } })
+        }).toThrow(errors.tooltip.incorrectFunction);
+
+        expect(( ) => {
+            model.setOptions({ tooltip: () => { return () => 34 } })
+        }).toThrow(errors.tooltip.incorrectFunction);
+
+        model.setOptions();
+
+        expect(( ) => {
+            model.setOptions("tooltip", () => { console.log(34); });
+        }).toThrow(errors.tooltip.incorrectFunction);
+
+        expect(( ) => {
+            model.setOptions("tooltip", () => { return () => 34 });
+        }).toThrow(errors.tooltip.incorrectFunction);
     });
 });

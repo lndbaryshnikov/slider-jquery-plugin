@@ -69,4 +69,12 @@ describe("tooltip works correctly", () => {
         tooltip.setOrientation("horizontal");
         expect(horizontalTooltipOnDom.className).toBe("jquery-slider-tooltip jquery-slider-tooltip-horizontal");
     });
+
+    test("tooltip works with value function", () => {
+        tooltip.destroy();
+
+        tooltip.init(70, "horizontal", (value: number) => value + "$" );
+
+        expect(tooltip.text).toBe("70$");
+    });
 });

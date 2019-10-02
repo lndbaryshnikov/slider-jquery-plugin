@@ -109,7 +109,8 @@ class SliderModel {
             incorrect: "Options are incorrect (option 'step' value should be between 'min' and 'max')"
         },
         tooltip: {
-            incorrect: "Options are incorrect (options 'tooltip' should be boolean true or false)"
+            incorrect: "Options are incorrect (option 'tooltip' should be boolean true or false)",
+            incorrectFunction: "Options are incorrect ('tooltip's function should return string or number)"
         }
     };
 
