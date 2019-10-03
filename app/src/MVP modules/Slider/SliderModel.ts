@@ -17,6 +17,8 @@ export type VerticalClasses = {
     "jquery-slider-handle": string
 }
 
+export type TooltipFunction = (value?: Options["value"]) => string | number;
+
 export type Options = {
     min: number,
     max: number,
@@ -24,7 +26,7 @@ export type Options = {
     value: number,
     orientation: 'horizontal' | 'vertical',
     range: 'min' | 'max' | boolean,
-    tooltip: boolean,
+    tooltip: boolean | TooltipFunction,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -36,7 +38,7 @@ export type UserOptions = {
     value?: number,
     orientation?: 'horizontal' | 'vertical',
     range?: 'min' | 'max' | boolean,
-    tooltip?: boolean,
+    tooltip?: boolean | TooltipFunction,
 
     classes?: {
         "jquery-slider"?: string,
@@ -109,7 +111,7 @@ class SliderModel {
             incorrect: "Options are incorrect (option 'step' value should be between 'min' and 'max')"
         },
         tooltip: {
-            incorrect: "Options are incorrect (option 'tooltip' should be boolean true or false)",
+            incorrect: "Options are incorrect (option 'tooltip' should be boolean true or false, or function)",
             incorrectFunction: "Options are incorrect ('tooltip's function should return string or number)"
         }
     };
@@ -413,10 +415,18 @@ class SliderModel {
                 optionsCopy[option] = restOptions[0] as Options["step"];
 
             } else if ( option === "tooltip" ) {
-                if ( typeof restOptions[0] !== "boolean" ) {
+                if ( typeof restOptions[0] !== "boolean" && typeof restOptions[0] !== "function") {
                   this._throw(errors.tooltip.incorrect);
 
                   return { result: false };
+                }
+
+                if ( typeof restOptions[0] === "function" ) {
+                    const result = (restOptions[0] as TooltipFunction)(this._options.value);
+
+                    if ( typeof result !== "number" && typeof result !== "string" ) {
+                        this._throw(errors.tooltip.incorrectFunction);
+                    }
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["tooltip"];
@@ -558,10 +568,18 @@ class SliderModel {
             return false;
         }
 
-        if ( typeof options.tooltip !== "boolean" ) {
+        if ( typeof options.tooltip !== "boolean" && typeof options.tooltip !== "function") {
             this._throw(errors.tooltip.incorrect);
 
             return false;
+        }
+
+        if ( typeof options.tooltip === "function" ) {
+            const result = options.tooltip(options.value);
+
+            if ( typeof result !== "number" && typeof result !== "string" ) {
+                this._throw(errors.tooltip.incorrectFunction);
+            }
         }
 
         return true;

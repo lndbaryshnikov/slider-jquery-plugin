@@ -1,4 +1,4 @@
-import SliderModel, {Options, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
+import SliderModel, {Options, TooltipFunction, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
 
 describe("setOptionsMethod exceptions", () => {
 
@@ -209,21 +209,21 @@ describe("setOptionsMethod exceptions", () => {
 
     test("throws exceptions when tooltip function is incorrect", () => {
         expect(( ) => {
-            model.setOptions({ tooltip: () => { console.log(34); } })
+            model.setOptions({ tooltip: (() => { console.log(34); }) as unknown as TooltipFunction })
         }).toThrow(errors.tooltip.incorrectFunction);
 
         expect(( ) => {
-            model.setOptions({ tooltip: () => { return () => 34 } })
+            model.setOptions({ tooltip: (() => { return () => 34 }) as unknown as TooltipFunction} )
         }).toThrow(errors.tooltip.incorrectFunction);
 
         model.setOptions();
 
         expect(( ) => {
-            model.setOptions("tooltip", () => { console.log(34); });
+            model.setOptions("tooltip", ( () => { console.log(34);} ) as TooltipFunction );
         }).toThrow(errors.tooltip.incorrectFunction);
 
         expect(( ) => {
-            model.setOptions("tooltip", () => { return () => 34 });
+            model.setOptions("tooltip", ( () => { return () => 34; } ) as unknown as TooltipFunction);
         }).toThrow(errors.tooltip.incorrectFunction);
     });
 });

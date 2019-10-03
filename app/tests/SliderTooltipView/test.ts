@@ -31,9 +31,9 @@ describe("tooltip works correctly", () => {
     test("tooltip's value is correct", () => {
         expect(horizontalTooltipOnDom.innerHTML).toBe("35");
 
-        tooltip.setText("hey");
+        tooltip.setText(23);
 
-        expect(horizontalTooltipOnDom.innerHTML).toBe("hey");
+        expect(horizontalTooltipOnDom.innerHTML).toBe("23");
     });
 
     test("rest methods", () => {

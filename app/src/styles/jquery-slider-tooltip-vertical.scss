@@ -1,13 +1,15 @@
 .jquery-slider-tooltip-vertical {
   top: -8px;
-  left: -50px;
-  width: 35px;
+  right: -2em;
+  width: 2em;
   height: 28px;
+
+  //margin: 0 auto 0 0;
 }
 
 .jquery-slider-tooltip-vertical::after {
   top: 50%;
-  left: 100%;
+  right: 100%;
   margin-top: -4px;
-  border-color: transparent transparent transparent orangered;
+  border-color: transparent orangered transparent transparent;
 }

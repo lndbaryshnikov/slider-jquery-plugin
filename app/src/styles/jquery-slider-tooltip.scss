@@ -6,14 +6,13 @@
     line-height: 28px;
     color: whitesmoke;
 
+    //overflow: visible;
+
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
-
-
-
 
 .jquery-slider-tooltip::after {
     content: "";

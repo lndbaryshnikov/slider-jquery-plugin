@@ -17,7 +17,6 @@ class SliderPresenter {
         this._view.whenValueChanged(this.validateValueCallback());
 
         this._model.whenValueUpdated(this.renderHandlePositionCallback());
-
     }
 
     get view() {
@@ -97,7 +96,8 @@ class SliderPresenter {
             let tooltip: SliderTooltipView | null = null;
 
             if ( options.tooltip ) {
-                this._tooltipView.init(options.value, options.orientation);
+                this._tooltipView.init(options.value, options.orientation,
+                    typeof options.tooltip === "function" ? options.tooltip : null);
 
                 tooltip = this._tooltipView;
             } else if ( this._tooltipView.state.isRendered ) this._tooltipView.destroy();
@@ -121,8 +121,14 @@ class SliderPresenter {
     renderHandlePositionCallback() {
         return () => {
             const value = (this._model.getOptions() as Options).value;
+            const tooltip = (this._model.getOptions() as Options).tooltip;
+
             this._view.updateHandlePosition(value);
-            if ( this._tooltipView.state.isRendered ) this._tooltipView.setText(value);
+            if ( this._tooltipView.state.isRendered ) {
+                this._tooltipView.setText(value,
+                    typeof tooltip === "function" ? tooltip : null
+                );
+            }
         }
     }
 }

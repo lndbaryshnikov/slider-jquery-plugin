@@ -1,3 +1,5 @@
+import {TooltipFunction} from "./Slider/SliderModel";
+
 export default class SliderTooltipView {
     private _text: string | number | null = null;
     private _html: HTMLDivElement;
@@ -23,8 +25,8 @@ export default class SliderTooltipView {
         };
     }
 
-    init(text: string | number, orientation: "horizontal" | "vertical" ) {
-        this.setText(text);
+    init(text: number, orientation: "horizontal" | "vertical", func?: TooltipFunction ) {
+        this.setText(text, func);
         this.setOrientation(orientation);
     }
 
@@ -34,10 +36,12 @@ export default class SliderTooltipView {
         this._root.append(this._html);
     }
 
-    setText(text: string | number) {
-        this._text = text;
+    setText(text: number, func?: TooltipFunction) {
+        if ( func ) {
+            this._text = func(text);
+        } else this._text = text;
 
-        this._html.innerHTML = String(text);
+        this._html.innerHTML = String(this._text);
     }
 
     setOrientation(orientation: "horizontal" | "vertical") {

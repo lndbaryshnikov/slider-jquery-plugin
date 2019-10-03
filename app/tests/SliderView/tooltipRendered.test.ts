@@ -64,6 +64,13 @@ describe("tooltip exists on dom and contains 'value'", () => {
         const defaultsWithAnotherValue = SliderModel.getDefaultOptions("horizontal");
         defaultsWithAnotherValue.value = 70;
 
+        tooltipView.init(defaultsWithAnotherValue.value,
+            defaultsWithTooltipFunction.orientation,
+            defaultsWithTooltipFunction.tooltip
+        );
+
+        view.setOptions(defaultsWithAnotherValue, tooltipView);
+
         expect(tooltip.innerHTML).toBe("70$");
     });
 });
