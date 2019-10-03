@@ -207,8 +207,6 @@ describe("slider events", () => {
 
                 const newHandleCoords = await sliderPage.getHandleCoords();
 
-                console.log(yExpected, newHandleCoords.top);
-
                 expect(newHandleCoords.top).toBe(yExpected);
             };
 
@@ -240,6 +238,26 @@ describe("slider events", () => {
             expect(tooltipCoords.left).toBe(newTooltipCoords.left);
             expect(tooltipText).toBe("0");
             expect(newTooltipText).toBe("50");
+        }, timeout);
+
+        test("tooltip moves correctly when user clicks on slider", async () => {
+            await page.mouse.click(sliderCoords.left + 1, (sliderCoords.top + sliderCoords.height * 0.3));
+
+            let newHandleCoords = await sliderPage.getHandleCoords();
+            let value = await sliderPage.getOptions("value");
+
+            expect(value).toBe(70);
+            expect(Math.round(newHandleCoords.top))
+                .toBe(Math.round(sliderCoords.top + sliderCoords.height * 0.3 - handleCoords.height / 2));
+
+            await page.mouse.click(sliderCoords.left, sliderMiddle.top);
+
+            newHandleCoords = await sliderPage.getHandleCoords();
+            value = await sliderPage.getOptions("value");
+
+            expect(value).toBe(50);
+            expect(Math.round(newHandleCoords.top))
+                .toBe(Math.round(sliderMiddle.top - handleCoords.height / 2));
         }, timeout);
     });
 
@@ -455,6 +473,26 @@ describe("slider events", () => {
             expect(tooltipCoords.top).toBe(newTooltipCoords.top);
             expect(tooltipText).toBe("0");
             expect(newTooltipText).toBe("50");
+        }, timeout);
+
+        test("handle moves correctly when user clicks on slider", async () => {
+            await page.mouse.click((sliderCoords.left + sliderCoords.width * 0.3), sliderCoords.top + 1);
+
+            let newHandleCoords = await sliderPage.getHandleCoords();
+            let value = await sliderPage.getOptions("value");
+
+            expect(value).toBe(30);
+            expect(Math.round(newHandleCoords.left))
+                .toBe(Math.round(sliderCoords.left + sliderCoords.width * 0.3 - handleCoords.width / 2));
+
+            await page.mouse.click(sliderMiddle.left, sliderCoords.top);
+
+            newHandleCoords = await sliderPage.getHandleCoords();
+            value = await sliderPage.getOptions("value");
+
+            expect(value).toBe(50);
+            expect(Math.round(newHandleCoords.left))
+                .toBe(Math.round(sliderMiddle.left - handleCoords.width / 2));
         }, timeout);
     });
 });

@@ -27,6 +27,7 @@ export default class SliderView {
     constructor() {
         this._setSliderElements();
         this._setHandleMovingHandler();
+        this._setSliderClickHandler();
     }
 
     whenValueChanged(callback: (value: Options["value"]) => void): void {
@@ -162,6 +163,23 @@ export default class SliderView {
                 return false;
             };
 
+    }
+
+    private _setSliderClickHandler() {
+        this._html.wrapper.onclick = (clickEvent: MouseEvent) => {
+            let positionToMove: number;
+
+            if ( this._options.orientation === "horizontal" ) {
+                positionToMove = clickEvent.pageX - this._getCoords().wrapper.left;
+            }
+
+            if ( this._options.orientation === "vertical" ) {
+                positionToMove = this._getCoords().wrapper.height -
+                    (clickEvent.pageY - this._getCoords().wrapper.top);
+            }
+
+            this._refreshValue(positionToMove);
+        }
     }
 
     private _renderHandlePosition() {
