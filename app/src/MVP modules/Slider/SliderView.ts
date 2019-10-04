@@ -22,6 +22,86 @@ export default class SliderView {
         rendered: false
     };
 
+    private _eventListeners = {
+        handleMoving: {
+            handleMouseDown: (mouseDownEvent: MouseEvent) => {
+                const handleShift = this._countHandleShift(mouseDownEvent);
+
+                const mouseMoveHandler = (mouseMoveEvent: MouseEvent) => {
+                    if ( this._options.orientation === 'horizontal' ) {
+                        const shiftX = handleShift.x;
+
+                        let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
+
+                        if (newLeft < 0 - this._getCoords().handle.width / 2) {
+                            newLeft = 0 - this._getCoords().handle.width / 2;
+                        }
+
+                        const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
+
+                        if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
+                            newLeft = rightEdge + this._getCoords().handle.width / 2;
+                        }
+
+                        const currentHandlePositionInPercents = newLeft + this._getCoords().handle.width / 2;
+
+                        this._refreshValue(currentHandlePositionInPercents);
+                    }
+
+                    if ( this._options.orientation === 'vertical' ) {
+                        const shiftY = handleShift.y;
+
+                        let newTop = mouseMoveEvent.pageY - shiftY - this._getCoords().wrapper.top;
+
+                        if (newTop < 0 - this._getCoords().handle.height / 2) {
+                            newTop = 0 - this._getCoords().handle.height / 2;
+                        }
+
+                        const rightEdge = this._getCoords().wrapper.height - this._getCoords().handle.height;
+
+                        if (newTop > rightEdge + this._getCoords().handle.height / 2) {
+                            newTop = rightEdge + this._getCoords().handle.height / 2;
+                        }
+
+                        const currentHandlePositionInPercents = this._getCoords().wrapper.height
+                            - newTop - this._getCoords().handle.height / 2;
+
+                        this._refreshValue(currentHandlePositionInPercents);
+                    }
+                };
+
+                document.addEventListener("mousemove", mouseMoveHandler);
+
+                const mouseUpHandler = () => {
+                    document.removeEventListener("mousemove", mouseMoveHandler);
+                    document.removeEventListener("mousemove", mouseUpHandler);
+                };
+
+                document.addEventListener("mouseup", mouseUpHandler);
+
+                return false;
+            },
+            handleOnDragStart: () => {
+                return false;
+            }
+        },
+        sliderClick: (clickEvent: MouseEvent) => {
+            if ( clickEvent.target === this._html.handle ) return;
+            let positionToMove: number;
+
+            if ( this._options.orientation === "horizontal" ) {
+                positionToMove = clickEvent.pageX - this._getCoords().wrapper.left;
+            }
+
+            if ( this._options.orientation === "vertical" ) {
+                positionToMove = this._getCoords().wrapper.height -
+                    (clickEvent.pageY - this._getCoords().wrapper.top);
+            }
+
+            this._refreshValue(positionToMove);
+        }
+    };
+
     private _valueChangedSubject = new Observer();
 
     constructor() {
@@ -76,6 +156,7 @@ export default class SliderView {
         this._options = options;
 
         this._setSliderClasses();
+        this._setTransition();
         this._setHandlePositionInPixels();
 
         if ( tooltip ) {
@@ -104,82 +185,19 @@ export default class SliderView {
         this._renderRange();
     }
 
+    // private _setHandlers() {
+    //     this._setHandleMovingHandler();
+    //     this._setSliderClickHandler();
+    // }
+
     private _setHandleMovingHandler() {
-            //Drag'n'Drop code
-            this._html.handle.onmousedown = (mouseDownEvent: MouseEvent) => {
-                const handleShift = this._countHandleShift(mouseDownEvent);
+        this._html.wrapper.addEventListener("mousedown", this._eventListeners.handleMoving.handleMouseDown);
 
-                    document.onmousemove = (mouseMoveEvent: MouseEvent) => {
-                        if ( this._options.orientation === 'horizontal' ) {
-                            const shiftX = handleShift.x;
-
-                            let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
-
-                            if (newLeft < 0 - this._getCoords().handle.width / 2) {
-                                newLeft = 0 - this._getCoords().handle.width / 2;
-                            }
-
-                            const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
-
-                            if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
-                                newLeft = rightEdge + this._getCoords().handle.width / 2;
-                            }
-
-                            const currentHandlePositionInPercents = newLeft + this._getCoords().handle.width / 2;
-
-                            this._refreshValue(currentHandlePositionInPercents);
-                        }
-
-                        if ( this._options.orientation === 'vertical' ) {
-                            const shiftY = handleShift.y;
-
-                            let newTop = mouseMoveEvent.pageY - shiftY - this._getCoords().wrapper.top;
-
-                            if (newTop < 0 - this._getCoords().handle.height / 2) {
-                                newTop = 0 - this._getCoords().handle.height / 2;
-                            }
-
-                            const rightEdge = this._getCoords().wrapper.height - this._getCoords().handle.height;
-
-                            if (newTop > rightEdge + this._getCoords().handle.height / 2) {
-                                newTop = rightEdge + this._getCoords().handle.height / 2;
-                            }
-
-                            const currentHandlePositionInPercents = this._getCoords().wrapper.height
-                                - newTop - this._getCoords().handle.height / 2;
-
-                            this._refreshValue(currentHandlePositionInPercents);
-                        }
-                    };
-
-                document.onmouseup = () => {
-                    document.onmousemove = document.onmouseup = null;
-                };
-
-                return false;
-            };
-
-            this._html.handle.ondragstart = () => {
-                return false;
-            };
-
+        this._html.handle.ondragstart = this._eventListeners.handleMoving.handleOnDragStart;
     }
 
     private _setSliderClickHandler() {
-        this._html.wrapper.onclick = (clickEvent: MouseEvent) => {
-            let positionToMove: number;
-
-            if ( this._options.orientation === "horizontal" ) {
-                positionToMove = clickEvent.pageX - this._getCoords().wrapper.left;
-            }
-
-            if ( this._options.orientation === "vertical" ) {
-                positionToMove = this._getCoords().wrapper.height -
-                    (clickEvent.pageY - this._getCoords().wrapper.top);
-            }
-
-            this._refreshValue(positionToMove);
-        }
+        this._html.wrapper.addEventListener("click", this._eventListeners.sliderClick);
     }
 
     private _renderHandlePosition() {
@@ -240,6 +258,29 @@ export default class SliderView {
         $(this._html.handle).addClass(this._options.classes[handle]);
 
         this._classesHash = $.extend({}, this._options.classes);
+    }
+
+    private _setTransition() {
+        const animate = this._options.animate;
+
+        const handleProp = this._options.orientation === "horizontal" ? "left" : "bottom";
+        const rangeProp = this._options.orientation === "horizontal" ? "width" : "height";
+
+        let transitionMs: number = animate === "fast" ? 500 :
+            animate === "slow" ? 1000 : typeof animate === "number" ? animate : 0;
+
+        this._html.handle.style.transition = `${handleProp} ${transitionMs}ms`;
+        this._html.range.style.transition = `${rangeProp} ${transitionMs}ms`;
+
+        this._html.handle.addEventListener("mousedown", () => {
+            this._html.handle.style.transition = "0ms";
+            this._html.range.style.transition = "0ms";
+        });
+
+        document.addEventListener("mouseup", () => {
+            this._html.handle.style.transition = `${handleProp} ${transitionMs}ms`;
+            this._html.range.style.transition = `${rangeProp} ${transitionMs}ms`;
+        });
     }
 
     private _setHandlePositionInPixels() {

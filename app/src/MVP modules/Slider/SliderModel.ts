@@ -27,6 +27,7 @@ export type Options = {
     orientation: 'horizontal' | 'vertical',
     range: 'min' | 'max' | boolean,
     tooltip: boolean | TooltipFunction,
+    animate: "slow" | "fast" | false | number
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -39,6 +40,7 @@ export type UserOptions = {
     orientation?: 'horizontal' | 'vertical',
     range?: 'min' | 'max' | boolean,
     tooltip?: boolean | TooltipFunction,
+    animate?: "slow" | "fast" | false | number
 
     classes?: {
         "jquery-slider"?: string,
@@ -113,6 +115,9 @@ class SliderModel {
         tooltip: {
             incorrect: "Options are incorrect (option 'tooltip' should be boolean true or false, or function)",
             incorrectFunction: "Options are incorrect ('tooltip's function should return string or number)"
+        },
+        animate: {
+            incorrect: "Options are incorrect (option 'animate' should be 'false', 'slow', 'fast' or number)"
         }
     };
 
@@ -166,6 +171,7 @@ class SliderModel {
             orientation: orientation,
             range: false,
             tooltip: false,
+            animate: "fast",
 
             classes: classes
         };
@@ -426,10 +432,21 @@ class SliderModel {
 
                     if ( typeof result !== "number" && typeof result !== "string" ) {
                         this._throw(errors.tooltip.incorrectFunction);
+
+                        return { result: false };
                     }
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["tooltip"];
+            } else if ( option === "animate" ) {
+              if ( restOptions[0] !== false && restOptions[0] !== "slow" && restOptions[0] !== "fast"
+              && typeof restOptions[0] !== "number" ) {
+                  this._throw(errors.animate.incorrect);
+
+                  return { result: false };
+              }
+
+                optionsCopy[option] = restOptions[0] as Options["animate"];
             } else {
                 let optionObj: any = {};
                 optionObj[option] = restOptions[0];
@@ -579,7 +596,16 @@ class SliderModel {
 
             if ( typeof result !== "number" && typeof result !== "string" ) {
                 this._throw(errors.tooltip.incorrectFunction);
+
+                return false;
             }
+        }
+
+        if ( options.animate !== false && options.animate !== "slow" && options.animate !== "fast"
+            && typeof options.animate !== "number" ) {
+            this._throw(errors.animate.incorrect);
+
+            return false;
         }
 
         return true;

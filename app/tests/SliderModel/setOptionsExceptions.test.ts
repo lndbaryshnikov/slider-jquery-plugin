@@ -226,4 +226,24 @@ describe("setOptionsMethod exceptions", () => {
             model.setOptions("tooltip", ( () => { return () => 34; } ) as unknown as TooltipFunction);
         }).toThrow(errors.tooltip.incorrectFunction);
     });
+
+    test("throws exceptions when 'animate' property is incorrect", () => {
+        expect(( ) => {
+            model.setOptions({ animate: "slowly" as unknown as Options["animate"] })
+        }).toThrow(errors.animate.incorrect);
+
+        expect(( ) => {
+            model.setOptions({ animate: true as unknown as Options["animate"] } )
+        }).toThrow(errors.animate.incorrect);
+
+        model.setOptions();
+
+        expect(( ) => {
+            model.setOptions("animate", "slowly" as unknown as Options["animate"] );
+        }).toThrow(errors.animate.incorrect);
+
+        expect(( ) => {
+            model.setOptions("animate", true as unknown as Options["animate"]);
+        }).toThrow(errors.animate.incorrect);
+    });
 });

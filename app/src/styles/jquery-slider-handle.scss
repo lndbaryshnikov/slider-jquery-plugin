@@ -1,6 +1,19 @@
 .jquery-slider-handle {
   background-color: blueviolet;
   border-radius: 30%;
+
+  //transition: all 1s;
+  //transition: bottom 500ms;
+
+
+}
+
+.jquery-slider-handle:active {
+  background-color: blueviolet;
+  border-radius: 30%;
+
+  //transition: all 0s;
+
 }
 
 .jquery-slider-horizontal .jquery-slider-handle {
@@ -13,4 +26,6 @@
   height: 1em;
   width: 1.4em;
   left: -23%;
+
+
 }

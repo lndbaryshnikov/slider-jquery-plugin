@@ -29,7 +29,7 @@ describe("slider events", () => {
 
     describe("vertical slider events", () => {
         beforeEach(async () => {
-            await sliderPage.createSlider({ orientation: "vertical" });
+            await sliderPage.createSlider({ orientation: "vertical", animate: false });
 
             sliderCoords = await sliderPage.getSliderCoords();
             rangeCoords = await sliderPage.getRangeCoords();
@@ -259,11 +259,19 @@ describe("slider events", () => {
             expect(Math.round(newHandleCoords.top))
                 .toBe(Math.round(sliderMiddle.top - handleCoords.height / 2));
         }, timeout);
+
+        test("handle doesn't move when user click on it, not on slider's scale", async () => {
+            await page.mouse.click(handleCoords.left + 1, handleCoords.top + 1);
+
+            const newHandleCoords = await sliderPage.getHandleCoords();
+
+            expect(newHandleCoords).toEqual(handleCoords);
+        }, timeout);
     });
 
     describe("horizontal slider events", () => {
         beforeEach(async () => {
-            await sliderPage.createSlider();
+            await sliderPage.createSlider({ animate: false });
 
             sliderCoords = await sliderPage.getSliderCoords();
             rangeCoords = await sliderPage.getRangeCoords();
@@ -493,6 +501,14 @@ describe("slider events", () => {
             expect(value).toBe(50);
             expect(Math.round(newHandleCoords.left))
                 .toBe(Math.round(sliderMiddle.left - handleCoords.width / 2));
+        }, timeout);
+
+        test("handle doesn't move when user click on it, not on slider's scale", async () => {
+            await page.mouse.click(handleCoords.right - 1, handleCoords.top + 1);
+
+            const newHandleCoords = await sliderPage.getHandleCoords();
+
+            expect(newHandleCoords).toEqual(handleCoords);
         }, timeout);
     });
 });
