@@ -14,7 +14,7 @@ describe("tooltip works correctly", () => {
         document.body.append(root);
 
         tooltip = new SliderTooltipView();
-        tooltip.init(35, "horizontal");
+        tooltip.setOptions(35, "horizontal");
         tooltip.render(root);
 
         horizontalTooltipOnDom = document.querySelector(".jquery-slider-tooltip");
@@ -73,7 +73,7 @@ describe("tooltip works correctly", () => {
     test("tooltip works with value function", () => {
         tooltip.destroy();
 
-        tooltip.init(70, "horizontal", (value: number) => value + "$" );
+        tooltip.setOptions(70, "horizontal", (value: number) => value + "$" );
 
         expect(tooltip.text).toBe("70$");
     });

@@ -1,6 +1,8 @@
 import SliderView from './SliderView';
 import SliderModel, {Options, UserOptions} from "./SliderModel";
 import SliderTooltipView from "../SliderTooltipView";
+import SliderLabelsView, {LabelOptions} from "../SliderLabelsView";
+import SliderPluginsFactory from "../SliderPluginsFactory";
 
 class SliderPresenter {
     private _data: { setUp: boolean; rendered: boolean; } = {
@@ -8,7 +10,12 @@ class SliderPresenter {
         rendered: false
     };
 
-    private _tooltipView: SliderTooltipView = new SliderTooltipView();
+    private _pluginsFactory = new SliderPluginsFactory();
+
+    private _plugins = {
+        tooltipView: this._pluginsFactory.createView("tooltip") as SliderTooltipView,
+        labelsView: this._pluginsFactory.createView("labels") as SliderLabelsView
+    };
 
     constructor(private _view: SliderView, private _model: SliderModel) {
         this._model.whenOptionsSet(this.setOptionsToViewCallback());
@@ -62,6 +69,17 @@ class SliderPresenter {
 
         this._view.render(root);
 
+        const tooltipView = this._plugins.tooltipView;
+        const labelsView = this._plugins.labelsView;
+
+        if ( labelsView.state.isSet ) {
+            this._view.renderPlugin("labels", labelsView);
+        }
+
+        if ( tooltipView.state.isSet ) {
+            this._view.renderPlugin("tooltip", tooltipView);
+        }
+
         this._data.rendered = true;
     }
 
@@ -96,13 +114,39 @@ class SliderPresenter {
             let tooltip: SliderTooltipView | null = null;
 
             if ( options.tooltip ) {
-                this._tooltipView.init(options.value, options.orientation,
+                this._plugins.tooltipView.setOptions(options.value, options.orientation,
                     typeof options.tooltip === "function" ? options.tooltip : null);
 
-                tooltip = this._tooltipView;
-            } else if ( this._tooltipView.state.isRendered ) this._tooltipView.destroy();
+                tooltip = this._plugins.tooltipView;
+            } else if ( this._plugins.tooltipView.state.isRendered ) this._plugins.tooltipView.destroy();
 
             this._view.setOptions(options, tooltip);
+
+            const tooltipView = this._plugins.tooltipView;
+            const labelsView = this._plugins.labelsView;
+
+            if ( options.labels || options.pips ) {
+                const labels = typeof options.labels === "function" ? true : options.labels;
+
+                const labelsOptions: LabelOptions = {
+                    labels: labels,
+                    pips: options.pips,
+                    orientation: options.orientation,
+                    min: options.min,
+                    max: options.max,
+                    step: options.step,
+                };
+
+                if ( typeof options.labels === "function" ) {
+                    labelsOptions.valueFunc = options.labels;
+                }
+
+                labelsView.setOptions(labelsOptions);
+            } else if ( !options.labels && !options.pips ) {
+                if ( labelsView.state.isRendered ) {
+                    this._view.destroyPlugin("labels", labelsView);
+                }
+            }
         }
     }
 
@@ -124,8 +168,8 @@ class SliderPresenter {
             const tooltip = (this._model.getOptions() as Options).tooltip;
 
             this._view.updateHandlePosition(value);
-            if ( this._tooltipView.state.isRendered ) {
-                this._tooltipView.setText(value,
+            if ( this._plugins.tooltipView.state.isRendered ) {
+                this._plugins.tooltipView.setText(value,
                     typeof tooltip === "function" ? tooltip : null
                 );
             }

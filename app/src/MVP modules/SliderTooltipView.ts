@@ -1,4 +1,4 @@
-import {TooltipFunction} from "./Slider/SliderModel";
+import {ValueFunction} from "./Slider/SliderModel";
 
 export default class SliderTooltipView {
     private _text: string | number | null = null;
@@ -20,12 +20,12 @@ export default class SliderTooltipView {
 
     get state() {
         return {
-            isRendered: (() => !!this._root)(),
-            isSet: (() => !!(this._root && this._orientation && this._text))()
+            isRendered: !!this._root,
+            isSet: !!(this._orientation && this._text)
         };
     }
 
-    init(text: number, orientation: "horizontal" | "vertical", func?: TooltipFunction ) {
+    setOptions(text: number, orientation: "horizontal" | "vertical", func?: ValueFunction ) {
         this.setText(text, func);
         this.setOrientation(orientation);
     }
@@ -36,7 +36,7 @@ export default class SliderTooltipView {
         this._root.append(this._html);
     }
 
-    setText(text: number, func?: TooltipFunction) {
+    setText(text: number, func?: ValueFunction) {
         if ( func ) {
             this._text = func(text);
         } else this._text = text;
@@ -63,7 +63,7 @@ export default class SliderTooltipView {
     }
 
     destroy() {
-        this.remove();
+        if ( this.state.isRendered ) this.remove();
         this.cleanTextField();
         this._orientation = null;
         this._root = null;

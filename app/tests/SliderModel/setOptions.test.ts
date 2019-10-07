@@ -184,7 +184,7 @@ describe("When options object is passed", () => {
     });
 
     // test("value sets correctly when options are not default (equals 'min')", () => {
-    //     model.init( { min: 34, max: 156 } );
+    //     model.setOptions( { min: 34, max: 156 } );
     //
     //     expect(model.getOptions("value")).toBe(34);
     // });

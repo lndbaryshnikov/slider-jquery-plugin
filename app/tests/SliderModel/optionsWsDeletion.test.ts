@@ -1,6 +1,6 @@
 import SliderModel, {Options} from "../../src/MVP modules/Slider/SliderModel";
 
-test('Model\'s init deletes whitespaces from classes', () => {
+test('Model\'s setOptions deletes whitespaces from classes', () => {
     const model = new SliderModel();
 
     model.setOptions({

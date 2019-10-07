@@ -3,6 +3,7 @@ import {countShift} from "../../functions/common/countShift";
 import getCoords from "../../functions/common/getCoords";
 import Observer from "../Observer";
 import SliderTooltipView from "../SliderTooltipView";
+import SliderLabelsView from "../SliderLabelsView";
 
 interface Html {
     wrapper: HTMLDivElement | null;
@@ -166,7 +167,7 @@ export default class SliderView {
 
         } else this._destroyTooltip();
 
-        this._renderOptions();
+        if ( this._data.rendered ) this._renderOptions();
     }
 
     updateHandlePosition(value: Options["value"]) {
@@ -184,11 +185,6 @@ export default class SliderView {
 
         this._renderRange();
     }
-
-    // private _setHandlers() {
-    //     this._setHandleMovingHandler();
-    //     this._setSliderClickHandler();
-    // }
 
     private _setHandleMovingHandler() {
         this._html.wrapper.addEventListener("mousedown", this._eventListeners.handleMoving.handleMouseDown);
@@ -266,8 +262,8 @@ export default class SliderView {
         const handleProp = this._options.orientation === "horizontal" ? "left" : "bottom";
         const rangeProp = this._options.orientation === "horizontal" ? "width" : "height";
 
-        let transitionMs: number = animate === "fast" ? 500 :
-            animate === "slow" ? 1000 : typeof animate === "number" ? animate : 0;
+        let transitionMs: number = animate === "fast" ? 300 :
+            animate === "slow" ? 700 : typeof animate === "number" ? animate : 0;
 
         this._html.handle.style.transition = `${handleProp} ${transitionMs}ms`;
         this._html.range.style.transition = `${rangeProp} ${transitionMs}ms`;
@@ -387,6 +383,18 @@ export default class SliderView {
         if ( this._tooltip ) {
             this._tooltip.destroy();
             this._tooltip = null;
+        }
+    }
+
+    renderPlugin(plugin: string, pluginView: SliderLabelsView | SliderTooltipView) {
+        if ( plugin === "tooltip" || plugin === "labels" ) {
+            pluginView.render(this._html.wrapper);
+        }
+    }
+
+    destroyPlugin(plugin: "labels" | "tooltip", labelsView: SliderLabelsView | SliderTooltipView) {
+        if ( plugin === "labels" || plugin === "tooltip" ) {
+            labelsView.destroy();
         }
     }
 }

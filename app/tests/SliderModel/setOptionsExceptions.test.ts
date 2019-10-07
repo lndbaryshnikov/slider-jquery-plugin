@@ -1,4 +1,4 @@
-import SliderModel, {Options, TooltipFunction, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
+import SliderModel, {Options, ValueFunction, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
 
 describe("setOptionsMethod exceptions", () => {
 
@@ -209,21 +209,21 @@ describe("setOptionsMethod exceptions", () => {
 
     test("throws exceptions when tooltip function is incorrect", () => {
         expect(( ) => {
-            model.setOptions({ tooltip: (() => { console.log(34); }) as unknown as TooltipFunction })
+            model.setOptions({ tooltip: (() => { console.log(34); }) as unknown as ValueFunction })
         }).toThrow(errors.tooltip.incorrectFunction);
 
         expect(( ) => {
-            model.setOptions({ tooltip: (() => { return () => 34 }) as unknown as TooltipFunction} )
+            model.setOptions({ tooltip: (() => { return () => 34 }) as unknown as ValueFunction} )
         }).toThrow(errors.tooltip.incorrectFunction);
 
         model.setOptions();
 
         expect(( ) => {
-            model.setOptions("tooltip", ( () => { console.log(34);} ) as TooltipFunction );
+            model.setOptions("tooltip", ( () => { console.log(34);} ) as ValueFunction );
         }).toThrow(errors.tooltip.incorrectFunction);
 
         expect(( ) => {
-            model.setOptions("tooltip", ( () => { return () => 34; } ) as unknown as TooltipFunction);
+            model.setOptions("tooltip", ( () => { return () => 34; } ) as unknown as ValueFunction);
         }).toThrow(errors.tooltip.incorrectFunction);
     });
 
@@ -245,5 +245,33 @@ describe("setOptionsMethod exceptions", () => {
         expect(( ) => {
             model.setOptions("animate", true as unknown as Options["animate"]);
         }).toThrow(errors.animate.incorrect);
+    });
+
+    test("throws exceptions when 'labels' or 'pips' are incorrect", () => {
+        expect(( ) => {
+            model.setOptions({ pips: 34 as unknown as true })
+        }).toThrow(errors.pips.incorrect);
+
+        expect(( ) => {
+            model.setOptions({ pips: true , labels: "false" as unknown as Options["labels"] } )
+        }).toThrow(errors.labels.incorrect);
+
+        expect(( ) => {
+            model.setOptions({ pips: true , labels: ((value: number) => {}) as unknown as Options["labels"] } )
+        }).toThrow(errors.labels.incorrectFunction);
+
+        model.setOptions();
+
+        expect(( ) => {
+            model.setOptions("pips", "each" as unknown as Options["pips"] );
+        }).toThrow(errors.pips.incorrect);
+
+        expect(( ) => {
+            model.setOptions("labels", "small" as unknown as Options["labels"]);
+        }).toThrow(errors.labels.incorrect);
+
+        expect(( ) => {
+            model.setOptions("labels", ((value: number) => true ) as unknown as Options["labels"]);
+        }).toThrow(errors.labels.incorrectFunction);
     });
 });

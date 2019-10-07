@@ -11,11 +11,10 @@ describe("tooltip exists on dom and contains 'value'", () => {
 
     beforeEach(() => {
         view = new SliderView();
-
     });
 
     test("tooltip rendered correctly", () => {
-        tooltipView.init(
+        tooltipView.setOptions(
             defaultsWithTooltip.value,
             defaultsWithTooltip.orientation,
         );
@@ -35,7 +34,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         const defaultsWIthAnotherValue = SliderModel.getDefaultOptions("horizontal");
         defaultsWIthAnotherValue.value = 50;
 
-        tooltipView.init(defaultsWIthAnotherValue.value,
+        tooltipView.setOptions(defaultsWIthAnotherValue.value,
             defaultsWithTooltip.orientation);
 
         view.setOptions(defaultsWIthAnotherValue, tooltipView);
@@ -47,7 +46,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         const defaultsWithTooltipFunction = SliderModel.getDefaultOptions("horizontal");
         defaultsWithTooltipFunction.tooltip = ( value: number ) => value + "$";
 
-        tooltipView.init(
+        tooltipView.setOptions(
             defaultsWithTooltipFunction.value,
             defaultsWithTooltipFunction.orientation,
             defaultsWithTooltipFunction.tooltip
@@ -64,7 +63,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         const defaultsWithAnotherValue = SliderModel.getDefaultOptions("horizontal");
         defaultsWithAnotherValue.value = 70;
 
-        tooltipView.init(defaultsWithAnotherValue.value,
+        tooltipView.setOptions(defaultsWithAnotherValue.value,
             defaultsWithTooltipFunction.orientation,
             defaultsWithTooltipFunction.tooltip
         );

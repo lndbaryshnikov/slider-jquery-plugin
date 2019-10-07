@@ -17,7 +17,7 @@ export type VerticalClasses = {
     "jquery-slider-handle": string
 }
 
-export type TooltipFunction = (value?: Options["value"]) => string | number;
+export type ValueFunction = (value?: Options["value"]) => string | number;
 
 export type Options = {
     min: number,
@@ -26,8 +26,10 @@ export type Options = {
     value: number,
     orientation: 'horizontal' | 'vertical',
     range: 'min' | 'max' | boolean,
-    tooltip: boolean | TooltipFunction,
-    animate: "slow" | "fast" | false | number
+    tooltip: boolean | ValueFunction,
+    animate: "slow" | "fast" | false | number,
+    labels: true | false | ValueFunction,
+    pips: boolean,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -39,8 +41,10 @@ export type UserOptions = {
     value?: number,
     orientation?: 'horizontal' | 'vertical',
     range?: 'min' | 'max' | boolean,
-    tooltip?: boolean | TooltipFunction,
-    animate?: "slow" | "fast" | false | number
+    tooltip?: boolean | ValueFunction,
+    animate?: "slow" | "fast" | false | number,
+    labels?: true | false | ValueFunction,
+    pips?: boolean,
 
     classes?: {
         "jquery-slider"?: string,
@@ -118,6 +122,14 @@ class SliderModel {
         },
         animate: {
             incorrect: "Options are incorrect (option 'animate' should be 'false', 'slow', 'fast' or number)"
+        },
+        labels: {
+            incorrect: "Options are incorrect (option 'labels' can only be true false, " +
+                "or function returning string or number)",
+            incorrectFunction: "Options are incorrect ('labels' function should return string or number)"
+        },
+        pips: {
+            incorrect: "Options are incorrect (option 'pips' should be true or false)"
         }
     };
 
@@ -172,6 +184,8 @@ class SliderModel {
             range: false,
             tooltip: false,
             animate: "fast",
+            pips: false,
+            labels: false,
 
             classes: classes
         };
@@ -428,7 +442,7 @@ class SliderModel {
                 }
 
                 if ( typeof restOptions[0] === "function" ) {
-                    const result = (restOptions[0] as TooltipFunction)(this._options.value);
+                    const result = (restOptions[0] as ValueFunction)(this._options.value);
 
                     if ( typeof result !== "number" && typeof result !== "string" ) {
                         this._throw(errors.tooltip.incorrectFunction);
@@ -447,6 +461,34 @@ class SliderModel {
               }
 
                 optionsCopy[option] = restOptions[0] as Options["animate"];
+            } else if ( option === "labels" ) {
+                if ( typeof restOptions[0] !== "boolean" && typeof restOptions[0] !== "function") {
+                    this._throw(errors.labels.incorrect);
+
+                    return { result: false };
+                }
+
+                if ( typeof restOptions[0] === "function") {
+                    const result = (restOptions[0] as ValueFunction)(this._options.value);
+
+                    if ( typeof result !== "string" && typeof result !== "number" ) {
+                        this._throw(errors.labels.incorrectFunction);
+
+                        return { result: false };
+                    }
+                }
+
+                optionsCopy[option] = restOptions[0] as Options["labels"];
+
+            } else if ( option === "pips" ) {
+                if ( typeof restOptions[0] !== "boolean" ) {
+                    this._throw(errors.pips.incorrect);
+
+                    return { result: false };
+                }
+
+                optionsCopy[option] = restOptions[0] as Options["pips"];
+
             } else {
                 let optionObj: any = {};
                 optionObj[option] = restOptions[0];
@@ -606,6 +648,27 @@ class SliderModel {
             this._throw(errors.animate.incorrect);
 
             return false;
+        }
+
+        if ( typeof options.pips !== "boolean" ) {
+            this._throw(errors.pips.incorrect);
+
+            return false;
+        }
+
+        if ( typeof options.labels !== "function" && typeof options.labels !== "boolean" ) {
+            this._throw(errors.labels.incorrect);
+
+            return false;
+        }
+
+        if ( typeof options.labels === "function" ) {
+            const result = options.labels(options.value);
+            if ( typeof result !== "string" && typeof result !== "number" ) {
+                this._throw(errors.labels.incorrectFunction);
+
+                return false;
+            }
         }
 
         return true;
