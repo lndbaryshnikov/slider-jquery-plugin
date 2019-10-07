@@ -142,6 +142,8 @@ class SliderPresenter {
                 }
 
                 labelsView.setOptions(labelsOptions);
+
+                if ( this._data.rendered ) this._view.renderPlugin("labels", labelsView);
             } else if ( !options.labels && !options.pips ) {
                 if ( labelsView.state.isRendered ) {
                     this._view.destroyPlugin("labels", labelsView);

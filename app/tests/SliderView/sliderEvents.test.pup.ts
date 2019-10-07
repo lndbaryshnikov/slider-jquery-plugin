@@ -267,6 +267,33 @@ describe("slider events", () => {
 
             expect(newHandleCoords).toEqual(handleCoords);
         }, timeout);
+
+        test("labels coords are right", async () => {
+            await sliderPage.setOptions({
+                labels: true,
+                pips: true,
+                step: 10
+            });
+
+            for ( let X = 0, label = 1; X <= 1; X += 0.1, label++ ) {
+                await sliderPage
+                    .moveHandleToCoords(handleCoords.left, sliderCoords.top + sliderCoords.height * (1 - X));
+
+                const newHandleCoords = await sliderPage.getHandleCoords();
+                const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
+
+                const labelCoords = await sliderPage
+                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+
+
+                const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
+
+                const pipMiddle = labelCoords.pip.top + labelCoords.pip.height / 2;
+
+                expect(labelMiddle).toBe(handleMiddle);
+                expect(pipMiddle).toBe(handleMiddle);
+            }
+        }, timeout);
     });
 
     describe("horizontal slider events", () => {
@@ -509,6 +536,32 @@ describe("slider events", () => {
             const newHandleCoords = await sliderPage.getHandleCoords();
 
             expect(newHandleCoords).toEqual(handleCoords);
+        }, timeout);
+
+        test("labels coords are right", async () => {
+            await sliderPage.setOptions({
+                labels: true,
+                pips: true,
+                step: 10
+            });
+
+            for ( let X = 0, label = 1; X <= 1; X += 0.1, label++ ) {
+                await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * X, handleCoords.top);
+
+                const newHandleCoords = await sliderPage.getHandleCoords();
+                const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
+
+                const labelCoords = await sliderPage
+                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+
+
+                const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
+
+                const pipMiddle = labelCoords.pip.left + labelCoords.pip.width / 2;
+
+                expect(labelMiddle).toBe(handleMiddle);
+                expect(pipMiddle).toBe(handleMiddle);
+            }
         }, timeout);
     });
 });

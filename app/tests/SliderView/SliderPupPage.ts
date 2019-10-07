@@ -18,6 +18,7 @@ export default class SliderPupPage {
     private _range: ElementHandle;
     private _handle: ElementHandle;
     private _tooltip: ElementHandle = null;
+    private _labels: ElementHandle[];
 
     constructor(private _browser: Browser) { }
 
@@ -82,6 +83,44 @@ export default class SliderPupPage {
             handle: this._handle,
             tooltip: this._tooltip
         }
+    }
+
+    async getLabelData(data: "classes" | "coords", numberOfLabel: number) {
+        return await this._page.evaluate((data: string, LabelNumber: number) => {
+            const labels = document.querySelectorAll(".jquery-slider-label");
+
+            const labelNeeded = labels[LabelNumber - 1];
+
+            console.log(labelNeeded);
+
+            if ( data === "classes" ) {
+                const labelClass = labelNeeded.className;
+                const pipClass = labelNeeded.children[0] ? labelNeeded.children[0].className : null;
+
+                return {
+                    label: labelClass,
+                    pip: pipClass
+                } as { label: string, pip: string };
+            }
+
+            const getCoords = (elem: HTMLElement) => {
+                const {left, top, right, bottom, width, height} = elem.getBoundingClientRect();
+
+                return {left, top, right, bottom, width, height};
+            };
+
+            if ( data === "coords" ) {
+                const labelCoords = getCoords(labelNeeded as HTMLElement);
+                console.log(labelNeeded, labelNeeded.children[0]);
+                const pipCoords = labelNeeded.children[0] ?
+                    getCoords(labelNeeded.children[0] as HTMLElement) : null;
+
+                return {
+                    label: labelCoords,
+                    pip: pipCoords
+                } as { label: Coords, pip: Coords };
+            }
+        }, data, numberOfLabel);
     }
 
     async getSliderCoords() {
