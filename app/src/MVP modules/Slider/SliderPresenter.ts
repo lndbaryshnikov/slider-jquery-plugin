@@ -111,44 +111,50 @@ class SliderPresenter {
         return () => {
             const options = this._model.getOptions() as Options;
 
-            let tooltip: SliderTooltipView | null = null;
+            this._view.setOptions(options);
 
-            if ( options.tooltip ) {
-                this._plugins.tooltipView.setOptions(options.value, options.orientation,
-                    typeof options.tooltip === "function" ? options.tooltip : null);
+            this._toggleTooltip(options);
+            this._toggleLabels(options);
+        }
+    }
 
-                tooltip = this._plugins.tooltipView;
-            } else if ( this._plugins.tooltipView.state.isRendered ) this._plugins.tooltipView.destroy();
+    private _toggleTooltip(options: Options) {
+        const tooltipView = this._plugins.tooltipView;
 
-            this._view.setOptions(options, tooltip);
+        if ( options.tooltip ) {
+            tooltipView.setOptions(options.value, options.orientation,
+                typeof options.tooltip === "function" ? options.tooltip : null);
 
-            const tooltipView = this._plugins.tooltipView;
-            const labelsView = this._plugins.labelsView;
+        } else if ( this._plugins.tooltipView.state.isRendered ) this._plugins.tooltipView.destroy();
+    }
 
-            if ( options.labels || options.pips ) {
-                const labels = typeof options.labels === "function" ? true : options.labels;
+    private _toggleLabels(options: Options) {
+        const labelsView = this._plugins.labelsView;
 
-                const labelsOptions: LabelOptions = {
-                    labels: labels,
-                    pips: options.pips,
-                    orientation: options.orientation,
-                    min: options.min,
-                    max: options.max,
-                    step: options.step,
-                };
+        if ( options.labels || options.pips ) {
+            const labels = typeof options.labels === "function" ? true : options.labels;
 
-                if ( typeof options.labels === "function" ) {
-                    labelsOptions.valueFunc = options.labels;
-                }
+            const labelsOptions: LabelOptions = {
+                labels: labels,
+                pips: options.pips,
+                orientation: options.orientation,
+                min: options.min,
+                max: options.max,
+                step: options.step,
+            };
 
-                labelsView.setOptions(labelsOptions);
-
-                if ( this._data.rendered ) this._view.renderPlugin("labels", labelsView);
-            } else if ( !options.labels && !options.pips ) {
-                if ( labelsView.state.isRendered ) {
-                    this._view.destroyPlugin("labels", labelsView);
-                }
+            if ( typeof options.labels === "function" ) {
+                labelsOptions.valueFunc = options.labels;
             }
+
+            labelsView.setOptions(labelsOptions);
+            labelsView.whenUserClicksOnLabel((middleCoordinate: number) => {
+                this._view.refreshValue(middleCoordinate);
+            });
+
+            if ( this._data.rendered ) this._view.renderPlugin("labels", labelsView);
+        } else if ( labelsView.state.isRendered ) {
+            this._view.destroyPlugin("labels", labelsView);
         }
     }
 

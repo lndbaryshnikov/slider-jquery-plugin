@@ -19,9 +19,10 @@ describe("tooltip exists on dom and contains 'value'", () => {
             defaultsWithTooltip.orientation,
         );
 
-        view.setOptions(defaultsWithTooltip, tooltipView);
+        view.setOptions(defaultsWithTooltip);
 
         view.render(document.body);
+        view.renderPlugin("tooltip", tooltipView);
 
         const handle = document.querySelector(".jquery-slider-handle");
         const tooltip = document.querySelector(".jquery-slider-tooltip");
@@ -37,7 +38,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         tooltipView.setOptions(defaultsWIthAnotherValue.value,
             defaultsWithTooltip.orientation);
 
-        view.setOptions(defaultsWIthAnotherValue, tooltipView);
+        view.setOptions(defaultsWIthAnotherValue);
 
         expect(tooltip.innerHTML).toBe("50");
     });
@@ -52,7 +53,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
             defaultsWithTooltipFunction.tooltip
         );
 
-        view.setOptions(defaultsWithTooltip, tooltipView);
+        view.setOptions(defaultsWithTooltip);
 
         view.render(document.body);
 
@@ -68,7 +69,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
             defaultsWithTooltipFunction.tooltip
         );
 
-        view.setOptions(defaultsWithAnotherValue, tooltipView);
+        view.setOptions(defaultsWithAnotherValue);
 
         expect(tooltip.innerHTML).toBe("70$");
     });

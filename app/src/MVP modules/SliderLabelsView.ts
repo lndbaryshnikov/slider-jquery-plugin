@@ -1,4 +1,5 @@
 import getCoords from "../functions/common/getCoords";
+import Observer from "./Observer";
 
 export interface LabelOptions {
     labels: boolean,
@@ -15,6 +16,8 @@ export default class SliderLabelsView {
     private _options: LabelOptions;
     private _root: HTMLElement | null = null;
     private _html: HTMLDivElement | null = null;
+
+    private _labelClickedSubject = new Observer();
 
     get state() {
         return {
@@ -42,6 +45,7 @@ export default class SliderLabelsView {
         this._createLabels();
         this._setClasses();
         if ( this._options.labels ) this._setText();
+        this._setClickHandler();
 
         if ( rootSnapshot ) {
             this.render(rootSnapshot);
@@ -99,6 +103,12 @@ export default class SliderLabelsView {
         if ( this.state.isRendered ) this.remove();
         this._labels = null;
         this._options = null;
+    }
+
+    whenUserClicksOnLabel(callback: (middleCoordinate: number) => void) {
+        this._labelClickedSubject.addObserver((_middleCoordinate: number) => {
+            callback(_middleCoordinate);
+        });
     }
 
     private _createLabels() {
@@ -163,5 +173,19 @@ export default class SliderLabelsView {
         const amount = range / this._options.step;
 
         return scaleSize / amount;
+    }
+
+    private _setClickHandler() {
+        for (let label of this._labels) {
+            label.addEventListener("click", () => {
+                const labelCoords = getCoords(label);
+
+                const middle = this._options.orientation === "horizontal" ?
+                    labelCoords.left + labelCoords.width / 2 :
+                    labelCoords.top + labelCoords.height / 2;
+
+                this._labelClickedSubject.notifyObservers(middle);
+            });
+        }
     }
 }

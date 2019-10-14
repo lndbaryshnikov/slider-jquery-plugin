@@ -30,7 +30,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         view = new SliderView();
         labelsView = new SliderLabelsView();
 
-        view.setOptions(defaultsWithLabelsAndPips, null);
+        view.setOptions(defaultsWithLabelsAndPips);
         labelsView.setOptions(labelsOptionsFull);
 
         view.render(document.body);

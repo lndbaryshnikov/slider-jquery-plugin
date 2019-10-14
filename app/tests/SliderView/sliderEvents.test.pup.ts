@@ -294,6 +294,29 @@ describe("slider events", () => {
                 expect(pipMiddle).toBe(handleMiddle);
             }
         }, timeout);
+
+        test("handle moves after label click", async () => {
+            await sliderPage.setOptions({
+                labels: true,
+                pips: true,
+                step: 10
+            });
+
+            for ( let label = 1; label <= 11; label++ ) {
+                const labelCoords = await sliderPage
+                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+
+                await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
+
+                const newHandleCoords = await sliderPage.getHandleCoords();
+
+                const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
+                const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
+
+                expect(handleMiddle).toBe(labelMiddle);
+            }
+
+        }, timeout);
     });
 
     describe("horizontal slider events", () => {
@@ -562,6 +585,29 @@ describe("slider events", () => {
                 expect(labelMiddle).toBe(handleMiddle);
                 expect(pipMiddle).toBe(handleMiddle);
             }
+        }, timeout);
+
+        test("handle moves after label click", async () => {
+            await sliderPage.setOptions({
+                labels: true,
+                pips: true,
+                step: 10
+            });
+
+            for ( let label = 1; label <= 11; label++ ) {
+                const labelCoords = await sliderPage
+                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+
+                await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
+
+                const newHandleCoords = await sliderPage.getHandleCoords();
+
+                const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
+                const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
+
+                expect(handleMiddle).toBe(labelMiddle);
+            }
+
         }, timeout);
     });
 });

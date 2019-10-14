@@ -1,10 +1,6 @@
 import arrayEquals from "../../functions/common/arrayEquals";
 import Observer from "../Observer";
 
-type Optional<T> = {
-    [O in keyof T]?: T[O]
-};
-
 export type HorizontalClasses = {
     "jquery-slider jquery-slider-horizontal": string,
     "jquery-slider-range": string,
@@ -56,8 +52,6 @@ export type UserOptions = {
 export type RestOptionsToSet = (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]]);
 
 class SliderModel {
-    private _handlePositionInPercents: number;
-
     private _incorrectOptionsReceivedSubject = new Observer();
     private _optionsSetSubject = new Observer();
     private _valueUpdatedSubject = new Observer();
@@ -392,21 +386,6 @@ class SliderModel {
 
                     optionsCopy[option] = restOptions[0] as Options["orientation"];
                 }
-            } else if ( option === "value" ) {
-                if ( typeof restOptions[0] !== "number" ) {
-                    this._throw(errors.options.incorrectType(option, "number"));
-
-                    return { result: false };
-                }
-
-                if ( restOptions[0] < this._options.min || restOptions[0] > this._options.max ) {
-                    this._throw(errors.value.beyond);
-
-                    return { result: false };
-                }
-
-                optionsCopy[option] = restOptions[0] as Options["value"];
-
             } else if ( option === "min" || option === "max" ) {
                 if ( typeof restOptions[0] !== "number" ) {
                     this._throw(errors.options.incorrectType(option, "number"));
@@ -424,71 +403,6 @@ class SliderModel {
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["min" | "max"];
-
-            } else if ( option === "step" ) {
-                if ( restOptions[0] > (this._options.max - this._options.min) || restOptions[0] <= 0 ) {
-                    this._throw(errors.step.incorrect);
-
-                    return { result: false };
-                }
-
-                optionsCopy[option] = restOptions[0] as Options["step"];
-
-            } else if ( option === "tooltip" ) {
-                if ( typeof restOptions[0] !== "boolean" && typeof restOptions[0] !== "function") {
-                  this._throw(errors.tooltip.incorrect);
-
-                  return { result: false };
-                }
-
-                if ( typeof restOptions[0] === "function" ) {
-                    const result = (restOptions[0] as ValueFunction)(this._options.value);
-
-                    if ( typeof result !== "number" && typeof result !== "string" ) {
-                        this._throw(errors.tooltip.incorrectFunction);
-
-                        return { result: false };
-                    }
-                }
-
-                optionsCopy[option] = restOptions[0] as Options["tooltip"];
-            } else if ( option === "animate" ) {
-              if ( restOptions[0] !== false && restOptions[0] !== "slow" && restOptions[0] !== "fast"
-              && typeof restOptions[0] !== "number" ) {
-                  this._throw(errors.animate.incorrect);
-
-                  return { result: false };
-              }
-
-                optionsCopy[option] = restOptions[0] as Options["animate"];
-            } else if ( option === "labels" ) {
-                if ( typeof restOptions[0] !== "boolean" && typeof restOptions[0] !== "function") {
-                    this._throw(errors.labels.incorrect);
-
-                    return { result: false };
-                }
-
-                if ( typeof restOptions[0] === "function") {
-                    const result = (restOptions[0] as ValueFunction)(this._options.value);
-
-                    if ( typeof result !== "string" && typeof result !== "number" ) {
-                        this._throw(errors.labels.incorrectFunction);
-
-                        return { result: false };
-                    }
-                }
-
-                optionsCopy[option] = restOptions[0] as Options["labels"];
-
-            } else if ( option === "pips" ) {
-                if ( typeof restOptions[0] !== "boolean" ) {
-                    this._throw(errors.pips.incorrect);
-
-                    return { result: false };
-                }
-
-                optionsCopy[option] = restOptions[0] as Options["pips"];
-
             } else {
                 let optionObj: any = {};
                 optionObj[option] = restOptions[0];
@@ -555,7 +469,10 @@ class SliderModel {
 
         const errors = SliderModel._optionsErrors;
 
-        if (!arrayEquals(Object.keys(options), Object.keys(defaults))) {
+        const optionsKeys = Object.keys(options);
+        const defaultOptionsKeys = Object.keys(defaults);
+
+        if ( !arrayEquals(optionsKeys, defaultOptionsKeys) ) {
             this._throw(errors.incorrectOptionsObject);
 
             return false;
@@ -571,9 +488,10 @@ class SliderModel {
             }
         }
 
-        if (!arrayEquals(Object.keys(options.classes),
-            Object.keys(defaults.classes))) {
+        const classesKeys = Object.keys(options.classes);
+        const defaultClassesKeys = Object.keys(defaults.classes);
 
+        if ( !arrayEquals(classesKeys, defaultClassesKeys) ) {
             this._throw(errors.classes.incorrectFormat);
 
             return false;
@@ -723,10 +641,6 @@ class SliderModel {
                     .replace(/\s+/g, ' ');
             }
         }
-    }
-
-    set handlePositionInPercents(positionInPercents: number) {
-        this._handlePositionInPercents = positionInPercents;
     }
 
     private _throw(error: string) {
