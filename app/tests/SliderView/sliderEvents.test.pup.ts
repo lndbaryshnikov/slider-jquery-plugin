@@ -42,7 +42,7 @@ describe("slider events", () => {
             await sliderPage.remove();
         });
 
-        test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
+        test("move jquery-slider-firstHandle to specific coordinates inside the slider", async () => {
             await sliderPage.moveHandleToCoords(handleCoords.left, sliderMiddle.top);
 
             const newHandleCoords = await sliderPage.getHandleCoords();
@@ -60,7 +60,7 @@ describe("slider events", () => {
             expect(Math.floor(newCoords.top)).toBe(testCoords.top);
         }, timeout);
 
-        test("handle stays within the slider when the cursor goes outside", async () => {
+        test("firstHandle stays within the slider when the cursor goes outside", async () => {
             await sliderPage.moveHandleToCoords(handleCoords.left, sliderCoords.top - 50);
 
             const newHandleCoordsTop = await sliderPage.getHandleCoords();
@@ -120,7 +120,7 @@ describe("slider events", () => {
 
         }, timeout);
 
-        test("handle sets correctly depending on 'value' option", async () => {
+        test("firstHandle sets correctly depending on 'value' option", async () => {
             await sliderPage.setOptions("value", 10);
 
             const handleTopWhenValueIsTen = sliderCoords.top + sliderCoords.height -
@@ -196,7 +196,7 @@ describe("slider events", () => {
 
         }, timeout);
 
-        test("handle moves correctly when step is wide", async() => {
+        test("firstHandle moves correctly when step is wide", async() => {
             await sliderPage.setOptions("step", 20);
 
             const testPosition = async (yMoveRelative: number, yExpectedRelative: number) => {
@@ -260,7 +260,7 @@ describe("slider events", () => {
                 .toBe(Math.round(sliderMiddle.top - handleCoords.height / 2));
         }, timeout);
 
-        test("handle doesn't move when user click on it, not on slider's scale", async () => {
+        test("firstHandle doesn't move when user click on it, not on slider's scale", async () => {
             await page.mouse.click(handleCoords.left + 1, handleCoords.top + 1);
 
             const newHandleCoords = await sliderPage.getHandleCoords();
@@ -295,7 +295,7 @@ describe("slider events", () => {
             }
         }, timeout);
 
-        test("handle moves after label click", async () => {
+        test("firstHandle moves after label click", async () => {
             await sliderPage.setOptions({
                 labels: true,
                 pips: true,
@@ -334,7 +334,7 @@ describe("slider events", () => {
             await sliderPage.remove();
         });
 
-        test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
+        test("move jquery-slider-firstHandle to specific coordinates inside the slider", async () => {
             await sliderPage.moveHandleToCoords(sliderMiddle.left,
                 handleCoords.top);
 
@@ -353,7 +353,7 @@ describe("slider events", () => {
             expect(Math.floor(newCoords.left)).toBe(testCoords.left);
         }, timeout);
 
-        test("handle stays within the slider when the cursor goes outside", async () => {
+        test("firstHandle stays within the slider when the cursor goes outside", async () => {
             await sliderPage.moveHandleToCoords(sliderCoords.left - 50,
                 handleCoords.top);
 
@@ -416,7 +416,7 @@ describe("slider events", () => {
 
         }, timeout);
 
-        test("handle sets correctly depending on 'value' option", async () => {
+        test("firstHandle sets correctly depending on 'value' option", async () => {
             await sliderPage.setOptions("value", 10);
 
             const handleLeftWhenValueIsTen = sliderCoords.left + sliderCoords.width * 0.1 - handleCoords.width / 2;
@@ -489,7 +489,7 @@ describe("slider events", () => {
             await testValue(0.98, 233);
         }, timeout);
 
-        test("handle moves correctly when step is wide", async() => {
+        test("firstHandle moves correctly when step is wide", async() => {
             await sliderPage.setOptions("step", 20);
 
             const testPosition = async (xMoveRelative: number, xExpectedRelative: number) => {
@@ -533,7 +533,7 @@ describe("slider events", () => {
             expect(newTooltipText).toBe("50");
         }, timeout);
 
-        test("handle moves correctly when user clicks on slider", async () => {
+        test("firstHandle moves correctly when user clicks on slider", async () => {
             await page.mouse.click((sliderCoords.left + sliderCoords.width * 0.3), sliderCoords.top + 1);
 
             let newHandleCoords = await sliderPage.getHandleCoords();
@@ -553,7 +553,7 @@ describe("slider events", () => {
                 .toBe(Math.round(sliderMiddle.left - handleCoords.width / 2));
         }, timeout);
 
-        test("handle doesn't move when user click on it, not on slider's scale", async () => {
+        test("firstHandle doesn't move when user click on it, not on slider's scale", async () => {
             await page.mouse.click(handleCoords.right - 1, handleCoords.top + 1);
 
             const newHandleCoords = await sliderPage.getHandleCoords();
@@ -587,7 +587,7 @@ describe("slider events", () => {
             }
         }, timeout);
 
-        test("handle moves after label click", async () => {
+        test("firstHandle moves after label click", async () => {
             await sliderPage.setOptions({
                 labels: true,
                 pips: true,

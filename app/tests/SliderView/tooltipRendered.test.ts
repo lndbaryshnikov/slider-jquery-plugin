@@ -56,6 +56,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         view.setOptions(defaultsWithTooltip);
 
         view.render(document.body);
+        view.renderPlugin("tooltip", tooltipView);
 
         const tooltip = document.querySelector(".jquery-slider-tooltip");
 

@@ -51,7 +51,7 @@ describe("slider API", () => {
         expect(sliderClass).toEqual("my-slider");
 
         await sliderPage.setOptions("range", true);
-        await sliderPage.setOptions("classes", "jquery-slider-handle", "my-handle");
+        await sliderPage.setOptions("classes", "jquery-slider-handle", "my-firstHandle");
 
         const range = await sliderPage.getOptions("range");
         const newClasses = await sliderPage.getOptions("classes");
@@ -60,7 +60,7 @@ describe("slider API", () => {
         expect(newClasses).toEqual({
             "jquery-slider jquery-slider-horizontal": "my-slider",
             "jquery-slider-range": "",
-            "jquery-slider-handle": "my-handle"
+            "jquery-slider-handle": "my-firstHandle"
         });
     }, timeout);
 });

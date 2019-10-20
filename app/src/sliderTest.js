@@ -1,5 +1,5 @@
 $('.slider').slider({
-    range: 'min',
+    range: true,
     value: 60,
     step: 10,
     min: 30,
@@ -9,6 +9,8 @@ $('.slider').slider({
     pips: true,
     labels: (value) => `${value}$`
 });
+
+// $('.slider').slider("options", "range", "min");
 
 $('.slider-2').slider({
     range: 'max',

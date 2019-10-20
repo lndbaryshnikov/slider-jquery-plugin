@@ -24,6 +24,10 @@ class SliderPresenter {
         this._view.whenValueChanged(this.validateValueCallback());
 
         this._model.whenValueUpdated(this.renderHandlePositionCallback());
+
+        this._plugins.labelsView.whenUserClicksOnLabel((middleCoordinate: number) => {
+            this._view.refreshValue(middleCoordinate);
+        });
     }
 
     get view() {
@@ -125,6 +129,8 @@ class SliderPresenter {
             tooltipView.setOptions(options.value, options.orientation,
                 typeof options.tooltip === "function" ? options.tooltip : null);
 
+            if ( this._data.rendered ) this._view.renderPlugin("tooltip", tooltipView);
+
         } else if ( this._plugins.tooltipView.state.isRendered ) this._plugins.tooltipView.destroy();
     }
 
@@ -148,9 +154,7 @@ class SliderPresenter {
             }
 
             labelsView.setOptions(labelsOptions);
-            labelsView.whenUserClicksOnLabel((middleCoordinate: number) => {
-                this._view.refreshValue(middleCoordinate);
-            });
+
 
             if ( this._data.rendered ) this._view.renderPlugin("labels", labelsView);
         } else if ( labelsView.state.isRendered ) {

@@ -7,7 +7,7 @@
 // //styles here:
 // import '../src/styles/jquery-slider.scss'
 // import '../src/styles/jquery-slider-range.scss'
-// import '../src/styles/jquery-slider-handle.scss'
+// import '../src/styles/jquery-slider-firstHandle.scss'
 //
 // const defaultClasses = getDefaultOptions.classes;
 //
@@ -52,7 +52,7 @@
 //     });
 //
 //     describe("slider events", () => {
-//         it("move jquery-slider-handle to specific coordinates inside the slider", () => {
+//         it("move jquery-slider-firstHandle to specific coordinates inside the slider", () => {
 //             const app = createInstance();
 //             app.createDom();
 //
@@ -61,8 +61,8 @@
 //
 //             const sliderMiddleLeft = sliderCoords.left + sliderCoords.width/2;
 //
-//             const handle = $('.jquery-slider-handle')[0];
-//             const handleCoords = getCoords(handle);
+//             const firstHandle = $('.jquery-slider-firstHandle')[0];
+//             const handleCoords = getCoords(firstHandle);
 //
 //             const newHandleCoords = moveHandleToCertainCoords(sliderMiddleLeft);
 //
@@ -80,7 +80,7 @@
 //             app.remove();
 //         });
 //
-//         it("handle stays within the slider when the cursor goes outside", () => {
+//         it("firstHandle stays within the slider when the cursor goes outside", () => {
 //             const app = createInstance();
 //             app.createDom();
 //

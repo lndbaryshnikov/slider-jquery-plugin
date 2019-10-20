@@ -67,7 +67,7 @@ const createEvent = (type: string, x?: number | string, y?: number | string): JQ
 interface HandleCoords extends Coords{}
 
 const moveHandleToCertainCoords = (X: number): HandleCoords => {
-    const handle = $('.jquery-slider-handle')[0];
+    const handle = $('.jquery-slider-firstHandle')[0];
     const handleCoords = getCoords(handle);
 
     const mousedownEvent = createEvent('mousedown', handleCoords.left, handleCoords.top);

@@ -52,7 +52,7 @@ describe("When options object is passed", () => {
             classes: {
                 "jquery-slider-range": "my-range",
                 "jquery-slider": "my-slider",
-                "jquery-slider-handle": "my-handle"
+                "jquery-slider-handle": "my-firstHandle"
             }
         });
 
@@ -173,13 +173,13 @@ describe("When options object is passed", () => {
         model.setOptions("classes", {
             'jquery-slider': '',
             'jquery-slider-range': '',
-            'jquery-slider-handle': 'my-handle'
+            'jquery-slider-handle': 'my-firstHandle'
         });
 
         expect(model.getOptions("classes")).toEqual({
             'jquery-slider jquery-slider-vertical': '',
             'jquery-slider-range': '',
-            'jquery-slider-handle': 'my-handle'
+            'jquery-slider-handle': 'my-firstHandle'
         });
     });
 

@@ -43,7 +43,7 @@ describe('getOptions method', () => {
         model.setOptions({
             classes: {
                 "jquery-slider-range": "my-range",
-                "jquery-slider-handle": "my-handle",
+                "jquery-slider-handle": "my-firstHandle",
             }
         });
 
