@@ -1,6 +1,7 @@
-import puppeteer, {Browser, Page} from "puppeteer";
+import puppeteer, {Browser, ElementHandle, Page} from "puppeteer";
 import SliderPupPage, {Coords} from './SliderPupPage'
 import {Options} from "../../src/MVP modules/Slider/SliderModel";
+import {JQueryElementWithSlider} from "../../src/jquery-slider";
 
 describe("slider events", () => {
     let browser: Browser, page: Page;
@@ -748,6 +749,46 @@ describe("slider events", () => {
                 .toBe(newSecondHandleCoords.left + newSecondHandleCoords.width / 2);
 
             expect(Math.ceil(newRangeCoords.width)).toBe(Math.ceil(newFirstHandleCoords.width));
+        }, timeout);
+
+        test("option change works with input for value", async () => {
+            await page.evaluate(() => {
+                const input = $("<input>");
+                const changeFunction = (handle: JQuery, value: number) => {
+                    input[0].innerHTML = String(value);
+                };
+                ($(".slider") as JQueryElementWithSlider)
+                    .slider("options", "change", changeFunction);
+            });
+
+            const compareValue = async () => {
+                const inputValue = await page.evaluate(() => {
+                    return (document.querySelector("input")).innerHTML;
+                });
+
+                const valueOption = await sliderPage.getOptions("value");
+                
+                expect(inputValue).toBe(valueOption);
+            };
+            
+            const testValues = async (mode: "set" | "move", valueOrPercent: number) => {
+                if ( mode === "set" ) {
+                    await sliderPage.setOptions("value", valueOrPercent);
+                }
+                
+                if ( mode === "move" ) {
+                    await sliderPage
+                        .moveHandleToCoords(sliderCoords.left + sliderCoords.width * valueOrPercent / 100,
+                            firstHandleCoords.top);
+                }
+
+                await compareValue();
+            };
+
+            await testValues("set", 30);
+            await testValues("move", 50);
+            await testValues("set", 70);
+            await testValues("move", 70);
         }, timeout);
     });
 });

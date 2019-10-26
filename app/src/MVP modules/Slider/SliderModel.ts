@@ -27,7 +27,7 @@ export type Options = {
     animate: "slow" | "fast" | false | number,
     labels: true | false | ValueFunction,
     pips: boolean,
-    change: ((event: Event, handle: JQuery, value: number) => void) | false,
+    change: ((handle: JQuery, value: number) => void) | false,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -43,7 +43,7 @@ export type UserOptions = {
     animate?: "slow" | "fast" | false | number,
     labels?: true | false | ValueFunction,
     pips?: boolean,
-    change?: ((event: Event, handle: JQuery, value: number) => void) | false
+    change?: ((handle: JQuery, value: number) => void) | false
 
     classes?: {
         "jquery-slider"?: string,
@@ -654,6 +654,25 @@ class SliderModel {
                 this._throw(errors.labels.incorrectFunction);
 
                 return false;
+            }
+        }
+
+        if ( typeof options.change !== "function" && options.change !== false ) {
+            this._throw(errors.change.incorrect);
+
+            return false;
+        }
+
+        if ( typeof options.change === "function" ) {
+            const func = options.change;
+
+            const div = $("<div></div>");
+            const value = 50;
+
+            if ( typeof func(div, value) !== "undefined" ) {
+                this._throw(errors.change.incorrectFunction);
+
+                return;
             }
         }
 
