@@ -12,6 +12,7 @@ describe("getDefaultOptions method", () => {
         animate: "fast",
         pips: false,
         labels: false,
+        change: false,
 
         classes: {
             "jquery-slider jquery-slider-horizontal": "",
@@ -31,6 +32,7 @@ describe("getDefaultOptions method", () => {
        animate: "fast",
        pips: false,
        labels: false,
+       change: false,
 
        classes: {
            "jquery-slider jquery-slider-vertical": "",

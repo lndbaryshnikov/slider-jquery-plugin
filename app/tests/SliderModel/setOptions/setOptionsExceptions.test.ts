@@ -325,4 +325,17 @@ describe("setOptionsMethod exceptions", () => {
             model.setOptions("labels", ((value: number) => true ) as unknown as Options["labels"]);
         }).toThrow(errors.labels.incorrectFunction);
     });
+
+    test("throws exception when change is not function or false", () => {
+        expect(( ) => {
+            // @ts-ignore
+            model.setOptions({ change: true });
+        }).toThrow(errors.change.incorrect);
+
+        model.setOptions();
+
+        expect(( ) => {
+            model.setOptions("change", (value: number) => value )
+        }).toThrow(errors.change.incorrectFunction);
+    });
 });

@@ -1,5 +1,6 @@
 import arrayEquals from "../../functions/common/arrayEquals";
 import Observer from "../Observer";
+import Event = JQuery.Event;
 
 export type HorizontalClasses = {
     "jquery-slider jquery-slider-horizontal": string,
@@ -26,6 +27,7 @@ export type Options = {
     animate: "slow" | "fast" | false | number,
     labels: true | false | ValueFunction,
     pips: boolean,
+    change: ((event: Event, handle: JQuery, value: number) => void) | false,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -41,6 +43,7 @@ export type UserOptions = {
     animate?: "slow" | "fast" | false | number,
     labels?: true | false | ValueFunction,
     pips?: boolean,
+    change?: ((event: Event, handle: JQuery, value: number) => void) | false
 
     classes?: {
         "jquery-slider"?: string,
@@ -128,6 +131,11 @@ class SliderModel {
         },
         pips: {
             incorrect: "Options are incorrect (option 'pips' should be true or false)"
+        },
+        change: {
+            incorrect: "Options are incorrect (option 'change' can be only function or false)",
+            incorrectFunction: "Options are incorrect ('change' function has " +
+                "two arguments and return undefined)"
         }
     };
 
@@ -184,6 +192,7 @@ class SliderModel {
             animate: "fast",
             pips: false,
             labels: false,
+            change: false,
 
             classes: classes
         };
