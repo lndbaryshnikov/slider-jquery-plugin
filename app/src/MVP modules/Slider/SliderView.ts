@@ -1,6 +1,6 @@
 import {HorizontalClasses, Options, VerticalClasses} from "./SliderModel";
 import {countShift} from "../../functions/common/countShift";
-import getCoords from "../../functions/common/getCoords";
+import getCoords, {Coords} from "../../functions/common/getCoords";
 import Observer from "../Observer";
 import SliderTooltipView from "../SliderTooltipView";
 import SliderLabelsView from "../SliderLabelsView";
@@ -17,7 +17,7 @@ export default class SliderView {
     private _root: HTMLElement | null = null;
     private _options: Options | null = null;
     private _classesHash: Options["classes"] | null = null;
-    private _handlePositionInPixels: number | null = null;
+    private _handlesPositionInPixels: number[] | null = null;
 
     private _data = {
         rendered: false
@@ -26,49 +26,99 @@ export default class SliderView {
     private _eventListeners = {
         handleMoving: {
             handleMouseDown: (mouseDownEvent: MouseEvent) => {
-                const handleShift = this._countHandleShift(mouseDownEvent);
+                let freeSpaceCoords: Coords;
+                let targetHandle = mouseDownEvent.target;
+
+                const orientation = this._options.orientation;
+
+                if ( this._options.range !== true && targetHandle === this._html.firstHandle ) {
+                    freeSpaceCoords = this._getCoords().wrapper;
+                }
+
+                if ( this._options.range === true ) {
+                    freeSpaceCoords = this._getCoords().wrapper;
+
+                    const firstHandleCoords = this._getCoords().firstHandle;
+                    const secondHandleCoords = this._getCoords().secondHandle;
+
+                    if ( targetHandle === this._html.firstHandle ) {
+                        if ( orientation === "horizontal" ) {
+                            freeSpaceCoords.right = secondHandleCoords.left -
+                                firstHandleCoords.width / 2;
+
+                            freeSpaceCoords.width = freeSpaceCoords.right - freeSpaceCoords.left;
+                        }
+
+                        if ( orientation === "vertical" ) {
+                            freeSpaceCoords.top = secondHandleCoords.bottom + firstHandleCoords.height / 2;
+
+                            freeSpaceCoords.height = freeSpaceCoords.bottom - freeSpaceCoords.top;
+                        }
+                    }
+
+                    if ( targetHandle === this._html.secondHandle ) {
+                        if ( orientation === "horizontal" ) {
+                            freeSpaceCoords.left = firstHandleCoords.right +
+                                secondHandleCoords.width / 2;
+
+                            freeSpaceCoords.width = freeSpaceCoords.right - freeSpaceCoords.left;
+                        }
+
+                        if ( orientation === "vertical" ) {
+                            freeSpaceCoords.bottom = firstHandleCoords.top - secondHandleCoords.height / 2;
+                            freeSpaceCoords.height = freeSpaceCoords.bottom - freeSpaceCoords.top;
+                        }
+                    }
+                }
+
+                let handleNumber: "first" | "second";
+
+                if ( targetHandle === this._html.firstHandle ) handleNumber = "first";
+                if ( targetHandle === this._html.secondHandle ) handleNumber = "second";
+
+                const handleShift = this._countHandleShift(mouseDownEvent, handleNumber);
 
                 const mouseMoveHandler = (mouseMoveEvent: MouseEvent) => {
                     if ( this._options.orientation === 'horizontal' ) {
                         const shiftX = handleShift.x;
 
-                        let newLeft = mouseMoveEvent.pageX - shiftX - this._getCoords().wrapper.left;
+                        let newLeft = mouseMoveEvent.pageX - shiftX - freeSpaceCoords.left;
 
-                        if (newLeft < 0 - this._getCoords().handle.width / 2) {
-                            newLeft = 0 - this._getCoords().handle.width / 2;
+                        if (newLeft < 0 - this._getCoords().firstHandle.width / 2) {
+                            newLeft = 0 - this._getCoords().firstHandle.width / 2;
                         }
 
-                        const rightEdge = this._getCoords().wrapper.width - this._getCoords().handle.width;
+                        const rightEdge = freeSpaceCoords.width - this._getCoords().firstHandle.width;
 
-                        if (newLeft > rightEdge + this._getCoords().handle.width / 2) {
-                            newLeft = rightEdge + this._getCoords().handle.width / 2;
+                        if (newLeft > rightEdge + this._getCoords().firstHandle.width / 2) {
+                            newLeft = rightEdge + this._getCoords().firstHandle.width / 2;
                         }
 
-                        const currentHandleXInPixels = this._getCoords().wrapper.left +
-                            newLeft + this._getCoords().handle.width / 2;
+                        const currentHandleXInPixels = freeSpaceCoords.left +
+                            newLeft + this._getCoords().firstHandle.width / 2;
 
-                        this.refreshValue(currentHandleXInPixels);
+                        this.refreshValue(currentHandleXInPixels, handleNumber);
                     }
 
                     if ( this._options.orientation === 'vertical' ) {
                         const shiftY = handleShift.y;
 
-                        let newTop = mouseMoveEvent.pageY - shiftY - this._getCoords().wrapper.top;
+                        let newTop = mouseMoveEvent.pageY - shiftY - freeSpaceCoords.top;
 
-                        if (newTop < 0 - this._getCoords().handle.height / 2) {
-                            newTop = 0 - this._getCoords().handle.height / 2;
+                        if (newTop < 0 - this._getCoords().firstHandle.height / 2) {
+                            newTop = 0 - this._getCoords().firstHandle.height / 2;
                         }
 
-                        const rightEdge = this._getCoords().wrapper.height - this._getCoords().handle.height;
+                        const rightEdge = freeSpaceCoords.height - this._getCoords().firstHandle.height;
 
-                        if (newTop > rightEdge + this._getCoords().handle.height / 2) {
-                            newTop = rightEdge + this._getCoords().handle.height / 2;
+                        if (newTop > rightEdge + this._getCoords().firstHandle.height / 2) {
+                            newTop = rightEdge + this._getCoords().firstHandle.height / 2;
                         }
 
-                        const currentHandleYInPixels = newTop + this._getCoords().handle.height / 2
-                            + this._getCoords().wrapper.top;
+                        const currentHandleYInPixels = newTop + this._getCoords().firstHandle.height / 2
+                            + freeSpaceCoords.top;
 
-                        this.refreshValue(currentHandleYInPixels);
+                        this.refreshValue(currentHandleYInPixels, handleNumber);
                     }
                 };
 
@@ -76,7 +126,7 @@ export default class SliderView {
 
                 const mouseUpHandler = () => {
                     document.removeEventListener("mousemove", mouseMoveHandler);
-                    document.removeEventListener("mousemove", mouseUpHandler);
+                    document.removeEventListener("mouseup", mouseUpHandler);
                 };
 
                 document.addEventListener("mouseup", mouseUpHandler);
@@ -88,8 +138,13 @@ export default class SliderView {
             }
         },
         sliderClick: (clickEvent: MouseEvent) => {
-            if ( clickEvent.target === this._html.firstHandle ) return;
+            if ( clickEvent.target === this._html.firstHandle
+                || clickEvent.target === this._html.secondHandle ) {
+                return;
+            }
+
             let coordinateToMove: number;
+            let handleNumber: "first" | "second" = "first";
 
             if ( this._options.orientation === "horizontal" ) {
                 coordinateToMove = clickEvent.pageX;
@@ -99,15 +154,19 @@ export default class SliderView {
                 coordinateToMove = clickEvent.pageY;
             }
 
-            this.refreshValue(coordinateToMove);
+            if ( this._options.range === true ) {
+                handleNumber = this._getClosestHandleNumber(coordinateToMove);
+            }
+
+            this.refreshValue(coordinateToMove, handleNumber);
         }
     };
 
     private _valueChangedSubject = new Observer();
 
-    whenValueChanged(callback: (value: Options["value"]) => void): void {
-        this._valueChangedSubject.addObserver((value: Options["value"]) => {
-            callback(value);
+    whenValueChanged(callback: (valueData: [number, "first" | "second"]) => void): void {
+        this._valueChangedSubject.addObserver((valueData: [number, "first" | "second"]) => {
+            callback(valueData);
         })
     }
 
@@ -134,7 +193,7 @@ export default class SliderView {
         this._html = undefined;
         this._root = undefined;
         this._options = undefined;
-        this._handlePositionInPixels = undefined;
+        this._handlesPositionInPixels = undefined;
 
         this._data.rendered = false;
     }  
@@ -177,62 +236,99 @@ export default class SliderView {
         this._options.value = value;
 
         this._setHandlePositionInPixels();
-        this._renderHandlePosition();
+        this._renderHandlePositions();
         this._renderRange();
     }
 
     private _renderOptions() {
         if ( !this._data.rendered ) return;
 
-        this._renderHandlePosition();
+        this._renderHandlePositions();
 
         this._renderRange();
     }
 
     private _setHandleMovingHandler() {
-        this._html.firstHandle.addEventListener("mousedown", this._eventListeners.handleMoving.handleMouseDown);
+        const addHandleMovingHandler = (handle: HTMLElement) => {
+            handle.addEventListener("mousedown", this._eventListeners.handleMoving.handleMouseDown);
 
-        this._html.firstHandle.ondragstart = this._eventListeners.handleMoving.handleOnDragStart;
+            handle.ondragstart = this._eventListeners.handleMoving.handleOnDragStart;
+        };
+
+        addHandleMovingHandler(this._html.firstHandle);
+
+        if ( this._options.range === true ) {
+            addHandleMovingHandler(this._html.secondHandle);
+        }
     }
 
     private _setSliderClickHandler() {
         this._html.wrapper.addEventListener("click", this._eventListeners.sliderClick);
     }
 
-    private _renderHandlePosition() {
-        if ( this._options.orientation === 'horizontal' ) {
-            this._html.firstHandle.style.left = this._handlePositionInPixels - this._getCoords().handle.width / 2 + 'px';
-        }
-        if ( this._options.orientation === 'vertical' ) {
-            this._html.firstHandle.style.bottom = this._handlePositionInPixels - this._getCoords().handle.height / 2 + 'px';
-        }
+    private _renderHandlePositions() {
+        const renderHandlePosition = (handleNumber: 'first' | 'second') => {
+            const handle = handleNumber === "first" ? this._html.firstHandle : this._html.secondHandle;
+            const handleCoords = handleNumber === "first" ? this._getCoords().firstHandle :
+                this._getCoords().secondHandle;
+
+            const handlePositionInPixels = this._handlesPositionInPixels[handleNumber === "first" ? 0 : 1];
+
+            if ( this._options.orientation === 'horizontal' ) {
+                handle.style.left = handlePositionInPixels - handleCoords.width / 2 + 'px';
+            }
+            if ( this._options.orientation === 'vertical' ) {
+                handle.style.bottom = handlePositionInPixels - handleCoords.height / 2 + 'px';
+            }
+        };
+
+        renderHandlePosition("first");
+
+        if ( this._options.range === true ) renderHandlePosition("second");
     }
 
     private _renderRange() {
+        const positions = this._handlesPositionInPixels;
+        const wrapperCoords = this._getCoords().wrapper;
+
         if ( this._options.orientation === 'horizontal' ) {
             if (this._options.range === 'min') {
                 this._html.range.style.left = 0 + 'px';
-                this._html.range.style.width = this._handlePositionInPixels + 'px';
+                this._html.range.style.width = positions[0] + 'px';
             }
 
             if (this._options.range === 'max') {
                 this._html.range.style.right = 0 + 'px';
-                this._html.range.style.width = this._getCoords().wrapper.width -
-                    this._handlePositionInPixels + 'px';
+                this._html.range.style.width = wrapperCoords.width -
+                    positions[0] + 'px';
+            }
+
+            if ( this._options.range === true ) {
+                this._html.range.style.left = positions[0] + 'px';
+                this._html.range.style.right = positions[1] + 'px';
+                this._html.range.style.width = positions[1] - positions[0] + 'px';
             }
         }
         if ( this._options.orientation === 'vertical' ) {
             if (this._options.range === 'min') {
                 this._html.range.style.bottom = 0 + 'px';
-                this._html.range.style.height = this._handlePositionInPixels + 'px';
+                this._html.range.style.height = positions[0] + 'px';
             }
 
             if (this._options.range === 'max') {
                 this._html.range.style.top = 0 + 'px';
-                this._html.range.style.height = this._getCoords().wrapper.height -
-                    this._handlePositionInPixels + 'px';
+                this._html.range.style.height = wrapperCoords.height -
+                    positions[0] + 'px';
+            }
+
+            if ( this._options.range === true ) {
+                this._html.range.style.top = wrapperCoords.height - positions[1] + 'px';
+                this._html.range.style.bottom = positions[0] + 'px';
+                this._html.range.style.height = positions[0] - positions[1] + 'px';
             }
         }
+
+
     }
 
     private _setSliderClasses() {
@@ -269,37 +365,68 @@ export default class SliderView {
         const animate = this._options.animate;
 
         const handleProp = this._options.orientation === "horizontal" ? "left" : "bottom";
-        const rangeProp = this._options.orientation === "horizontal" ? "width" : "height";
+        // const rangeProp = this._options.orientation === "horizontal" ? "width" : "height";
 
         let transitionMs: number = animate === "fast" ? 300 :
             animate === "slow" ? 700 : typeof animate === "number" ? animate : 0;
 
         this._html.firstHandle.style.transition = `${handleProp} ${transitionMs}ms`;
-        this._html.range.style.transition = `${rangeProp} ${transitionMs}ms`;
+        this._html.range.style.transition = `${transitionMs}ms`;
 
-        this._html.firstHandle.addEventListener("mousedown", () => {
-            this._html.firstHandle.style.transition = "0ms";
-            this._html.range.style.transition = "0ms";
-        });
+        const addTransitionToHandle = (handle: HTMLElement) => {
+            handle.addEventListener("mousedown", () => {
+                handle.style.transition = "0ms";
+                this._html.range.style.transition = "0ms";
+            });
 
-        document.addEventListener("mouseup", () => {
-            this._html.firstHandle.style.transition = `${handleProp} ${transitionMs}ms`;
-            this._html.range.style.transition = `${rangeProp} ${transitionMs}ms`;
-        });
+            document.addEventListener("mouseup", () => {
+                handle.style.transition = `${handleProp} ${transitionMs}ms`;
+                this._html.range.style.transition = `${transitionMs}ms`;
+            });
+        };
+
+        addTransitionToHandle(this._html.firstHandle);
+
+        if ( this._options.range === true ) {
+            addTransitionToHandle(this._html.secondHandle);
+        }
     }
 
     private _setHandlePositionInPixels() {
         if ( !this._data.rendered ) return;
 
-        const range = this._options.max - this._options.min;
-        const valueInPercents = (this._options.value - this._options.min) / range;
+        this._handlesPositionInPixels = null;
+        this._handlesPositionInPixels = [];
 
-        this._handlePositionInPixels = this._options.orientation === "horizontal" ?
-            this._getCoords().wrapper.width * valueInPercents :
-            this._getCoords().wrapper.height * valueInPercents;
+        const range = this._options.max - this._options.min;
+
+        const firstValueInPercents = ( (this._options.range === true ? (this._options.value as number[])[0] :
+            this._options.value as number) - this._options.min ) / range;
+
+        const addHandlePosition = (handleValueInPercents: number) => {
+            this._handlesPositionInPixels.push(this._options.orientation === "horizontal" ?
+                this._getCoords().wrapper.width * handleValueInPercents :
+                this._getCoords().wrapper.height * handleValueInPercents
+            );
+        };
+
+        addHandlePosition(firstValueInPercents);
+
+        if ( this._options.range === true ) {
+            const secondValueInPercents = ( (this._options.value as number[])[1] - this._options.min) / range;
+
+            addHandlePosition(secondValueInPercents);
+        }
+
     }
 
-    refreshValue(currentHandleCoordinate: number) {
+    refreshValue(currentHandleCoordinate: number, handleNumber?: "first" | "second") {
+        if ( !handleNumber ) {
+            if ( this._options.range !== true ) handleNumber = "first";
+                else {
+                    handleNumber = this._getClosestHandleNumber(currentHandleCoordinate);
+            }
+        }
         const range = this._options.max - this._options.min;
         const orientation = this._options.orientation;
         const wrapperCoords = this._getCoords().wrapper;
@@ -311,14 +438,14 @@ export default class SliderView {
 
         if ( currentHandleCoordinate > wrapperEnd ) {
             this._valueChangedSubject
-                .notifyObservers(isHorizontal ? this._options.max : this._options.min);
+                .notifyObservers([isHorizontal ? this._options.max : this._options.min, handleNumber]);
 
             return;
         }
 
         if ( currentHandleCoordinate < wrapperStart ) {
             this._valueChangedSubject
-                .notifyObservers(isHorizontal ? this._options.min : this._options.max);
+                .notifyObservers([isHorizontal ? this._options.min : this._options.max, handleNumber]);
 
             return;
         }
@@ -361,7 +488,7 @@ export default class SliderView {
             }
         }
 
-        this._valueChangedSubject.notifyObservers(value);
+        this._valueChangedSubject.notifyObservers([value, handleNumber]);
     }
 
     private _setSliderElements() {
@@ -380,8 +507,10 @@ export default class SliderView {
         if ( this._options.range === true ) this._html.wrapper.append(this._html.secondHandle);
     }
 
-    private _countHandleShift(mouseDownEvent: MouseEvent) {
-        return countShift(mouseDownEvent, this._html.firstHandle);
+    private _countHandleShift(mouseDownEvent: MouseEvent, handleNumber: "first" | "second") {
+        const handle = handleNumber === "first" ? this._html.firstHandle : this._html.secondHandle;
+
+        return countShift(mouseDownEvent, handle);
     }
 
     private _hasClassesChanged() {
@@ -405,18 +534,68 @@ export default class SliderView {
         return {
             wrapper: getCoords(this._html.wrapper),
             range: getCoords(this._html.range),
-            handle: getCoords(this._html.firstHandle)
+            firstHandle: getCoords(this._html.firstHandle),
+            secondHandle: this._options.range === true ? getCoords(this._html.secondHandle) : null
         }
     }
 
-    renderPlugin(plugin: string, pluginView: SliderLabelsView | SliderTooltipView) {
+    private _getClosestHandleNumber(coord: number) {
+        let handleNumber: "first" | "second";
+
+        if ( this._options.range !== true ) return;
+
+        if ( this._options.orientation === "horizontal" ) {
+            const firstRight = this._getCoords().firstHandle.right;
+            const secondLeft = this._getCoords().secondHandle.left;
+
+            if ( coord < secondLeft && coord > firstRight ) {
+                const firstDistance = coord - firstRight;
+                const secondDistance = secondLeft - coord;
+
+                handleNumber = firstDistance > secondDistance ? "second" : "first";
+            }
+
+            if ( coord < firstRight ) handleNumber = "first";
+            if ( coord > secondLeft ) handleNumber = "second";
+        }
+
+        if ( this._options.orientation === "vertical" ) {
+            const firstTop = this._getCoords().firstHandle.top;
+            const secondBottom = this._getCoords().secondHandle.bottom;
+
+            if ( coord > secondBottom && coord < firstTop ) {
+                const firstDistance = firstTop - coord;
+                const secondDistance = coord - secondBottom;
+
+                handleNumber = firstDistance > secondDistance ? "second" : "first";
+            }
+
+            if ( coord > firstTop ) handleNumber = "first";
+            if ( coord < secondBottom ) handleNumber = "second";
+        }
+
+        return handleNumber;
+    }
+
+    renderPlugin(plugin: string, pluginView: SliderLabelsView | SliderTooltipView, number?: "first" | "second") {
         if ( plugin === "labels" ) {
             pluginView.render(this._html.wrapper);
         }
 
         if ( plugin === "tooltip" ) {
-            if ( !this._html.firstHandle.contains((pluginView as SliderTooltipView).html) ) {
-                pluginView.render(this._html.firstHandle);
+            if ( !number ) number = "first";
+
+            if ( number === "first" ) {
+                if ( !this._html.firstHandle.contains((pluginView as SliderTooltipView).html) ) {
+                    pluginView.render(this._html.firstHandle);
+                }
+            }
+
+            if ( number === "second" ) {
+                if ( this._html.secondHandle &&
+                    !this._html.firstHandle.contains((pluginView as SliderTooltipView).html) ) {
+                    pluginView.render(this._html.secondHandle);
+                }
             }
         }
     }

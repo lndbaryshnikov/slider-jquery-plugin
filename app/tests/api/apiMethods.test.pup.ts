@@ -50,13 +50,13 @@ describe("slider API", () => {
 
         expect(sliderClass).toEqual("my-slider");
 
-        await sliderPage.setOptions("range", true);
+        await sliderPage.setOptions("range", "min");
         await sliderPage.setOptions("classes", "jquery-slider-handle", "my-firstHandle");
 
         const range = await sliderPage.getOptions("range");
         const newClasses = await sliderPage.getOptions("classes");
 
-        expect(range).toBe(true);
+        expect(range).toBe("min");
         expect(newClasses).toEqual({
             "jquery-slider jquery-slider-horizontal": "my-slider",
             "jquery-slider-range": "",

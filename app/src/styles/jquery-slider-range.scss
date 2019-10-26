@@ -1,7 +1,8 @@
 .jquery-slider-range {
-  //width: 0;
-  //height: 100%;
-  background-color: aqua;
+  background-color: violet;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .jquery-slider-horizontal .jquery-slider-range {

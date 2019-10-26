@@ -13,12 +13,12 @@ export interface Coords {
 
 export default class SliderPupPage {
     private _page: Page;
-    private _root: ElementHandle;
-    private _slider: ElementHandle;
-    private _range: ElementHandle;
-    private _handle: ElementHandle;
+    private _root: ElementHandle = null;
+    private _slider: ElementHandle = null;
+    private _range: ElementHandle = null;
+    private _firstHandle: ElementHandle = null;
+    private _secondHandle: ElementHandle = null;
     private _tooltip: ElementHandle = null;
-    private _labels: ElementHandle[];
 
     constructor(private _browser: Browser) { }
 
@@ -45,34 +45,26 @@ export default class SliderPupPage {
             // @ts-ignore
         }, options);
 
-        this._root = await this._page.$('.slider');
-        this._slider = await this._page.$('.jquery-slider');
-        this._range = await this._page.$('.jquery-slider-range');
-        this._handle = await this._page.$('.jquery-slider-handle');
-
-        if ( options && options.tooltip ) {
-            this._tooltip = await this._page.$('.jquery-slider-tooltip');
-        }
+        await this._defineElements(options);
     }
 
-    async setOptions(...options: (UserOptions | RestOptionsToSet)[]){
+    async setOptions(...options: (UserOptions | RestOptionsToSet)[]) {
         await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
-
             ($(root) as JQueryElementWithSlider).slider('options', ...options);
             // @ts-ignore
         }, this._root, ...options);
 
-        if ( !!(await this.getOptions("tooltip")) ) {
-            this._tooltip = await this._page.$('.jquery-slider-tooltip');
-        } else this._tooltip = null;
+        const optionsSet = await this.getOptions() as Options;
+
+        await this._defineElements(optionsSet);
     }
 
     async getOptions(...options: (UserOptions | RestOptionsToSet)[]) {
         return await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
-
             return ($(root) as JQueryElementWithSlider).slider('options', ...options);
             // @ts-ignore
-        }, this._root, ...options) as unknown as (Options[keyof Options] | Options["classes"][keyof Options["classes"]]);
+        }, this._root, ...options) as unknown as Options | (Options[keyof Options] |
+            Options["classes"][keyof Options["classes"]]);
     }
 
     get elements() {
@@ -80,7 +72,8 @@ export default class SliderPupPage {
             root: this._root,
             slider: this._slider,
             range: this._range,
-            handle: this._handle,
+            firstHandle: this._firstHandle,
+            secondHandle: this._secondHandle,
             tooltip: this._tooltip
         }
     }
@@ -90,8 +83,6 @@ export default class SliderPupPage {
             const labels = document.querySelectorAll(".jquery-slider-label");
 
             const labelNeeded = labels[LabelNumber - 1];
-
-            console.log(labelNeeded);
 
             if ( data === "classes" ) {
                 const labelClass = labelNeeded.className;
@@ -111,7 +102,6 @@ export default class SliderPupPage {
 
             if ( data === "coords" ) {
                 const labelCoords = getCoords(labelNeeded as HTMLElement);
-                console.log(labelNeeded, labelNeeded.children[0]);
                 const pipCoords = labelNeeded.children[0] ?
                     getCoords(labelNeeded.children[0] as HTMLElement) : null;
 
@@ -131,8 +121,14 @@ export default class SliderPupPage {
         return await this.getCoords(this._range);
     }
 
-    async getHandleCoords() {
-        return await this.getCoords(this._handle);
+    async getFirstHandleCoords() {
+        return await this.getCoords(this._firstHandle);
+    }
+
+    async getSecondHandleCoords() {
+        if ( !this._secondHandle ) throw new Error("Second handle doesn't exist");
+
+        return await this.getCoords(this._secondHandle);
     }
 
     async getTooltipCoords() {
@@ -187,8 +183,12 @@ export default class SliderPupPage {
         };
     }
 
-    async moveHandleToCoords (X: number, Y: number) {
-        const handleCoords = await this.getCoords(this._handle);
+    async moveHandleToCoords (X: number, Y: number, isSecond?: true) {
+        if ( isSecond && !this._secondHandle ) throw new Error("second handle doesn't exist");
+
+        let handleCoords: Coords;
+        if ( !!isSecond ) handleCoords = await this.getCoords(this._secondHandle);
+        else handleCoords = await this.getCoords(this._firstHandle);
 
         await this._page.mouse.move(handleCoords.left + handleCoords.width / 2,
             handleCoords.top + handleCoords.height / 2);
@@ -205,6 +205,23 @@ export default class SliderPupPage {
         this._root = null;
         this._slider = null;
         this._range = null;
-        this._handle = null;
+        this._firstHandle = null;
+        this._secondHandle = null;
+        this._tooltip = null;
+    }
+
+    private async _defineElements(options: Options | UserOptions) {
+        this._root = await this._page.$('.slider');
+        this._slider = await this._page.$('.jquery-slider');
+        this._range = await this._page.$('.jquery-slider-range');
+        this._firstHandle = await this._page.$('.jquery-slider-handle');
+
+        if ( options && options.range === true ) {
+            this._secondHandle = (await this._page.$$(".jquery-slider-handle"))[1];
+        } else this._secondHandle = null;
+
+        if ( options && options.tooltip ) {
+            this._tooltip = await this._page.$('.jquery-slider-tooltip');
+        } else this._tooltip = null;
     }
 }

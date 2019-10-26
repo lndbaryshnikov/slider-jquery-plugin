@@ -15,7 +15,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
 
     test("tooltip rendered correctly", () => {
         tooltipView.setOptions(
-            defaultsWithTooltip.value,
+            defaultsWithTooltip.value as number,
             defaultsWithTooltip.orientation,
         );
 
@@ -48,7 +48,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
         defaultsWithTooltipFunction.tooltip = ( value: number ) => value + "$";
 
         tooltipView.setOptions(
-            defaultsWithTooltipFunction.value,
+            defaultsWithTooltipFunction.value as number,
             defaultsWithTooltipFunction.orientation,
             defaultsWithTooltipFunction.tooltip
         );

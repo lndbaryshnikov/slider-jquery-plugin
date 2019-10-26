@@ -13,7 +13,10 @@ class SliderPresenter {
     private _pluginsFactory = new SliderPluginsFactory();
 
     private _plugins = {
-        tooltipView: this._pluginsFactory.createView("tooltip") as SliderTooltipView,
+        tooltipView: {
+            first: this._pluginsFactory.createView("tooltip") as SliderTooltipView,
+            second: this._pluginsFactory.createView("tooltip") as SliderTooltipView,
+        },
         labelsView: this._pluginsFactory.createView("labels") as SliderLabelsView
     };
 
@@ -73,15 +76,20 @@ class SliderPresenter {
 
         this._view.render(root);
 
-        const tooltipView = this._plugins.tooltipView;
+        const firstTooltipView = this._plugins.tooltipView.first;
+        const secondTooltipView = this._plugins.tooltipView.second;
         const labelsView = this._plugins.labelsView;
 
         if ( labelsView.state.isSet ) {
             this._view.renderPlugin("labels", labelsView);
         }
 
-        if ( tooltipView.state.isSet ) {
-            this._view.renderPlugin("tooltip", tooltipView);
+        if ( firstTooltipView.state.isSet ) {
+            this._view.renderPlugin("tooltip", firstTooltipView, "first");
+        }
+
+        if ( secondTooltipView.state.isSet ) {
+            this._view.renderPlugin("tooltip", secondTooltipView, "second");
         }
 
         this._data.rendered = true;
@@ -123,15 +131,36 @@ class SliderPresenter {
     }
 
     private _toggleTooltip(options: Options) {
-        const tooltipView = this._plugins.tooltipView;
+        const firstTooltipView = this._plugins.tooltipView.first;
+        const secondTooltipView = this._plugins.tooltipView.second;
 
         if ( options.tooltip ) {
-            tooltipView.setOptions(options.value, options.orientation,
-                typeof options.tooltip === "function" ? options.tooltip : null);
+            if ( options.range !== true ) {
+                firstTooltipView.setOptions((options.value as number), options.orientation,
+                    typeof options.tooltip === "function" ? options.tooltip : null);
+            } else {
+                firstTooltipView.setOptions((options.value as number[])[0], options.orientation,
+                    typeof options.tooltip === "function" ? options.tooltip : null);
 
-            if ( this._data.rendered ) this._view.renderPlugin("tooltip", tooltipView);
+                secondTooltipView.setOptions((options.value as number[])[1], options.orientation,
+                    typeof options.tooltip === "function" ? options.tooltip : null);
+            }
 
-        } else if ( this._plugins.tooltipView.state.isRendered ) this._plugins.tooltipView.destroy();
+            if ( this._data.rendered ) {
+                this._view.renderPlugin("tooltip", firstTooltipView, "first");
+
+                if ( options.range === true ) {
+                    this._view.renderPlugin("tooltip", secondTooltipView, "second");
+                }
+            }
+
+        } else if ( firstTooltipView.state.isRendered ) {
+            this._view.destroyPlugin("tooltip", firstTooltipView);
+
+            if ( options.range === true && secondTooltipView.state.isRendered ) {
+                this._view.destroyPlugin("tooltip", secondTooltipView);
+            }
+        }
     }
 
     private _toggleLabels(options: Options) {
@@ -169,19 +198,32 @@ class SliderPresenter {
     }
 
     validateValueCallback() {
-        return (value: Options["value"]) => {
-            this._model.refreshValue(value);
+        return (valueData: [number, "first" | "second"]) => {
+            this._model.refreshValue(valueData);
         }
     }
 
     renderHandlePositionCallback() {
         return () => {
-            const value = (this._model.getOptions() as Options).value;
-            const tooltip = (this._model.getOptions() as Options).tooltip;
+            const options = this._model.getOptions() as Options;
+
+            const value = options.value;
+            const tooltip = options.tooltip;
+            const range = options.range;
+
+            const firstTooltipView = this._plugins.tooltipView.first;
+            const secondTooltipView = this._plugins.tooltipView.second;
 
             this._view.updateHandlePosition(value);
-            if ( this._plugins.tooltipView.state.isRendered ) {
-                this._plugins.tooltipView.setText(value,
+
+            if ( firstTooltipView.state.isRendered ) {
+                firstTooltipView.setText(range !== true ? value as number : (value as number[])[0],
+                    typeof tooltip === "function" ? tooltip : null
+                );
+            }
+
+            if ( secondTooltipView.state.isRendered ) {
+                secondTooltipView.setText(range !== true ? value as number : (value as number[])[1],
                     typeof tooltip === "function" ? tooltip : null
                 );
             }

@@ -1,4 +1,4 @@
-import SliderModel, {Options, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
+import SliderModel, {Options, UserOptions} from "../../../src/MVP modules/Slider/SliderModel";
 
 describe("When options object is passed", () => {
     let model: SliderModel;

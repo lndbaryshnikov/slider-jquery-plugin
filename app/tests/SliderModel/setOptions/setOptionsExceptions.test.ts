@@ -1,4 +1,4 @@
-import SliderModel, {Options, ValueFunction, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
+import SliderModel, {Options, ValueFunction, UserOptions} from "../../../src/MVP modules/Slider/SliderModel";
 
 describe("setOptionsMethod exceptions", () => {
 
@@ -29,7 +29,7 @@ describe("setOptionsMethod exceptions", () => {
     test("throws error when main passes wrong class _options", () => {
         expect(() => {
             model.setOptions({classes: {'jquery-sl': 'my-slider'}} as UserOptions);
-        }).toThrow(errors.classes.incorrectFormat);
+        }).toThrow(errors.classes.incorrectType);
     });
 
     test("throws error when main adds whitespaces in slider's main classes", () => {
@@ -110,7 +110,7 @@ describe("setOptionsMethod exceptions", () => {
         }).toThrow(errors.classes.customIsNotString);
     });
 
-    test("throws extension when type of 'min', 'max', 'step' or 'value' is not 'string'", () => {
+    test("throws extension when type of 'min', 'max', 'step' or 'value' is not 'number'", () => {
         const checkStringType = (type: 'min' | 'max' | 'step' | 'value') => {
             expect(() => {
                 model.setOptions();
@@ -123,13 +123,42 @@ describe("setOptionsMethod exceptions", () => {
         checkStringType("min");
         checkStringType("max");
         checkStringType("step");
-        checkStringType("value");
+    });
+
+    test("throws exception when type of 'value' is not number or array", () => {
+        const error = errors.value.incorrectType;
+
+        expect(() => {
+            model.setOptions({ value: "20" } as unknown as UserOptions);
+        }).toThrow(error);
+
+        expect(() => {
+            model.setOptions();
+            model.setOptions("value", "20");
+        }).toThrow(error);
+    });
+
+    test("throws exception when range is true but value is not an array", () => {
+        expect(( ) => {
+            model.setOptions({ range: true });
+        }).toThrow(errors.value.rangeTrue);
+    });
+
+    test("throws exception when range is not true but value is array", () => {
+        expect(( ) => {
+            model.setOptions({ value: [1,99] });
+        }).toThrow(errors.value.rangeNotTrue);
     });
 
     test("throws exception when value, as single option passes, goes beyond min and max", () => {
         expect(() => {
             model.setOptions({min: 30, max: 120, value: 40});
             model.setOptions("value", 20);
+        }).toThrow(errors.value.beyond);
+
+        expect(() => {
+            model.setOptions({min: 30, max: 120, value: [40, 60], range: true});
+            model.setOptions("value", [20, 60]);
         }).toThrow(errors.value.beyond);
     });
 
@@ -138,12 +167,22 @@ describe("setOptionsMethod exceptions", () => {
             model.setOptions({value: 40});
             model.setOptions("max", 30);
         }).toThrow(errors.minAndMax.lessOrMore("max", "less"));
+
+        expect(() => {
+            model.setOptions({value: [20, 30], range: true});
+            model.setOptions("max", 25);
+        }).toThrow(errors.minAndMax.lessOrMore("max", "less"));
     });
 
     test("throws exception when 'min', as single option passes, more than 'value'", () => {
         expect(() => {
             model.setOptions({value: 50, max: 120});
             model.setOptions("min", 60);
+        }).toThrow(errors.minAndMax.lessOrMore("min", "more"));
+
+        expect(() => {
+            model.setOptions({value: [50, 60], range: true, max: 120});
+            model.setOptions("min", 55);
         }).toThrow(errors.minAndMax.lessOrMore("min", "more"));
     });
 
@@ -155,6 +194,10 @@ describe("setOptionsMethod exceptions", () => {
         }).toThrow(error);
 
         expect(() => {
+            model.setOptions({range: true, value: [100, 150]});
+        }).toThrow(error);
+
+        expect(() => {
             model.setOptions({min: 10});
         }).toThrow(error);
 
@@ -163,7 +206,15 @@ describe("setOptionsMethod exceptions", () => {
         }).toThrow(error);
 
         expect(() => {
+            model.setOptions({range: true, value: [50, 60], min: 10, max: 45});
+        }).toThrow(error);
+
+        expect(() => {
             model.setOptions({value: 50, max: 100, min: 60});
+        }).toThrow(error);
+
+        expect(() => {
+            model.setOptions({range: true, value: [40, 50], max: 100, min: 60});
         }).toThrow(error);
     });
 

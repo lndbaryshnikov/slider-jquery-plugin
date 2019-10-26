@@ -19,7 +19,7 @@ export type Options = {
     min: number,
     max: number,
     step: number,
-    value: number,
+    value: number | number[],
     orientation: 'horizontal' | 'vertical',
     range: 'min' | 'max' | boolean,
     tooltip: boolean | ValueFunction,
@@ -34,7 +34,7 @@ export type UserOptions = {
     min?: number,
     max?: number,
     step?: number,
-    value?: number,
+    value?: number | number[],
     orientation?: 'horizontal' | 'vertical',
     range?: 'min' | 'max' | boolean,
     tooltip?: boolean | ValueFunction,
@@ -71,7 +71,7 @@ class SliderModel {
             vertical: "jquery-slider-vertical" as keyof Options["classes"]
         },
         range: "jquery-slider-range" as keyof Options["classes"],
-        handle: "jquery-slider-handle" as keyof Options["classes"]
+        firstHandle: "jquery-slider-handle" as keyof Options["classes"]
     };
 
     private static _optionsErrors = {
@@ -91,10 +91,14 @@ class SliderModel {
             twoExtra: "Only option 'classes' can have two extra arguments",
             customIsNotString: "Class is incorrect (should be a string)",
             extraWs: "Options are incorrect (main classes shouldn't have extra whitespaces)",
-            incorrectFormat: "Options are incorrect (classes should correspond the required format)"
+            incorrectType: "Options are incorrect (classes should correspond the required format)"
         },
         value: {
-            beyond: "Options are incorrect ('value' cannot go beyond 'min' and 'max')"
+            beyond: "Options are incorrect ('value' cannot go beyond 'min' and 'max')",
+            incorrectType: "Options are incorrect ('value' can only be of type 'number' or 'array')",
+            incorrectArray: "Options are incorrect ('value' array should contain two numbers)",
+            rangeNotTrue: "Options are incorrect (array is allowed for 'value' when 'range' is true)",
+            rangeTrue: "Options are incorrect ('value' should be array when 'range' is true)"
         },
         minAndMax: {
             lessOrMore: (option: string, lessOrMore: "less" | "more") => {
@@ -185,11 +189,27 @@ class SliderModel {
         };
     };
 
-    refreshValue(value: Options["value"]) {
+    refreshValue(valueData: [number, string]) {
+        let value = valueData[0];
+        const valueNumber = valueData[1];
+
         if ( value < this._options.min ) value = this._options.min;
         if ( value > this._options.max ) value = this._options.max;
 
-        this._options.value = value;
+        if ( typeof this._options.value === "number" && this._options.range !== true ) {
+            this._options.value = value;
+        }
+
+        if ( Array.isArray(this._options.value) && this._options.range === true ) {
+            const comparingValueIndex = valueNumber === "first" ? 1 : 0;
+
+            if ( value === this._options.value[comparingValueIndex] ) {
+                const multiplier = valueNumber === "first" ? -1 : 1;
+                value += multiplier * this._options.step;
+            }
+
+            (this._options.value as number[])[valueNumber === "first" ? 0 : 1] = value;
+        }
 
         this._valueUpdatedSubject.notifyObservers();
     }
@@ -225,7 +245,7 @@ class SliderModel {
             const userClasses: (keyof UserOptions['classes'])[] = [
                 this._classes.slider.main,
                 this._classes.range,
-                this._classes.handle
+                this._classes.firstHandle
             ];
 
             if ( className && !userClasses.includes(className) ) {
@@ -393,13 +413,28 @@ class SliderModel {
                     return { result: false };
                 }
 
-                if ( (option === "min" && restOptions[0] > this._options.value) ||
-                    option === "max" && restOptions[0] < this._options.value) {
+                if ( typeof this._options.value === "number" ) {
+                    if ((option === "min" && restOptions[0] > this._options.value) ||
+                        option === "max" && restOptions[0] < this._options.value) {
 
-                    this._throw(errors.minAndMax.lessOrMore(option,
-                        option === "min" ? 'more' : 'less'));
+                        this._throw(errors.minAndMax.lessOrMore(option,
+                            option === "min" ? 'more' : 'less'));
 
-                    return { result: false };
+                        return {result: false};
+                    }
+                }
+                if ( Array.isArray(this._options.value) ) {
+                    if ( (option === "min" && restOptions[0] > this._options.value[0] ||
+                    restOptions[0] > this._options.value[1]) ||
+                        (option === "max" && restOptions[0] < this._options.value[0] ||
+                    restOptions[0] < this._options.value[1]) ) {
+
+                        this._throw(errors.minAndMax.lessOrMore(option,
+                            option === "min" ? 'more' : 'less'));
+
+                        return {result: false};
+                    }
+
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["min" | "max"];
@@ -428,7 +463,7 @@ class SliderModel {
             const classNames = [
                 this._classes.slider.main,
                 this._classes.range,
-                this._classes.handle
+                this._classes.firstHandle
             ];
 
             if ( typeof restOptions[0] !== 'string' ||
@@ -492,7 +527,7 @@ class SliderModel {
         const defaultClassesKeys = Object.keys(defaults.classes);
 
         if ( !arrayEquals(classesKeys, defaultClassesKeys) ) {
-            this._throw(errors.classes.incorrectFormat);
+            this._throw(errors.classes.incorrectType);
 
             return false;
         }
@@ -517,7 +552,13 @@ class SliderModel {
             return true;
         };
 
-        if ( !checkType("number", options, "min", "max", "step", "value") ) {
+        if ( !checkType("number", options, "min", "max", "step") ) {
+            return false;
+        }
+
+        if ( typeof options.value !== "number" && !Array.isArray(options.value) ) {
+            this._throw(errors.value.incorrectType);
+
             return false;
         }
 
@@ -533,10 +574,28 @@ class SliderModel {
             return false;
         }
 
-        if ( !(options.min <= options.value && options.max >= options.value) ) {
-            this._throw(errors.value.beyond);
+        if ( options.range !== true && Array.isArray(options.value) ) {
+            this._throw(errors.value.rangeNotTrue);
+        }
 
-            return false;
+        if ( options.range === true && !Array.isArray(options.value) ) {
+            this._throw(errors.value.rangeTrue);
+        }
+
+        if ( Array.isArray(options.value) ) {
+            for (let value of options.value) {
+                if ( !(options.min <= value && options.max >= value) ) {
+                    this._throw(errors.value.beyond);
+
+                    return false;
+                }
+            }
+        } else {
+            if (!(options.min <= options.value && options.max >= options.value)) {
+                this._throw(errors.value.beyond);
+
+                return false;
+            }
         }
 
         if ( options.step > (options.max - options.min) || options.step <= 0 ) {
@@ -621,7 +680,7 @@ class SliderModel {
 
             options.classes[this._classes.slider.complete(orientation)] = values[0];
             options.classes[this._classes.range] = values[1];
-            options.classes[this._classes.handle] = values[2];
+            options.classes[this._classes.firstHandle] = values[2];
         }
 
         return {
