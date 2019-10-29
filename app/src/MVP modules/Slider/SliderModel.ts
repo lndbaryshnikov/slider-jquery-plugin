@@ -1,6 +1,5 @@
 import arrayEquals from "../../functions/common/arrayEquals";
 import Observer from "../Observer";
-import Event = JQuery.Event;
 
 export type HorizontalClasses = {
     "jquery-slider jquery-slider-horizontal": string,
@@ -16,7 +15,7 @@ export type VerticalClasses = {
 
 export type ValueFunction = (value?: Options["value"]) => string | number;
 
-export type changeFunction = ((value: number | number[]) => void);
+export type ChangeFunction = ((value: number | number[]) => void);
 
 export type Options = {
     min: number,
@@ -29,7 +28,7 @@ export type Options = {
     animate: "slow" | "fast" | false | number,
     labels: true | false | ValueFunction,
     pips: boolean,
-    change: changeFunction | false,
+    change: ChangeFunction | false,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -45,7 +44,7 @@ export type UserOptions = {
     animate?: "slow" | "fast" | false | number,
     labels?: true | false | ValueFunction,
     pips?: boolean,
-    change?: changeFunction | false
+    change?: ChangeFunction | false
 
     classes?: {
         "jquery-slider"?: string,

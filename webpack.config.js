@@ -11,7 +11,6 @@ const fonts = require('./webpack/fonts');
 const devserver = require('./webpack/devserver');
 const providePlugin = require('./webpack/provide-plugin');
 const typescript = require('./webpack/typescript');
-let glob = require("glob");
 
 const PATHS = {
     src: path.join(__dirname, 'app/src/'),
@@ -21,13 +20,6 @@ const PATHS = {
 let entry = PATHS.src + 'jquery-slider.ts';
 let outputPath = PATHS.dist;
 let outputFilename = './js/index.js';
-
-if (process.env.TESTBUILD) {
-    entry = glob.sync(__dirname + "/app/dom-tests/**/*.test.ts");
-    outputPath = __dirname + '/dom-tests-dist/';
-    outputFilename = 'tests.js';
-}
-
 
 const common = merge([
     {
@@ -43,14 +35,6 @@ const common = merge([
         },
 
         devtool: 'source-map',
-        //For jsdom when I tried to run dom-tests om Node.js
-        // node: {
-        //     net: 'empty',
-        //     tls: 'empty',
-        //     dns: 'empty',
-        //     fs: 'empty',
-        //     child_process: 'empty'
-        // }
     },
     babel(),
     styleExtract(),

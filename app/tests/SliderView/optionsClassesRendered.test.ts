@@ -1,4 +1,4 @@
-import {getClassList} from "../../src/functions/private/view.private";
+import {getClassList} from "../../src/functions/common/getClassList";
 import SliderModel, {HorizontalClasses} from "../../src/MVP modules/Slider/SliderModel";
 import SliderPresenter from "../../src/MVP modules/Slider/SliderPresenter";
 import SliderView from "../../src/MVP modules/Slider/SliderView";
