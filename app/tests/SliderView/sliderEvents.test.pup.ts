@@ -750,12 +750,34 @@ describe("slider events", () => {
 
             expect(Math.ceil(newRangeCoords.width)).toBe(Math.ceil(newFirstHandleCoords.width));
         }, timeout);
+    });
+
+    describe("common events", () => {
+        beforeEach(async () => {
+            await sliderPage.createSlider({ animate: false });
+
+            sliderCoords = await sliderPage.getSliderCoords();
+            rangeCoords = await sliderPage.getRangeCoords();
+            firstHandleCoords = await sliderPage.getFirstHandleCoords();
+
+            sliderMiddle = await sliderPage.getSliderMiddle();
+        });
+
+        afterEach(async () => {
+            await sliderPage.remove();
+        });
 
         test("option change works with input for value", async () => {
             await page.evaluate(() => {
-                const input = $("<input>");
-                const changeFunction = (handle: JQuery, value: number) => {
-                    input[0].innerHTML = String(value);
+                const input = document.createElement("input");
+                document.body.appendChild(input);
+
+                const changeFunction = (value: number | number[]) => {
+                    if ( !Array.isArray(value) ) {
+                        input.value = String(value);
+                    } else {
+                        input.value = `${value[0]} - ${value[1]}`
+                    }
                 };
                 ($(".slider") as JQueryElementWithSlider)
                     .slider("options", "change", changeFunction);
@@ -763,19 +785,21 @@ describe("slider events", () => {
 
             const compareValue = async () => {
                 const inputValue = await page.evaluate(() => {
-                    return (document.querySelector("input")).innerHTML;
+                    return (document.querySelector("input")).value;
                 });
 
                 const valueOption = await sliderPage.getOptions("value");
-                
-                expect(inputValue).toBe(valueOption);
+
+                expect(String(inputValue))
+                    .toBe(Array.isArray(valueOption) ? `${valueOption[0]} - ${valueOption[1]}` :
+                        String(valueOption));
             };
-            
+
             const testValues = async (mode: "set" | "move", valueOrPercent: number) => {
                 if ( mode === "set" ) {
                     await sliderPage.setOptions("value", valueOrPercent);
                 }
-                
+
                 if ( mode === "move" ) {
                     await sliderPage
                         .moveHandleToCoords(sliderCoords.left + sliderCoords.width * valueOrPercent / 100,
@@ -789,6 +813,10 @@ describe("slider events", () => {
             await testValues("move", 50);
             await testValues("set", 70);
             await testValues("move", 70);
+
+            await page.evaluate(() => {
+                document.querySelector("input").remove();
+            });
         }, timeout);
     });
 });

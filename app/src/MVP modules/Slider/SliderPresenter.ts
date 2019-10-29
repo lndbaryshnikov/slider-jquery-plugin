@@ -68,10 +68,10 @@ class SliderPresenter {
 
     render(root: HTMLElement) {
         if ( !this._data.setUp ) {
-            throw new Error('Slider isn\'t setUp');
+            throw new Error("Slider isn\'t setUp");
         }
         if ( !!this._data.rendered ) {
-            throw new Error('Slider is already rendered');
+            throw new Error("Slider is already rendered");
         }
 
         this._view.render(root);
@@ -210,6 +210,7 @@ class SliderPresenter {
             const value = options.value;
             const tooltip = options.tooltip;
             const range = options.range;
+            const change = options.change;
 
             const firstTooltipView = this._plugins.tooltipView.first;
             const secondTooltipView = this._plugins.tooltipView.second;
@@ -226,6 +227,10 @@ class SliderPresenter {
                 secondTooltipView.setText(range !== true ? value as number : (value as number[])[1],
                     typeof tooltip === "function" ? tooltip : null
                 );
+            }
+
+            if ( !!change && typeof change === "function" ) {
+                change(options.value);
             }
         }
     }

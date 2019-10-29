@@ -16,6 +16,8 @@ export type VerticalClasses = {
 
 export type ValueFunction = (value?: Options["value"]) => string | number;
 
+export type changeFunction = ((value: number | number[]) => void);
+
 export type Options = {
     min: number,
     max: number,
@@ -27,7 +29,7 @@ export type Options = {
     animate: "slow" | "fast" | false | number,
     labels: true | false | ValueFunction,
     pips: boolean,
-    change: ((handle: JQuery, value: number) => void) | false,
+    change: changeFunction | false,
 
     classes: HorizontalClasses | VerticalClasses
 };
@@ -43,7 +45,7 @@ export type UserOptions = {
     animate?: "slow" | "fast" | false | number,
     labels?: true | false | ValueFunction,
     pips?: boolean,
-    change?: ((handle: JQuery, value: number) => void) | false
+    change?: changeFunction | false
 
     classes?: {
         "jquery-slider"?: string,
@@ -666,10 +668,7 @@ class SliderModel {
         if ( typeof options.change === "function" ) {
             const func = options.change;
 
-            const div = $("<div></div>");
-            const value = 50;
-
-            if ( typeof func(div, value) !== "undefined" ) {
+            if ( typeof func(options.value) !== "undefined" ) {
                 this._throw(errors.change.incorrectFunction);
 
                 return;
