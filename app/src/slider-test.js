@@ -50,9 +50,8 @@ $('.slider-4').slider({
 $('.slider-5').slider({
     animate: false,
     range: true,
-    value: [0, 100]
-});
-
-$('.slider-5').slider("options", {
-    step: 20
+    max: 10,
+    value: [0, 10],
+    labels: true,
+    step: 1
 });

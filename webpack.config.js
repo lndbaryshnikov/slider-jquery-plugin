@@ -19,11 +19,14 @@ const PATHS = {
 
 const common = merge([
     {
-        entry: PATHS.src + 'jquery-slider.ts',
+        entry: {
+            "jquery-slider": PATHS.src + 'jquery-slider.ts',
+            "jquery-slider-demo": PATHS.src + 'slider-demo.ts'
+        },
 
         output: {
             path: PATHS.dist,
-            filename: './js/index.js'
+            filename: './js/[name].js'
         },
 
         externals: {

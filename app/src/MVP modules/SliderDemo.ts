@@ -32,9 +32,15 @@ export default class SliderDemo {
     private _configPanel: ConfigPanel;
     private _wrapper: HTMLDivElement;
 
-    constructor(private _slider: SliderPresenter, private _root: HTMLDivElement) {
+    constructor(private _slider: SliderPresenter, private _root: HTMLElement) {
         this._wrapper = document.createElement("div");
         this._wrapper.setAttribute("class", "slider-demo__wrapper");
+
+        this._slider.setOptions({
+            labels: true,
+            tooltip: true,
+            max: 10
+        });
 
         this._createPanel();
         this._addHandlers();
@@ -42,11 +48,7 @@ export default class SliderDemo {
 
     render() {
         this._root.append(this._wrapper);
-        this._slider.initialize(this._wrapper, {
-            labels: true,
-            tooltip: true,
-            max: 10
-        });
+        this._slider.render(this._wrapper);
         this._wrapper.append(this._configPanel.wrapper);
     }
 
@@ -160,9 +162,13 @@ export default class SliderDemo {
             pips: getItem("select", "Tooltip:", ["true", "false"]),
         };
 
-        const elements = Object.keys(this._configPanel).slice(1);
+        const items = Object.values(this._configPanel)
+            .slice(1)
+            .map((item: SelectItem | ValueItem | InputItem) => {
+                return item.wrapper;
+            });
 
-        this._configPanel.wrapper.append(...elements);
+        this._configPanel.wrapper.append(...items);
     }
 
     private _refreshSlider(option: keyof Options, value: string | number | boolean | number[]) {
