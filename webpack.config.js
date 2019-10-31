@@ -17,17 +17,13 @@ const PATHS = {
     dist: path.join(__dirname, 'dist')
 };
 
-let entry = PATHS.src + 'jquery-slider.ts';
-let outputPath = PATHS.dist;
-let outputFilename = './js/index.js';
-
 const common = merge([
     {
-        entry: entry,
+        entry: PATHS.src + 'jquery-slider.ts',
 
         output: {
-            path: outputPath,
-            filename: outputFilename
+            path: PATHS.dist,
+            filename: './js/index.js'
         },
 
         externals: {
