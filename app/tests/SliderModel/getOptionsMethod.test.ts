@@ -1,8 +1,8 @@
 import SliderModel, {Options} from "../../src/MVP modules/Slider/SliderModel";
 
-describe('getOptions method', () => {
+describe("getOptions method", () => {
     let model: SliderModel;
-    let errors = SliderModel.optionsErrors;
+    const errors = SliderModel.optionsErrors;
 
     beforeEach(() => {
         model = new SliderModel();
@@ -21,21 +21,21 @@ describe('getOptions method', () => {
     test("return options object when no arguments passed", () => {
         model.setOptions();
 
-        expect(model.getOptions()).toEqual(SliderModel.getDefaultOptions('horizontal'));
+        expect(model.getOptions()).toEqual(SliderModel.getDefaultOptions("horizontal"));
     });
 
     test("return single option when only option name is provided", () => {
        model.setOptions();
 
-       expect(model.getOptions('max')).toBe(SliderModel.getDefaultOptions('horizontal').max);
-       expect(model.getOptions('classes')).toEqual(SliderModel.getDefaultOptions('horizontal').classes)
+       expect(model.getOptions("max")).toBe(SliderModel.getDefaultOptions("horizontal").max);
+       expect(model.getOptions("classes")).toEqual(SliderModel.getDefaultOptions("horizontal").classes)
     });
 
     test("throws exception when incorrect options name provided", () => {
         model.setOptions();
 
         expect(( ) => {
-            model.getOptions('minimal' as keyof Options);
+            model.getOptions("minimal" as keyof Options);
         }).toThrow(errors.options.notExisting("minimal"));
     });
 
@@ -47,9 +47,9 @@ describe('getOptions method', () => {
             }
         });
 
-        expect(model.getOptions( 'classes', 'jquery-slider' as keyof Options['classes'] ))
+        expect(model.getOptions( "classes", "jquery-slider" as keyof Options["classes"] ))
             .toBe("");
-        expect(model.getOptions( 'classes', 'jquery-slider-range' as keyof Options['classes'] ))
+        expect(model.getOptions( "classes", "jquery-slider-range" as keyof Options["classes"] ))
             .toBe("my-range");
     });
 
@@ -57,11 +57,11 @@ describe('getOptions method', () => {
         model.setOptions();
 
         expect(( ) => {
-            model.getOptions('classes', 'jquery-slider jquery-slider-horizontal' as keyof Options['classes']);
+            model.getOptions("classes", "jquery-slider jquery-slider-horizontal" as keyof Options["classes"]);
         }).toThrow(errors.classes.notExisting("jquery-slider jquery-slider-horizontal"));
 
         expect(( ) => {
-            model.getOptions('classes', 'jquery-slider-my-range' as keyof Options['classes']);
+            model.getOptions("classes", "jquery-slider-my-range" as keyof Options["classes"]);
         }).toThrow(errors.classes.notExisting("jquery-slider-my-range"));
     });
 
@@ -69,7 +69,7 @@ describe('getOptions method', () => {
         model.setOptions();
 
         expect(() => {
-            model.getOptions('min', "jquery-slider-handle");
+            model.getOptions("min", "jquery-slider-handle");
         }).toThrow(errors.classes.contains);
     });
 

@@ -20,20 +20,20 @@ const PATHS = {
 const common = merge([
     {
         entry: {
-            "jquery-slider": PATHS.src + 'jquery-slider.ts',
-            "jquery-slider-demo": PATHS.src + 'slider-demo.ts'
+            "jquery-slider": PATHS.src + "jquery-slider.ts",
+            "jquery-slider-demo": PATHS.src + "slider-demo.ts"
         },
 
         output: {
             path: PATHS.dist,
-            filename: './js/[name].js'
+            filename: "./js/[name].js"
         },
 
         externals: {
-            jquery: 'jQuery'
+            jquery: "jQuery"
         },
 
-        devtool: 'source-map',
+        devtool: "source-map",
     },
     babel(),
     styleExtract(),
@@ -45,10 +45,10 @@ const common = merge([
 
 
 module.exports = function(env){
-    if (env === 'production') {
+    if (env === "production") {
         return common;
     }
-    if (env === 'development') {
+    if (env === "development") {
         return merge([
             {},
             common,

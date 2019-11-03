@@ -1,10 +1,10 @@
 const clone = (obj) => {
     class Create {
         constructor() {
-            for (let item in obj) {
+            for (const item in obj) {
                 if (obj.hasOwnProperty(item)) {
-                    this[item] = (typeof obj[item] ==
-                        'object') ? clone(obj[item]) : obj[item];
+                    this[item] = (typeof obj[item] ===
+                        "object") ? clone(obj[item]) : obj[item];
                 }
             }
         }

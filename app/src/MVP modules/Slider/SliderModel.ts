@@ -2,15 +2,15 @@ import arrayEquals from "../../functions/common/arrayEquals";
 import Observer from "../Observer";
 
 export type HorizontalClasses = {
-    "jquery-slider jquery-slider-horizontal": string,
-    "jquery-slider-range": string,
-    "jquery-slider-handle": string
+    "jquery-slider jquery-slider-horizontal": string;
+    "jquery-slider-range": string;
+    "jquery-slider-handle": string;
 }
 
 export type VerticalClasses = {
     "jquery-slider jquery-slider-vertical": string;
-    "jquery-slider-range": string,
-    "jquery-slider-handle": string
+    "jquery-slider-range": string;
+    "jquery-slider-handle": string;
 }
 
 export type ValueFunction = (value?: Options["value"]) => string | number;
@@ -18,39 +18,39 @@ export type ValueFunction = (value?: Options["value"]) => string | number;
 export type ChangeFunction = ((value: number | number[]) => void);
 
 export type Options = {
-    min: number,
-    max: number,
-    step: number,
-    value: number | number[],
-    orientation: 'horizontal' | 'vertical',
-    range: 'min' | 'max' | boolean,
-    tooltip: boolean | ValueFunction,
-    animate: "slow" | "fast" | false | number,
-    labels: true | false | ValueFunction,
-    pips: boolean,
-    change: ChangeFunction | false,
+    min: number;
+    max: number;
+    step: number;
+    value: number | number[];
+    orientation: "horizontal" | "vertical";
+    range: "min" | "max" | boolean;
+    tooltip: boolean | ValueFunction;
+    animate: "slow" | "fast" | false | number;
+    labels: true | false | ValueFunction;
+    pips: boolean;
+    change: ChangeFunction | false;
 
-    classes: HorizontalClasses | VerticalClasses
+    classes: HorizontalClasses | VerticalClasses;
 };
 
 export type UserOptions = {
-    min?: number,
-    max?: number,
-    step?: number,
-    value?: number | number[],
-    orientation?: 'horizontal' | 'vertical',
-    range?: 'min' | 'max' | boolean,
-    tooltip?: boolean | ValueFunction,
-    animate?: "slow" | "fast" | false | number,
-    labels?: true | false | ValueFunction,
-    pips?: boolean,
-    change?: ChangeFunction | false
+    min?: number;
+    max?: number;
+    step?: number;
+    value?: number | number[];
+    orientation?: "horizontal" | "vertical";
+    range?: "min" | "max" | boolean;
+    tooltip?: boolean | ValueFunction;
+    animate?: "slow" | "fast" | false | number;
+    labels?: true | false | ValueFunction;
+    pips?: boolean;
+    change?: ChangeFunction | false;
 
     classes?: {
-        "jquery-slider"?: string,
-        "jquery-slider-range"?: string,
-        "jquery-slider-handle"?: string
-    }
+        "jquery-slider"?: string;
+        "jquery-slider-range"?: string;
+        "jquery-slider-handle"?: string;
+    };
 };
 
 export type RestOptionsToSet = (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]]);
@@ -65,11 +65,11 @@ class SliderModel {
     private _classes = {
         slider: {
             main: "jquery-slider" as keyof UserOptions["classes"],
-            orientation: (orientation: 'horizontal' | 'vertical') => {
-                return `jquery-slider-${orientation}` as keyof Options['classes'];
+            orientation: (orientation: "horizontal" | "vertical"): keyof Options["classes"] => {
+                return `jquery-slider-${orientation}` as keyof Options["classes"];
             },
-            complete: (orientation: 'horizontal' | 'vertical') => {
-                return `jquery-slider jquery-slider-${orientation}` as keyof Options['classes'];
+            complete: (orientation: "horizontal" | "vertical"): keyof Options["classes"] => {
+                return `jquery-slider jquery-slider-${orientation}` as keyof Options["classes"];
             },
             horizontal: "jquery-slider-horizontal" as keyof Options["classes"],
             vertical: "jquery-slider-vertical" as keyof Options["classes"]
@@ -81,16 +81,16 @@ class SliderModel {
     private static _optionsErrors = {
         notSet: "Options are not set (to set options pass options object)",
         alreadySet: "Options are already set (to change - provide options)",
-        incorrectOptions: 'Incorrect options (should be object or key - value pairs)',
+        incorrectOptions: "Incorrect options (should be object or key - value pairs)",
         incorrectOptionsObject: "Options are incorrect (should correspond the required format)",
         options: {
-            notExisting: (option: string) => `Option "${option}" doesn't exist`,
-            incorrectType: (option: string, type: string) => {
+            notExisting: (option: string): string => `Option "${option}" doesn't exist`,
+            incorrectType: (option: string, type: string): string => {
                 return `Options are incorrect (option '${option}' should be of type '${type}')`
             },
         },
         classes: {
-            notExisting: (className: string) => `Class "${className}" does not exist`,
+            notExisting: (className: string): string => `Class "${className}" does not exist`,
             contains: "Only option 'classes' contains classes",
             twoExtra: "Only option 'classes' can have two extra arguments",
             customIsNotString: "Class is incorrect (should be a string)",
@@ -105,7 +105,7 @@ class SliderModel {
             rangeTrue: "Options are incorrect ('value' should be array when 'range' is true)"
         },
         minAndMax: {
-            lessOrMore: (option: string, lessOrMore: "less" | "more") => {
+            lessOrMore: (option: string, lessOrMore: "less" | "more"): string => {
                 return `Options are incorrect (option '${option}' cannot be ${lessOrMore} than 'value')`;
             }
         },
@@ -140,46 +140,45 @@ class SliderModel {
         }
     };
 
-    whenOptionsAreIncorrect(callback: (error: string) => void) {
+    whenOptionsAreIncorrect(callback: (error: string) => void): void {
         this._incorrectOptionsReceivedSubject.addObserver((error: string) => {
             callback(error);
         });
     }
 
-    whenOptionsSet(callback: () => void) {
+    whenOptionsSet(callback: () => void): void {
         this._optionsSetSubject.addObserver(() => {
             callback();
         });
     }
 
-    whenValueUpdated(callback: () => void) {
+    whenValueUpdated(callback: () => void): void {
        this._valueUpdatedSubject.addObserver(() => {
            callback();
        }) ;
-    };
+    }
 
     static get optionsErrors() {
         return SliderModel._optionsErrors;
     }
 
-    static getDefaultOptions(orientation: 'horizontal' | 'vertical' | undefined): Options {
+    static getDefaultOptions(orientation: "horizontal" | "vertical" | undefined): Options {
+        if ( orientation === undefined ) orientation = "horizontal";
+        let classes: Options["classes"];
 
-        if ( orientation === undefined ) orientation = 'horizontal';
-        let classes: Options['classes'];
-
-        if ( orientation === 'horizontal' ) {
+        if ( orientation === "horizontal" ) {
             classes = {
                 "jquery-slider jquery-slider-horizontal": "",
                 "jquery-slider-range": "",
                 "jquery-slider-handle": ""
-            }
+            };
         }
-        if ( orientation === 'vertical' ) {
+        if ( orientation === "vertical" ) {
             classes = {
                 "jquery-slider jquery-slider-vertical": "",
                 "jquery-slider-range": "",
                 "jquery-slider-handle": ""
-            }
+            };
         }
 
         return {
@@ -195,11 +194,11 @@ class SliderModel {
             labels: false,
             change: false,
 
-            classes: classes
+            classes: classes,
         };
-    };
+    }
 
-    refreshValue(valueData: [number, string]) {
+    refreshValue(valueData: [number, string]): void {
         let value = valueData[0];
         const valueNumber = valueData[1];
 
@@ -218,13 +217,13 @@ class SliderModel {
                 value += multiplier * this._options.step;
             }
 
-            (this._options.value as number[])[valueNumber === "first" ? 0 : 1] = value;
+            (this._options.value)[valueNumber === "first" ? 0 : 1] = value;
         }
 
         this._valueUpdatedSubject.notifyObservers();
     }
 
-    destroy() {
+    destroy(): void {
         if ( !this._options ) {
             this._throw(SliderModel._optionsErrors.notSet);
         }
@@ -232,7 +231,7 @@ class SliderModel {
         this._options = null;
     }
 
-    getOptions(option?: keyof Options, className?: keyof UserOptions['classes']): Options | Options[keyof Options] |
+    getOptions(option?: keyof Options, className?: keyof UserOptions["classes"]): Options | Options[keyof Options] |
         Options["classes"][keyof Options["classes"]] {
 
         const errors = SliderModel._optionsErrors;
@@ -243,7 +242,7 @@ class SliderModel {
             return;
         }
 
-        if ( !option && !className ) return this._options as Options;
+        if ( !option && !className ) return this._options;
 
         if ( option ) {
             if ( !!option && !(option in this._options) ) {
@@ -252,7 +251,7 @@ class SliderModel {
                 return;
             }
 
-            const userClasses: (keyof UserOptions['classes'])[] = [
+            const userClasses: (keyof UserOptions["classes"])[] = [
                 this._classes.slider.main,
                 this._classes.range,
                 this._classes.firstHandle
@@ -264,25 +263,24 @@ class SliderModel {
                 return;
             }
 
-            if ( option && className && option !== 'classes') {
+            if ( option && className && option !== "classes") {
                 this._throw(errors.classes.contains);
 
                 return;
             }
 
             if (option && !className) {
-                return this._options[option] as Options[keyof Options];
+                return this._options[option];
             } else {
                 if ( className === this._classes.slider.main ) {
                     className = this._classes.slider.complete(this._options.orientation);
                 }
-                return this._options.classes[className as keyof Options["classes"]] as
-                    Options["classes"][keyof Options["classes"]];
+                return this._options.classes[className as keyof Options["classes"]];
             }
         }
     }
 
-    setOptions(options?: UserOptions | keyof Options, ...restOptions: RestOptionsToSet[]) {
+    setOptions(options?: UserOptions | keyof Options, ...restOptions: RestOptionsToSet[]): void | false {
         const errors = SliderModel._optionsErrors;
 
         if ( restOptions.length !== 0 && typeof options === "string" ) {
@@ -294,7 +292,10 @@ class SliderModel {
 
             if ( restOptions.length === 1 || restOptions.length === 2 ) {
                 const optionsObject =
-                    this._extendBySingleOption(options, ...restOptions as UserOptions[keyof UserOptions][]);
+                    this._extendBySingleOption(
+                        options,
+                        ...restOptions as (keyof UserOptions["classes"] | UserOptions[keyof UserOptions])[]
+                    );
 
                 if ( !optionsObject.result ) return false;
 
@@ -322,7 +323,7 @@ class SliderModel {
                 return;
             }
 
-            this._options = SliderModel.getDefaultOptions('horizontal');
+            this._options = SliderModel.getDefaultOptions("horizontal");
         } else {
 
             return this._throw(errors.incorrectOptions);
@@ -331,15 +332,17 @@ class SliderModel {
         this._optionsSetSubject.notifyObservers();
     }
 
-    private _extendByOptionsObject(options: UserOptions) {
-        let _currentOptions: Options;
+    private _extendByOptionsObject(
+        options: UserOptions
+    ): { result: false } | { options: Options; result: true } {
+        let currentOptions: Options;
 
         if ( this._options ) {
-            _currentOptions = $.extend(true, {}, this._options);
+            currentOptions = $.extend(true, {}, this._options);
 
             if ( (options as Options).orientation && (options).orientation !== this._options.orientation ) {
                 const optionsObject =
-                    this._changeOrientationClass(_currentOptions, 'result', (options).orientation);
+                    this._changeOrientationClass(currentOptions, "result", (options).orientation);
 
                 optionsObject.options = null;
 
@@ -347,7 +350,7 @@ class SliderModel {
             }
 
             const optionsObject =
-                this._changeOrientationClass(options, 'user',
+                this._changeOrientationClass(options, "user",
                     (options).orientation ? (options).orientation :
                         this._options.orientation);
 
@@ -356,38 +359,40 @@ class SliderModel {
             if ( !optionsObject.result ) return { result: false };
 
         } else {
-            _currentOptions = SliderModel.getDefaultOptions((options).orientation);
+            currentOptions = SliderModel.getDefaultOptions((options).orientation);
 
             const optionsObject =
-                this._changeOrientationClass(options, 'user', (options).orientation);
+                this._changeOrientationClass(options, "user", (options).orientation);
 
             optionsObject.options = null;
 
             if ( !optionsObject.result ) return { result: false };
         }
 
-        let _defaultOptions: Options | null = $.extend(true, {}, _currentOptions);
+        let defaultOptions: Options | null = $.extend(true, {}, currentOptions);
 
-        const _options: Options = $.extend(true, _defaultOptions, options);
+        const extendedOptions: Options = $.extend(true, defaultOptions, options);
 
-        _defaultOptions = null;
+        defaultOptions = null;
 
-        if ( !this._checkOptions(_options) ) {
+        if ( !this._checkOptions(extendedOptions) ) {
             return { result: false };
         } else {
             return {
-                options: _options,
+                options: extendedOptions,
                 result: true
             };
         }
     }
 
-    private _extendBySingleOption(option: keyof Options,
-                                  ...restOptions: (keyof UserOptions["classes"] | UserOptions[keyof UserOptions])[]) {
+    private _extendBySingleOption(
+        option: keyof Options,
+        ...restOptions: (keyof UserOptions["classes"] | UserOptions[keyof UserOptions])[]
+    ): { result: boolean; options?: Options } {
 
         const errors = SliderModel.optionsErrors;
 
-        if ( !((option as keyof Options) in this._options) ) {
+        if ( !(option in this._options) ) {
             this._throw(errors.options.notExisting(option));
 
             return { result: false };
@@ -428,9 +433,9 @@ class SliderModel {
                         option === "max" && restOptions[0] < this._options.value) {
 
                         this._throw(errors.minAndMax.lessOrMore(option,
-                            option === "min" ? 'more' : 'less'));
+                            option === "min" ? "more" : "less"));
 
-                        return {result: false};
+                        return { result: false };
                     }
                 }
                 if ( Array.isArray(this._options.value) ) {
@@ -440,16 +445,16 @@ class SliderModel {
                     restOptions[0] < this._options.value[1]) ) {
 
                         this._throw(errors.minAndMax.lessOrMore(option,
-                            option === "min" ? 'more' : 'less'));
+                            option === "min" ? "more" : "less"));
 
-                        return {result: false};
+                        return { result: false };
                     }
 
                 }
 
                 optionsCopy[option] = restOptions[0] as Options["min" | "max"];
             } else {
-                let optionObj: any = {};
+                const optionObj: any = {};
                 optionObj[option] = restOptions[0];
 
                 $.extend(optionsCopy, optionObj as Options);
@@ -464,7 +469,7 @@ class SliderModel {
         }
 
         if ( restOptions.length === 2 ) {
-            if ( option !== 'classes' ) {
+            if ( option !== "classes" ) {
                 this._throw(errors.classes.twoExtra);
 
                 return { result: false };
@@ -476,7 +481,7 @@ class SliderModel {
                 this._classes.firstHandle
             ];
 
-            if ( typeof restOptions[0] !== 'string' ||
+            if ( typeof restOptions[0] !== "string" ||
                 !classNames.includes(restOptions[0] as keyof UserOptions["classes"]) ) {
 
                 this._throw(errors.classes.notExisting(restOptions[0] as string));
@@ -484,7 +489,7 @@ class SliderModel {
                 return { result: false };
             }
 
-            let className: keyof Options['classes'];
+            let className: keyof Options["classes"];
 
             if ( restOptions[0] === this._classes.slider.main ) {
                 className = this._classes.slider.complete(this._options.orientation);
@@ -526,6 +531,8 @@ class SliderModel {
         let mainClass: keyof typeof  options.classes;
 
         for (mainClass in options.classes) {
+            if ( !options.classes.hasOwnProperty(mainClass) ) continue;
+
             if ( mainClass.trim() !== mainClass ) {
                 this._throw(errors.classes.extraWs);
 
@@ -543,6 +550,8 @@ class SliderModel {
         }
 
         for (mainClass in options.classes) {
+            if ( !options.classes.hasOwnProperty(mainClass) ) continue;
+
             if ( typeof options.classes[mainClass] !== "string" ) {
                 this._throw(errors.options.incorrectType("classes", "string"));
 
@@ -550,8 +559,11 @@ class SliderModel {
             }
         }
 
-        const checkType = (type: 'string' | 'number' | 'boolean', options: Options, ...params: (keyof Options)[]) => {
-            for ( let param of params ) {
+        const checkType = (
+            type: "string" | "number" | "boolean",
+            options: Options, ...params: (keyof Options)[]
+        ): boolean => {
+            for ( const param of params ) {
                 if ( typeof options[param] !== type ) {
                     this._throw(errors.options.incorrectType(param, type));
 
@@ -593,7 +605,7 @@ class SliderModel {
         }
 
         if ( Array.isArray(options.value) ) {
-            for (let value of options.value) {
+            for (const value of options.value) {
                 if ( !(options.min <= value && options.max >= value) ) {
                     this._throw(errors.value.beyond);
 
@@ -677,17 +689,19 @@ class SliderModel {
         return true;
     }
 
-    private _changeOrientationClass(options: Options | UserOptions, type: 'user' | 'result',
-                                    orientation: 'horizontal' | 'vertical' | undefined) {
+    private _changeOrientationClass(
+        options: Options | UserOptions, type: "user" | "result",
+        orientation: "horizontal" | "vertical" | undefined
+    ): { result: boolean; options?: Options | UserOptions } {
 
-        if ( orientation !==  undefined && orientation !== 'horizontal' && orientation !== 'vertical' )  {
+        if ( orientation !==  undefined && orientation !== "horizontal" && orientation !== "vertical" )  {
             this._throw(SliderModel._optionsErrors.orientation.incorrect);
 
             return { result: false };
         }
-        if ( orientation === undefined ) orientation = 'horizontal';
+        if ( orientation === undefined ) orientation = "horizontal";
 
-        if ( type === 'user' && options.classes && (options as UserOptions).classes[this._classes.slider.main] ) {
+        if ( type === "user" && options.classes && (options as UserOptions).classes[this._classes.slider.main] ) {
             options.classes[this._classes.slider.complete(orientation)] =
                 (options as UserOptions).classes[this._classes.slider.main];
 
@@ -695,10 +709,12 @@ class SliderModel {
         }
 
         if ( type === "result" ) {
-            let mainClass: keyof Options['classes'];
+            let mainClass: keyof Options["classes"];
             const values: string[] = [];
 
             for (mainClass in options.classes) {
+                if ( !options.classes.hasOwnProperty(mainClass) ) continue;
+
                 values.push(options.classes[mainClass]);
 
                 delete options.classes[mainClass];
@@ -715,20 +731,22 @@ class SliderModel {
         };
     }
 
-    private _deleteWSFromUserCLasses() {
-        const _this = this;
-        let key: keyof typeof _this._options.classes;
+    private _deleteWSFromUserCLasses(): void {
+        const classes = this._options.classes;
+        let key: keyof typeof classes;
 
         for ( key in this._options.classes ) {
-            if ( this._options.classes[key] !== '' ) {
+            if ( !this._options.classes.hasOwnProperty(key) ) continue;
+
+            if ( this._options.classes[key] !== "" ) {
                 this._options.classes[key] = this._options.classes[key]
                     .trim()
-                    .replace(/\s+/g, ' ');
+                    .replace(/\s+/g, " ");
             }
         }
     }
 
-    private _throw(error: string) {
+    private _throw(error: string): void {
         this._incorrectOptionsReceivedSubject.notifyObservers(error);
     }
 }

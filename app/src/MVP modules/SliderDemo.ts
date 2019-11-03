@@ -2,16 +2,16 @@ import SliderPresenter from "./Slider/SliderPresenter";
 import {Options} from "./Slider/SliderModel";
 
 type Item = {
-    wrapper : HTMLDivElement,
-    sign: HTMLDivElement,
+    wrapper: HTMLDivElement;
+    sign: HTMLDivElement;
 };
 
 type InputItem = Item & { input: HTMLInputElement };
 type SelectItem = Item & { select: HTMLSelectElement };
 
 type ValueItem = Item & {
-    firstInput: HTMLInputElement,
-    secondInput: HTMLInputElement
+    firstInput: HTMLInputElement;
+    secondInput: HTMLInputElement;
 }
 
 interface ConfigPanel {
@@ -20,7 +20,7 @@ interface ConfigPanel {
     max: InputItem;
     step: InputItem;
     value: ValueItem;
-    orientation: SelectItem,
+    orientation: SelectItem;
     range: SelectItem;
     tooltip: SelectItem;
     animate: SelectItem;
@@ -46,23 +46,24 @@ export default class SliderDemo {
         this._addHandlers();
     }
 
-    render() {
+    render(): void {
         this._root.append(this._wrapper);
         this._slider.render(this._wrapper);
         this._wrapper.append(this._configPanel.wrapper);
     }
 
-    private _createPanel() {
+    private _createPanel(): void {
         const panelBlockClass = "config-panel";
         const itemBlockClass = "item";
 
-        const getPanelBlockDiv = (className: string) => {
+        const getPanelBlockDiv = (className: string): HTMLDivElement => {
             const div = document.createElement("div");
             div.setAttribute("class", `${panelBlockClass}__${className}`);
+
             return div;
         };
 
-        const getItemElement = (elem: string, className: string) => {
+        const getItemElement = (elem: string, className: string): HTMLElement => {
             const element = document.createElement(elem);
             element.setAttribute("class", `${itemBlockClass}__${className}`);
 
@@ -70,13 +71,13 @@ export default class SliderDemo {
         };
 
         type InputSettings = {
-            placeholder: string,
-            value: string | number
+            placeholder: string;
+            value: string | number;
         }
 
         type ValueSettings = {
-            placeholder: string,
-            values: [number | string, number | string | null]
+            placeholder: string;
+            values: [number | string, number | string | null];
         }
 
         type SelectSettings = string[];
@@ -104,7 +105,7 @@ export default class SliderDemo {
 
                 const values = (settings as ValueSettings).values;
                 firstInput.value = String(values[0]);
-                secondInput.value = !!values[1] ? String(values[1]) : "";
+                secondInput.value = values[1] ? String(values[1]) : "";
 
                 return {
                     wrapper: wrapper,
@@ -171,11 +172,11 @@ export default class SliderDemo {
         this._configPanel.wrapper.append(...items);
     }
 
-    private _refreshSlider(option: keyof Options, value: string | number | boolean | number[]) {
+    private _refreshSlider(option: keyof Options, value: string | number | boolean | number[]): void {
         this._slider.setOptions(option, value);
     }
 
-    private _addHandlers() {
+    private _addHandlers(): void {
         const elements = this._configPanel;
 
         let option: keyof ConfigPanel;
@@ -186,19 +187,19 @@ export default class SliderDemo {
 
             if ( option === "min" || option === "max" || option === "step" || option === "value" ) {
                 if ( option !== "value" ) {
-                    const input = (elements[option] as InputItem).input;
+                    const input = (elements[option]).input;
 
                     input.addEventListener("change", () => {
                         this._refreshSlider(option as keyof Options, Number(input.value));
                     });
                 } else {
-                    const item = elements[option] as ValueItem;
+                    const item = elements[option];
 
                     const value = this._slider.getOptions("range") === true ?
                         [Number(item.firstInput.value), Number(item.secondInput.value)] :
                          Number(item.firstInput.value);
 
-                    const valueHandler = () => {
+                    const valueHandler = (): void => {
                         this._refreshSlider(option as keyof Options, value);
                     };
 
@@ -206,7 +207,7 @@ export default class SliderDemo {
                     item.secondInput.addEventListener("change", valueHandler);
                 }
             } else {
-                const select = (elements[option] as SelectItem).select;
+                const select = (elements[option]).select;
 
                 select.addEventListener("change", () => {
                     this._refreshSlider(

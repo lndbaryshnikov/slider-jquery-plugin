@@ -1,11 +1,11 @@
-export const hasAnArrayElements = (array_checking: any[], source: any[]) => {
+export const hasAnArrayElements = (array: any[], sourceArray: any[]) => {
     let has: boolean;
 
-    for (let i = 0; i < array_checking.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         has = false;
 
-        for (let j = 0; j < source.length; j++) {
-            if (array_checking[i] === source[j]) {
+        for (let j = 0; j < sourceArray.length; j++) {
+            if (array[i] === sourceArray[j]) {
                 has = true;
 
                 break;

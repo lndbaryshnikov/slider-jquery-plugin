@@ -16,7 +16,7 @@ describe("setOptionsMethod exceptions", () => {
 
     test("throws error when userOptions isn't an object", () => {
         expect(() => {
-            model.setOptions('options' as UserOptions);
+            model.setOptions("options" as UserOptions);
         }).toThrow(errors.incorrectOptions);
     });
 
@@ -28,7 +28,7 @@ describe("setOptionsMethod exceptions", () => {
 
     test("throws error when main passes wrong class _options", () => {
         expect(() => {
-            model.setOptions({classes: {'jquery-sl': 'my-slider'}} as UserOptions);
+            model.setOptions({classes: {"jquery-sl": "my-slider"}} as UserOptions);
         }).toThrow(errors.classes.incorrectType);
     });
 
@@ -36,8 +36,8 @@ describe("setOptionsMethod exceptions", () => {
         expect(() => {
             model.setOptions({
                 classes: {
-                    'jquery-slider  ': 'slider',
-                    '  jquery-slider-range  ': 'range'
+                    "jquery-slider  ": "slider",
+                    "  jquery-slider-range  ": "range"
                 }
             } as UserOptions)
         }).toThrow(errors.classes.extraWs);
@@ -111,7 +111,7 @@ describe("setOptionsMethod exceptions", () => {
     });
 
     test("throws extension when type of 'min', 'max', 'step' or 'value' is not 'number'", () => {
-        const checkStringType = (type: 'min' | 'max' | 'step' | 'value') => {
+        const checkStringType = (type: "min" | "max" | "step" | "value") => {
             expect(() => {
                 model.setOptions();
                 model.setOptions(type, "34");
@@ -328,6 +328,7 @@ describe("setOptionsMethod exceptions", () => {
 
     test("throws exception when change is not function or false", () => {
         expect(( ) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             model.setOptions({ change: true });
         }).toThrow(errors.change.incorrect);

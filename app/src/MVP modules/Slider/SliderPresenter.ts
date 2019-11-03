@@ -1,11 +1,11 @@
-import SliderView from './SliderView';
+import SliderView from "./SliderView";
 import SliderModel, {Options, UserOptions} from "./SliderModel";
 import SliderTooltipView from "../SliderTooltipView";
 import SliderLabelsView, {LabelOptions} from "../SliderLabelsView";
 import SliderPluginsFactory from "../SliderPluginsFactory";
 
 class SliderPresenter {
-    private _data: { setUp: boolean; rendered: boolean; } = {
+    private _data: { setUp: boolean; rendered: boolean } = {
         setUp: false,
         rendered: false
     };
@@ -33,17 +33,17 @@ class SliderPresenter {
         });
     }
 
-    get view() {
+    get view(): SliderView {
         return this._view;
     }
 
-    get model() {
+    get model(): SliderModel {
         return this._model;
     }
 
-    initialize(root: HTMLElement, userOptions?: UserOptions) {
-        if ( !!this._data.rendered ) {
-            throw new Error('Slider is already initialized');
+    initialize(root: HTMLElement, userOptions?: UserOptions): void {
+        if ( this._data.rendered ) {
+            throw new Error("Slider is already initialized");
         }
 
         if ( !this._data.setUp ) this.setOptions(userOptions);
@@ -51,14 +51,21 @@ class SliderPresenter {
         if ( !this._data.rendered ) this.render(root);
     }
 
-    setOptions(options?: UserOptions | keyof Options, ...restOptions:
-        (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]])[]) {
+    setOptions(
+        options?: UserOptions | keyof Options,
+        ...restOptions:
+            (UserOptions[keyof UserOptions] | UserOptions["classes"][keyof UserOptions["classes"]])[]
+    ): void {
         this._model.setOptions(options, ...restOptions);
 
         this._data.setUp = true;
     }
 
-    getOptions(option?: keyof Options, className?: keyof UserOptions["classes"]) {
+    getOptions(
+        option?: keyof Options,
+        className?: keyof UserOptions["classes"]
+    ): Options | Options[keyof Options] |
+        Options["classes"][keyof Options["classes"]] {
         if ( !this._data.setUp ) {
             throw new Error(SliderModel.optionsErrors.notSet);
         }
@@ -66,11 +73,11 @@ class SliderPresenter {
         return this._model.getOptions(option, className);
     }
 
-    render(root: HTMLElement) {
+    render(root: HTMLElement): void {
         if ( !this._data.setUp ) {
-            throw new Error("Slider isn\'t setUp");
+            throw new Error("Slider isn't setUp");
         }
-        if ( !!this._data.rendered ) {
+        if ( this._data.rendered ) {
             throw new Error("Slider is already rendered");
         }
 
@@ -97,7 +104,7 @@ class SliderPresenter {
 
     destroy(): void {
         if ( !this._data.setUp ) {
-            throw new Error('Slider isn\'t initialized yet');
+            throw new Error("Slider isn't initialized yet");
         }
 
         if ( this._data.rendered !== false ) this._view.cleanDom();
@@ -109,9 +116,9 @@ class SliderPresenter {
         this._data.rendered = false;
     }
 
-    off() {
+    off(): void {
         if ( !this._data.rendered ) {
-            throw new Error('Slider isn\'t rendered');
+            throw new Error("Slider isn't rendered");
         }
 
         this._view.cleanDom();
@@ -120,7 +127,7 @@ class SliderPresenter {
     }
 
     setOptionsToViewCallback() {
-        return () => {
+        return (): void => {
             const options = this._model.getOptions() as Options;
 
             this._view.setOptions(options);
@@ -130,7 +137,7 @@ class SliderPresenter {
         }
     }
 
-    private _toggleTooltip(options: Options) {
+    private _toggleTooltip(options: Options): void {
         const firstTooltipView = this._plugins.tooltipView.first;
         const secondTooltipView = this._plugins.tooltipView.second;
 
@@ -163,7 +170,7 @@ class SliderPresenter {
         }
     }
 
-    private _toggleLabels(options: Options) {
+    private _toggleLabels(options: Options): void {
         const labelsView = this._plugins.labelsView;
 
         if ( options.labels || options.pips ) {
@@ -192,19 +199,19 @@ class SliderPresenter {
     }
 
     showErrorMessageCallback() {
-        return (error: string) => {
+        return (error: string): void => {
             throw new Error(error);
         };
     }
 
     validateValueCallback() {
-        return (valueData: [number, "first" | "second"]) => {
+        return (valueData: [number, "first" | "second"]): void => {
             this._model.refreshValue(valueData);
         }
     }
 
     renderHandlePositionCallback() {
-        return () => {
+        return (): void => {
             const options = this._model.getOptions() as Options;
 
             const value = options.value;

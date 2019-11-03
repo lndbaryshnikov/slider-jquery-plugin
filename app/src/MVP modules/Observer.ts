@@ -12,13 +12,13 @@ class Observer implements ObserversStorage{
     }
 
     addObserver(observer: Function): void {
-        if(typeof observer !== 'function') {
-            throw new Error('Observer must be a function');
+        if(typeof observer !== "function") {
+            throw new Error("Observer must be a function");
         }
 
         for (let i = 0; i < this.observers.length; i++) {
             if (this.observers[i].toString() === observer.toString()) {
-                throw new Error('Observer already in the list');
+                throw new Error("Observer already in the list");
             }
         }
 
@@ -34,7 +34,7 @@ class Observer implements ObserversStorage{
             }
         }
 
-        throw new Error('Could not find observer in list of observers');
+        throw new Error("Could not find observer in list of observers");
     }
 
     notifyObservers(data?: any): void {
@@ -45,7 +45,7 @@ class Observer implements ObserversStorage{
         for (let i = 0; i < observersSnapshot.length; i++) {
             observersSnapshot[i](data);
         }
-    };
+    }
 }
 
 export default Observer;

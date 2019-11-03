@@ -1,6 +1,6 @@
-import SliderModel, {Options, RestOptionsToSet, UserOptions} from './MVP modules/Slider/SliderModel'
-import SliderView from './MVP modules/Slider/SliderView'
-import SliderPresenter from './MVP modules/Slider/SliderPresenter'
+import SliderModel, {Options, RestOptionsToSet, UserOptions} from "./MVP modules/Slider/SliderModel"
+import SliderView from "./MVP modules/Slider/SliderView"
+import SliderPresenter from "./MVP modules/Slider/SliderPresenter"
 
 import "./styles/jquery-slider.styles"
 
@@ -16,30 +16,30 @@ interface SliderMethods {
 
 (( $ ) => {
     const sliderMethods = {
-        getData(element: JQueryElementWithSlider) {
-            return element.data('slider');
+        getData(element: JQueryElementWithSlider): JQuery {
+            return element.data("slider");
         },
 
-        setData(root: JQueryElementWithSlider, slider: SliderPresenter) {
-            root.data('slider', {
+        setData(root: JQueryElementWithSlider, slider: SliderPresenter): void {
+            root.data("slider", {
                 root: root,
                 slider: slider
             });
         },
 
         throwErr(existsOrNot: boolean): void {
-            if ( !!existsOrNot ) {
-                throw new Error('jQuery.slider already exists on this DOM element');
+            if ( existsOrNot ) {
+                throw new Error("jQuery.slider already exists on this DOM element");
             }
 
             if ( !existsOrNot ) {
-                throw new Error('jQuery.slider doesn\'t exist on this DOM element');
+                throw new Error("jQuery.slider doesn't exist on this DOM element");
             }
 
-            throw new Error('Incorrect argument');
+            throw new Error("Incorrect argument");
         },
 
-        init(userOptions?: UserOptions) {
+        init(userOptions?: UserOptions): void | JQuery {
             const $this = (this as unknown as JQueryElementWithSlider).eq(0);
 
             if ( !sliderMethods.getData($this) ) {
@@ -55,11 +55,14 @@ interface SliderMethods {
             }
 
         },
+
         options(...userOptions: (UserOptions | string)[] ) {
             const $this = (this as unknown as JQueryElementWithSlider).eq(0);
 
             const data = sliderMethods.getData($this);
-            if ( !!data ) {
+            if ( data ) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 const slider = data.slider;
 
                 if ( userOptions.length === 0 ) {
@@ -91,7 +94,7 @@ interface SliderMethods {
                     return $this;
                 }
 
-                if ( ( (userOptions.length == 2 && userOptions[0] === "classes")
+                if ( ( (userOptions.length === 2 && userOptions[0] === "classes")
                     || userOptions.length === 1 )
                     && typeof  userOptions[0] === "string" ) {
 
@@ -108,16 +111,18 @@ interface SliderMethods {
     };
 
     ($.fn as JQueryElementWithSlider).slider =
-        function (method?: UserOptions | keyof SliderMethods,
-                  ...options: (UserOptions | keyof Options | RestOptionsToSet)[]) {
+        function (
+            method?: UserOptions | keyof SliderMethods,
+            ...options: (UserOptions | keyof Options | RestOptionsToSet)[]
+        ) {
         if ( sliderMethods[ method as keyof SliderMethods ] ) {
             return sliderMethods[ method as keyof SliderMethods ].apply( this, options );
 
-        } else if ( typeof method === 'object' || ( !method && options.length === 0 ) ) {
+        } else if ( typeof method === "object" || ( !method && options.length === 0 ) ) {
             return sliderMethods.init.call(this, method as UserOptions);
 
         } else {
-            $.error( 'Method "' +  method + '" doesn\'t exist for jQuery.slider' );
+            $.error( "Method '" +  method + "' doesn't exist for jQuery.slider" );
         }
     };
 })(jQuery);

@@ -2,7 +2,7 @@ import SliderLabelsView from "./SliderLabelsView";
 import SliderTooltipView from "./SliderTooltipView";
 
 export default class SliderPluginsFactory {
-    createView(plugin: string) {
+    createView(plugin: string): SliderLabelsView | SliderTooltipView {
         if ( plugin === "labels" ) {
             return new SliderLabelsView();
         }

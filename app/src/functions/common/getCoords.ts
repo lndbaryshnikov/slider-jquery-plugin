@@ -1,10 +1,10 @@
 export interface Coords {
-    top: number,
-    bottom: number,
-    left: number,
-    right: number,
-    width: number,
-    height: number
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+    width: number;
+    height: number;
 }
 
 const getCoords = (domElem: HTMLElement): Coords => {

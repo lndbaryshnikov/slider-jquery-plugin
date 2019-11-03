@@ -1,5 +1,5 @@
 import {HorizontalClasses, Options, VerticalClasses} from "./SliderModel";
-import {countShift} from "../../functions/common/countShift";
+import { countShift, Shift } from "../../functions/common/countShift";
 import getCoords, {Coords} from "../../functions/common/getCoords";
 import Observer from "../Observer";
 import SliderTooltipView from "../SliderTooltipView";
@@ -25,9 +25,9 @@ export default class SliderView {
 
     private _eventListeners = {
         handleMoving: {
-            handleMouseDown: (mouseDownEvent: MouseEvent) => {
+            handleMouseDown: (mouseDownEvent: MouseEvent): false => {
                 let freeSpaceCoords: Coords;
-                let targetHandle = mouseDownEvent.target;
+                const targetHandle = mouseDownEvent.target;
 
                 const orientation = this._options.orientation;
 
@@ -79,7 +79,7 @@ export default class SliderView {
                 const handleShift = this._countHandleShift(mouseDownEvent, handleNumber);
 
                 const mouseMoveHandler = (mouseMoveEvent: MouseEvent) => {
-                    if ( this._options.orientation === 'horizontal' ) {
+                    if ( this._options.orientation === "horizontal" ) {
                         const shiftX = handleShift.x;
 
                         let newLeft = mouseMoveEvent.pageX - shiftX - freeSpaceCoords.left;
@@ -100,7 +100,7 @@ export default class SliderView {
                         this.refreshValue(currentHandleXInPixels, handleNumber);
                     }
 
-                    if ( this._options.orientation === 'vertical' ) {
+                    if ( this._options.orientation === "vertical" ) {
                         const shiftY = handleShift.y;
 
                         let newTop = mouseMoveEvent.pageY - shiftY - freeSpaceCoords.top;
@@ -124,7 +124,7 @@ export default class SliderView {
 
                 document.addEventListener("mousemove", mouseMoveHandler);
 
-                const mouseUpHandler = () => {
+                const mouseUpHandler = (): void => {
                     document.removeEventListener("mousemove", mouseMoveHandler);
                     document.removeEventListener("mouseup", mouseUpHandler);
                 };
@@ -133,11 +133,11 @@ export default class SliderView {
 
                 return false;
             },
-            handleOnDragStart: () => {
+            handleOnDragStart: (): false => {
                 return false;
             }
         },
-        sliderClick: (clickEvent: MouseEvent) => {
+        sliderClick: (clickEvent: MouseEvent): void => {
             if ( clickEvent.target === this._html.firstHandle
                 || clickEvent.target === this._html.secondHandle ) {
                 return;
@@ -170,11 +170,11 @@ export default class SliderView {
         })
     }
 
-    get html() {
+    get html(): Html {
         return this._html;
     }
 
-    get value() {
+    get value(): number | number[] {
         return this._options.value;
     }
 
@@ -198,7 +198,7 @@ export default class SliderView {
         this._data.rendered = false;
     }  
 
-    cleanDom() {
+    cleanDom(): void {
         if ( !!this._root || this._root.contains(this._html.wrapper) ) {
             this._html.wrapper.remove();
         }
@@ -232,7 +232,7 @@ export default class SliderView {
         }
     }
 
-    updateHandlePosition(value: Options["value"]) {
+    updateHandlePosition(value: Options["value"]): void {
         this._options.value = value;
 
         this._setHandlePositionInPixels();
@@ -240,7 +240,7 @@ export default class SliderView {
         this._renderRange();
     }
 
-    private _renderOptions() {
+    private _renderOptions(): void {
         if ( !this._data.rendered ) return;
 
         this._renderHandlePositions();
@@ -248,8 +248,8 @@ export default class SliderView {
         this._renderRange();
     }
 
-    private _setHandleMovingHandler() {
-        const addHandleMovingHandler = (handle: HTMLElement) => {
+    private _setHandleMovingHandler(): void {
+        const addHandleMovingHandler = (handle: HTMLElement): void => {
             handle.addEventListener("mousedown", this._eventListeners.handleMoving.handleMouseDown);
 
             handle.ondragstart = this._eventListeners.handleMoving.handleOnDragStart;
@@ -262,23 +262,23 @@ export default class SliderView {
         }
     }
 
-    private _setSliderClickHandler() {
+    private _setSliderClickHandler(): void {
         this._html.wrapper.addEventListener("click", this._eventListeners.sliderClick);
     }
 
-    private _renderHandlePositions() {
-        const renderHandlePosition = (handleNumber: 'first' | 'second') => {
+    private _renderHandlePositions(): void {
+        const renderHandlePosition = (handleNumber: "first" | "second") => {
             const handle = handleNumber === "first" ? this._html.firstHandle : this._html.secondHandle;
             const handleCoords = handleNumber === "first" ? this._getCoords().firstHandle :
                 this._getCoords().secondHandle;
 
             const handlePositionInPixels = this._handlesPositionInPixels[handleNumber === "first" ? 0 : 1];
 
-            if ( this._options.orientation === 'horizontal' ) {
-                handle.style.left = handlePositionInPixels - handleCoords.width / 2 + 'px';
+            if ( this._options.orientation === "horizontal" ) {
+                handle.style.left = handlePositionInPixels - handleCoords.width / 2 + "px";
             }
-            if ( this._options.orientation === 'vertical' ) {
-                handle.style.bottom = handlePositionInPixels - handleCoords.height / 2 + 'px';
+            if ( this._options.orientation === "vertical" ) {
+                handle.style.bottom = handlePositionInPixels - handleCoords.height / 2 + "px";
             }
         };
 
@@ -291,47 +291,47 @@ export default class SliderView {
         const positions = this._handlesPositionInPixels;
         const wrapperCoords = this._getCoords().wrapper;
 
-        if ( this._options.orientation === 'horizontal' ) {
-            if (this._options.range === 'min') {
-                this._html.range.style.left = 0 + 'px';
-                this._html.range.style.width = positions[0] + 'px';
+        if ( this._options.orientation === "horizontal" ) {
+            if (this._options.range === "min") {
+                this._html.range.style.left = 0 + "px";
+                this._html.range.style.width = positions[0] + "px";
             }
 
-            if (this._options.range === 'max') {
-                this._html.range.style.right = 0 + 'px';
+            if (this._options.range === "max") {
+                this._html.range.style.right = 0 + "px";
                 this._html.range.style.width = wrapperCoords.width -
-                    positions[0] + 'px';
+                    positions[0] + "px";
             }
 
             if ( this._options.range === true ) {
-                this._html.range.style.left = positions[0] + 'px';
-                this._html.range.style.right = positions[1] + 'px';
-                this._html.range.style.width = positions[1] - positions[0] + 'px';
+                this._html.range.style.left = positions[0] + "px";
+                this._html.range.style.right = positions[1] + "px";
+                this._html.range.style.width = positions[1] - positions[0] + "px";
             }
         }
-        if ( this._options.orientation === 'vertical' ) {
-            if (this._options.range === 'min') {
-                this._html.range.style.bottom = 0 + 'px';
-                this._html.range.style.height = positions[0] + 'px';
+        if ( this._options.orientation === "vertical" ) {
+            if (this._options.range === "min") {
+                this._html.range.style.bottom = 0 + "px";
+                this._html.range.style.height = positions[0] + "px";
             }
 
-            if (this._options.range === 'max') {
-                this._html.range.style.top = 0 + 'px';
+            if (this._options.range === "max") {
+                this._html.range.style.top = 0 + "px";
                 this._html.range.style.height = wrapperCoords.height -
-                    positions[0] + 'px';
+                    positions[0] + "px";
             }
 
             if ( this._options.range === true ) {
-                this._html.range.style.top = wrapperCoords.height - positions[1] + 'px';
-                this._html.range.style.bottom = positions[0] + 'px';
-                this._html.range.style.height = positions[0] - positions[1] + 'px';
+                this._html.range.style.top = wrapperCoords.height - positions[1] + "px";
+                this._html.range.style.bottom = positions[0] + "px";
+                this._html.range.style.height = positions[0] - positions[1] + "px";
             }
         }
 
 
     }
 
-    private _setSliderClasses() {
+    private _setSliderClasses(): void {
         // if ( this._classesHash && !this._hasClassesChanged() ) return;
 
         const defaultClasses = Object.keys(this._options.classes) as
@@ -340,34 +340,34 @@ export default class SliderView {
         const range = defaultClasses[1];
         const handle = defaultClasses[2];
 
-        this._html.wrapper.setAttribute('class', wrapper);
-        this._html.range.setAttribute('class', range);
-        this._html.firstHandle.setAttribute('class', handle);
+        this._html.wrapper.setAttribute("class", wrapper);
+        this._html.range.setAttribute("class", range);
+        this._html.firstHandle.setAttribute("class", handle);
 
-        this._html.wrapper.style.position = 'relative';
-        this._html.range.style.position = 'absolute';
-        this._html.firstHandle.style.position = 'absolute';
+        this._html.wrapper.style.position = "relative";
+        this._html.range.style.position = "absolute";
+        this._html.firstHandle.style.position = "absolute";
 
         $(this._html.wrapper).addClass(this._options.classes[wrapper]);
         $(this._html.range).addClass(this._options.classes[range]);
         $(this._html.firstHandle).addClass(this._options.classes[handle]);
 
         if ( this._html.secondHandle ) {
-            this._html.secondHandle.setAttribute('class', handle);
-            this._html.secondHandle.style.position = 'absolute';
+            this._html.secondHandle.setAttribute("class", handle);
+            this._html.secondHandle.style.position = "absolute";
             $(this._html.secondHandle).addClass(this._options.classes[handle]);
         }
 
         // this._classesHash = $.extend({}, this._options.classes);
     }
 
-    private _setTransition() {
+    private _setTransition(): void {
         const animate = this._options.animate;
 
         const handleProp = this._options.orientation === "horizontal" ? "left" : "bottom";
         // const rangeProp = this._options.orientation === "horizontal" ? "width" : "height";
 
-        let transitionMs: number = animate === "fast" ? 300 :
+        const transitionMs: number = animate === "fast" ? 300 :
             animate === "slow" ? 700 : typeof animate === "number" ? animate : 0;
 
         this._html.firstHandle.style.transition = `${handleProp} ${transitionMs}ms`;
@@ -392,7 +392,7 @@ export default class SliderView {
         }
     }
 
-    private _setHandlePositionInPixels() {
+    private _setHandlePositionInPixels(): void {
         if ( !this._data.rendered ) return;
 
         this._handlesPositionInPixels = null;
@@ -403,7 +403,7 @@ export default class SliderView {
         const firstValueInPercents = ( (this._options.range === true ? (this._options.value as number[])[0] :
             this._options.value as number) - this._options.min ) / range;
 
-        const addHandlePosition = (handleValueInPercents: number) => {
+        const addHandlePosition = (handleValueInPercents: number): void => {
             this._handlesPositionInPixels.push(this._options.orientation === "horizontal" ?
                 this._getCoords().wrapper.width * handleValueInPercents :
                 this._getCoords().wrapper.height * handleValueInPercents
@@ -420,7 +420,7 @@ export default class SliderView {
 
     }
 
-    refreshValue(currentHandleCoordinate: number, handleNumber?: "first" | "second") {
+    refreshValue(currentHandleCoordinate: number, handleNumber?: "first" | "second"): void {
         if ( !handleNumber ) {
             if ( this._options.range !== true ) handleNumber = "first";
                 else {
@@ -454,7 +454,7 @@ export default class SliderView {
             currentHandleCoordinate - wrapperCoords.left :
             wrapperCoords.height - (currentHandleCoordinate - wrapperCoords.top);
 
-        const getValuesArray = () => {
+        const getValuesArray = (): number[] => {
             const valuesArray: number[] = [];
 
             for ( let currentValue = this._options.min;
@@ -491,13 +491,13 @@ export default class SliderView {
         this._valueChangedSubject.notifyObservers([value, handleNumber]);
     }
 
-    private _setSliderElements() {
-        const secondHandle = this._options.range === true ? document.createElement('div') : null;
+    private _setSliderElements(): void {
+        const secondHandle = this._options.range === true ? document.createElement("div") : null;
 
         this._html = {
-            wrapper: document.createElement('div'),
-            range: document.createElement('div'),
-            firstHandle: document.createElement('div'),
+            wrapper: document.createElement("div"),
+            range: document.createElement("div"),
+            firstHandle: document.createElement("div"),
             secondHandle: secondHandle
         };
 
@@ -507,13 +507,13 @@ export default class SliderView {
         if ( this._options.range === true ) this._html.wrapper.append(this._html.secondHandle);
     }
 
-    private _countHandleShift(mouseDownEvent: MouseEvent, handleNumber: "first" | "second") {
+    private _countHandleShift(mouseDownEvent: MouseEvent, handleNumber: "first" | "second"): Shift {
         const handle = handleNumber === "first" ? this._html.firstHandle : this._html.secondHandle;
 
         return countShift(mouseDownEvent, handle);
     }
 
-    private _hasClassesChanged() {
+    private _hasClassesChanged(): boolean {
         if ( !this._classesHash ) return true;
 
         const classes = this._options.classes;
@@ -522,6 +522,8 @@ export default class SliderView {
         let mainClass: keyof Options["classes"];
 
         for (mainClass in this._options.classes ) {
+            if ( !this._options.classes.hasOwnProperty(mainClass) ) continue;
+
             if ( !( mainClass in hash && classes[mainClass] === hash[mainClass] ) ) {
                 return true;
             }
@@ -539,7 +541,7 @@ export default class SliderView {
         }
     }
 
-    private _getClosestHandleNumber(coord: number) {
+    private _getClosestHandleNumber(coordinate: number): "first" | "second" {
         let handleNumber: "first" | "second";
 
         if ( this._options.range !== true ) return;
@@ -548,36 +550,40 @@ export default class SliderView {
             const firstRight = this._getCoords().firstHandle.right;
             const secondLeft = this._getCoords().secondHandle.left;
 
-            if ( coord < secondLeft && coord > firstRight ) {
-                const firstDistance = coord - firstRight;
-                const secondDistance = secondLeft - coord;
+            if ( coordinate < secondLeft && coordinate > firstRight ) {
+                const firstDistance = coordinate - firstRight;
+                const secondDistance = secondLeft - coordinate;
 
                 handleNumber = firstDistance > secondDistance ? "second" : "first";
             }
 
-            if ( coord < firstRight ) handleNumber = "first";
-            if ( coord > secondLeft ) handleNumber = "second";
+            if ( coordinate < firstRight ) handleNumber = "first";
+            if ( coordinate > secondLeft ) handleNumber = "second";
         }
 
         if ( this._options.orientation === "vertical" ) {
             const firstTop = this._getCoords().firstHandle.top;
             const secondBottom = this._getCoords().secondHandle.bottom;
 
-            if ( coord > secondBottom && coord < firstTop ) {
-                const firstDistance = firstTop - coord;
-                const secondDistance = coord - secondBottom;
+            if ( coordinate > secondBottom && coordinate < firstTop ) {
+                const firstDistance = firstTop - coordinate;
+                const secondDistance = coordinate - secondBottom;
 
                 handleNumber = firstDistance > secondDistance ? "second" : "first";
             }
 
-            if ( coord > firstTop ) handleNumber = "first";
-            if ( coord < secondBottom ) handleNumber = "second";
+            if ( coordinate > firstTop ) handleNumber = "first";
+            if ( coordinate < secondBottom ) handleNumber = "second";
         }
 
         return handleNumber;
     }
 
-    renderPlugin(plugin: string, pluginView: SliderLabelsView | SliderTooltipView, number?: "first" | "second") {
+    renderPlugin(
+        plugin: string,
+        pluginView: SliderLabelsView | SliderTooltipView,
+        number?: "first" | "second"
+    ): void {
         if ( plugin === "labels" ) {
             pluginView.render(this._html.wrapper);
         }
@@ -600,7 +606,7 @@ export default class SliderView {
         }
     }
 
-    destroyPlugin(plugin: "labels" | "tooltip", pluginView: SliderLabelsView | SliderTooltipView) {
+    destroyPlugin(plugin: "labels" | "tooltip", pluginView: SliderLabelsView | SliderTooltipView): void {
         if ( plugin === "labels" || plugin === "tooltip" ) {
             pluginView.destroy();
         }

@@ -2,6 +2,7 @@ import SliderLabelsView, {LabelOptions} from "../../src/MVP modules/SliderLabels
 
 const extractValue = (value: string) => {
     return value.replace(/\d+px/, "")
+    // eslint-disable-next-line no-useless-escape
         .replace( /[<>="\\ a-z\/\-:;]/gi, "");
 };
 
@@ -52,7 +53,7 @@ describe("tooltip works correctly", () => {
     test("complete label exists and contain pips", () => {
         const pipsOnDom = document.querySelectorAll(".jquery-slider-pip");
 
-        for (let label of labels.labels) {
+        for (const label of labels.labels) {
             expect(root.contains(label)).toBeTruthy();
         }
 
@@ -78,7 +79,7 @@ describe("tooltip works correctly", () => {
 
         expect(labels.labels).toBeTruthy();
 
-        for (let label of labels.labels) {
+        for (const label of labels.labels) {
             expect(root.contains(label)).toBe(false);
         }
     });

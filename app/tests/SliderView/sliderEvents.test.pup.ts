@@ -1,5 +1,5 @@
-import puppeteer, {Browser, ElementHandle, Page} from "puppeteer";
-import SliderPupPage, {Coords} from './SliderPupPage'
+import puppeteer, {Browser, Page} from "puppeteer";
+import SliderPupPage, {Coords} from "./SliderPupPage"
 import {Options} from "../../src/MVP modules/Slider/SliderModel";
 import {JQueryElementWithSlider} from "../../src/jquery-slider";
 
@@ -26,7 +26,7 @@ describe("slider events", () => {
     let rangeCoords: Coords;
     let firstHandleCoords: Coords;
 
-    let sliderMiddle: { left: number; top: number; };
+    let sliderMiddle: { left: number; top: number };
 
     describe("vertical slider events", () => {
         beforeEach(async () => {
@@ -52,7 +52,7 @@ describe("slider events", () => {
                 top: newHandleCoords.top,
                 left: newHandleCoords.left
             };
-            const testCoords = await {
+            const testCoords = {
                 top: sliderMiddle.top - firstHandleCoords.height / 2,
                 left: firstHandleCoords.left
             };
@@ -66,25 +66,24 @@ describe("slider events", () => {
 
             const newHandleCoordsTop = await sliderPage.getFirstHandleCoords();
 
-            const newTop_1 = newHandleCoordsTop.top - sliderCoords.top;
+            const firstNewTop = newHandleCoordsTop.top - sliderCoords.top;
 
             await sliderPage.moveHandleToCoords(newHandleCoordsTop.left, sliderCoords.bottom + 50);
 
             const newHandleCoordsBottom = await sliderPage.getFirstHandleCoords();
 
-            const newTop_2 = newHandleCoordsBottom.top - sliderCoords.top;
+            const secondNewTop = newHandleCoordsBottom.top - sliderCoords.top;
 
             const bottomEdge = sliderCoords.height - newHandleCoordsBottom.height;
 
-            expect(newTop_1).toBe(0 - firstHandleCoords.height / 2);
-            expect(newTop_2).toBe(bottomEdge + firstHandleCoords.height / 2);
+            expect(firstNewTop).toBe(0 - firstHandleCoords.height / 2);
+            expect(secondNewTop).toBe(bottomEdge + firstHandleCoords.height / 2);
         }, timeout);
 
         test("range changes correctly when options.range = 'min'", async () => {
-            await sliderPage.setOptions({ range: 'min' });
+            await sliderPage.setOptions({ range: "min" });
 
-
-            const range = await sliderPage.elements.range;
+            const range = sliderPage.elements.range;
             const newModeRangeCoords = await page.evaluate((range) => {
                 console.log(range.className);
                 const {left, top, right, bottom, width, height} = range.getBoundingClientRect();
@@ -112,7 +111,7 @@ describe("slider events", () => {
         }, timeout);
 
         test("range changes correctly when options.range = 'max'", async () => {
-            await sliderPage.setOptions({range: 'max'});
+            await sliderPage.setOptions({range: "max"});
 
             const newModeRangeCoords = await sliderPage.getRangeCoords();
 
@@ -156,7 +155,7 @@ describe("slider events", () => {
         test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
             let value: Options["value"];
 
-            const getValue = async() => {
+            const getValue = async (): Promise<Options["value"]> => {
                 return await sliderPage.getOptions("value") as Options["value"];
             };
 
@@ -192,7 +191,7 @@ describe("slider events", () => {
                 value: 138
             });
 
-            const testValue = async (yRelative: number, valueExpected: number) => {
+            const testValue = async (yRelative: number, valueExpected: number): Promise<void> => {
                 const yToMove = sliderCoords.top + sliderCoords.height * (1 - yRelative);
                 await sliderPage.moveHandleToCoords(firstHandleCoords.left, yToMove);
 
@@ -211,7 +210,7 @@ describe("slider events", () => {
         test("handle moves correctly when step is wide", async() => {
             await sliderPage.setOptions({"step": 20});
 
-            const testPosition = async (yMoveRelative: number, yExpectedRelative: number) => {
+            const testPosition = async (yMoveRelative: number, yExpectedRelative: number): Promise<void> => {
                 const yToMove = sliderCoords.top + sliderCoords.height * (1 - yMoveRelative);
                 const yExpected = sliderCoords.top + sliderCoords.height * (1 - yExpectedRelative) - firstHandleCoords.height / 2;
 
@@ -295,7 +294,7 @@ describe("slider events", () => {
                 const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
 
                 const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
 
 
                 const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
@@ -316,7 +315,7 @@ describe("slider events", () => {
 
             for ( let label = 1; label <= 11; label++ ) {
                 const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
 
                 await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
 
@@ -344,7 +343,7 @@ describe("slider events", () => {
             let newSecondHandleCoords: Coords;
             let valueOption: Options["value"];
 
-            const refreshValues = async () => {
+            const refreshValues = async (): Promise<void> => {
                 newRangeCoords = await sliderPage.getRangeCoords();
                 newFirstHandleCoords = await sliderPage.getFirstHandleCoords();
                 newSecondHandleCoords = await sliderPage.getSecondHandleCoords();
@@ -420,7 +419,7 @@ describe("slider events", () => {
                 top: newHandleCoords.top,
                 left: newHandleCoords.left
             };
-            const testCoords = await {
+            const testCoords = {
                 top: firstHandleCoords.top,
                 left: sliderMiddle.left - firstHandleCoords.width / 2
             };
@@ -435,23 +434,23 @@ describe("slider events", () => {
 
             const newHandleCoordsLeft = await sliderPage.getFirstHandleCoords();
 
-            const newLeft_1 = newHandleCoordsLeft.left - sliderCoords.left;
+            const firstNewLeft = newHandleCoordsLeft.left - sliderCoords.left;
 
             await sliderPage.moveHandleToCoords(sliderCoords.right + 50,
                 newHandleCoordsLeft.top);
 
             const newHandleCoordsRight = await sliderPage.getFirstHandleCoords();
 
-            const newLeft_2 = newHandleCoordsRight.left - sliderCoords.left;
+            const secondNewLeft = newHandleCoordsRight.left - sliderCoords.left;
 
             const rightEdge = sliderCoords.width - newHandleCoordsRight.width;
 
-            expect(newLeft_1).toBe(0 - firstHandleCoords.width / 2);
-            expect(newLeft_2).toBe(rightEdge + firstHandleCoords.width / 2);
+            expect(firstNewLeft).toBe(0 - firstHandleCoords.width / 2);
+            expect(secondNewLeft).toBe(rightEdge + firstHandleCoords.width / 2);
         }, timeout);
 
         test("range changes correctly when options.range = 'min'", async () => {
-            await sliderPage.setOptions({ range: 'min' });
+            await sliderPage.setOptions({ range: "min" });
 
             const newModeRangeCoords = await sliderPage.getRangeCoords();
 
@@ -471,7 +470,7 @@ describe("slider events", () => {
         }, timeout);
 
         test("range changes correctly when options.range = 'max'", async () => {
-            await sliderPage.setOptions({range: 'max'});
+            await sliderPage.setOptions({range: "max"});
 
             const newModeRangeCoords = await sliderPage.getRangeCoords();
 
@@ -515,7 +514,7 @@ describe("slider events", () => {
         test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
             let value: Options["value"];
 
-            const getValue = async() => {
+            const getValue = async(): Promise<Options["value"]> => {
                 return await sliderPage.getOptions("value") as Options["value"];
             };
 
@@ -550,7 +549,7 @@ describe("slider events", () => {
                 value: 138
             });
 
-            const testValue = async (xRelative: number, valueExpected: number) => {
+            const testValue = async (xRelative: number, valueExpected: number): Promise<void> => {
                 const xToMove = sliderCoords.left + sliderCoords.width * xRelative;
                 await sliderPage.moveHandleToCoords(xToMove, firstHandleCoords.top);
 
@@ -568,7 +567,7 @@ describe("slider events", () => {
         test("firstHandle moves correctly when step is wide", async() => {
             await sliderPage.setOptions("step", 20);
 
-            const testPosition = async (xMoveRelative: number, xExpectedRelative: number) => {
+            const testPosition = async (xMoveRelative: number, xExpectedRelative: number): Promise<void> => {
                 const xToMove = sliderCoords.left + sliderCoords.width * xMoveRelative;
                 const xExpected = sliderCoords.left + sliderCoords.width * xExpectedRelative - firstHandleCoords.width / 2;
 
@@ -651,7 +650,7 @@ describe("slider events", () => {
                 const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
 
                 const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
 
 
                 const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
@@ -672,7 +671,7 @@ describe("slider events", () => {
 
             for ( let label = 1; label <= 11; label++ ) {
                 const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords, pip: Coords };
+                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
 
                 await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
 
@@ -701,7 +700,7 @@ describe("slider events", () => {
             let valueOption: Options["value"];
 
 
-            const refreshValues = async () => {
+            const refreshValues = async (): Promise<void> => {
                 newRangeCoords = await sliderPage.getRangeCoords();
                 newFirstHandleCoords = await sliderPage.getFirstHandleCoords();
                 newSecondHandleCoords = await sliderPage.getSecondHandleCoords();
@@ -783,7 +782,7 @@ describe("slider events", () => {
                     .slider("options", "change", changeFunction);
             });
 
-            const compareValue = async () => {
+            const compareValue = async (): Promise<void> => {
                 const inputValue = await page.evaluate(() => {
                     return (document.querySelector("input")).value;
                 });
@@ -795,7 +794,7 @@ describe("slider events", () => {
                         String(valueOption));
             };
 
-            const testValues = async (mode: "set" | "move", valueOrPercent: number) => {
+            const testValues = async (mode: "set" | "move", valueOrPercent: number): Promise<void> => {
                 if ( mode === "set" ) {
                     await sliderPage.setOptions("value", valueOrPercent);
                 }

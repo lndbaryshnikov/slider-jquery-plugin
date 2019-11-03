@@ -6,7 +6,7 @@ describe("handles rendered depending on 'range'", () => {
    let root: HTMLDivElement;
 
 
-    const getDefaultsWithRange = (range: boolean | 'min' | 'max') => {
+    const getDefaultsWithRange = (range: boolean | "min" | "max") => {
        const defaults = SliderModel.getDefaultOptions("horizontal");
        defaults.range = range;
 

@@ -3,12 +3,12 @@ import {JQueryElementWithSlider} from "../../src/jquery-slider";
 import {Options, RestOptionsToSet, UserOptions} from "../../src/MVP modules/Slider/SliderModel";
 
 export interface Coords {
-    left: number,
-    top: number,
-    right: number,
-    bottom: number,
-    width: number,
-    height: number
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
 }
 
 export default class SliderPupPage {
@@ -30,18 +30,19 @@ export default class SliderPupPage {
 
         await this.setViewport(width, height);
 
-        await this._page.addScriptTag({path: 'node_modules/jquery/dist/jquery.min.js'});
-        await this._page.addStyleTag({path: 'dist/css/main.css'});
-        await this._page.addScriptTag({path: 'dist/js/index.js'});
+        await this._page.addScriptTag({path: "node_modules/jquery/dist/jquery.min.js"});
+        await this._page.addStyleTag({path: "dist/css/jquery-slider.css"});
+        await this._page.addScriptTag({path: "dist/js/jquery-slider.js"});
     }
 
     async createSlider(options?: UserOptions) {
         await this._page.evaluate((options: UserOptions) => {
-            const root = $('<div class="slider"></div>') as JQueryElementWithSlider;
+            const root = $("<div class='slider'></div>") as JQueryElementWithSlider;
 
-            $('body').append(root);
+            $("body").append(root);
 
             root.slider(options);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
         }, options);
 
@@ -50,7 +51,8 @@ export default class SliderPupPage {
 
     async setOptions(...options: (UserOptions | RestOptionsToSet)[]) {
         await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
-            ($(root) as JQueryElementWithSlider).slider('options', ...options);
+            ($(root) as JQueryElementWithSlider).slider("options", ...options);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
         }, this._root, ...options);
 
@@ -61,7 +63,8 @@ export default class SliderPupPage {
 
     async getOptions(...options: (UserOptions | RestOptionsToSet)[]) {
         return await this._page.evaluate((root: HTMLElement, ...options: (UserOptions | keyof Options | keyof Options)[]) => {
-            return ($(root) as JQueryElementWithSlider).slider('options', ...options);
+            return ($(root) as JQueryElementWithSlider).slider("options", ...options);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
         }, this._root, ...options) as unknown as Options | (Options[keyof Options] |
             Options["classes"][keyof Options["classes"]]);
@@ -91,10 +94,10 @@ export default class SliderPupPage {
                 return {
                     label: labelClass,
                     pip: pipClass
-                } as { label: string, pip: string };
+                } as { label: string; pip: string };
             }
 
-            const getCoords = (elem: HTMLElement) => {
+            const getCoords = (elem: HTMLElement): Coords => {
                 const {left, top, right, bottom, width, height} = elem.getBoundingClientRect();
 
                 return {left, top, right, bottom, width, height};
@@ -108,35 +111,35 @@ export default class SliderPupPage {
                 return {
                     label: labelCoords,
                     pip: pipCoords
-                } as { label: Coords, pip: Coords };
+                } as { label: Coords; pip: Coords };
             }
         }, data, numberOfLabel);
     }
 
-    async getSliderCoords() {
+    async getSliderCoords(): Promise<Coords> {
         return await this.getCoords(this._slider);
     }
 
-    async getRangeCoords() {
+    async getRangeCoords(): Promise<Coords> {
         return await this.getCoords(this._range);
     }
 
-    async getFirstHandleCoords() {
+    async getFirstHandleCoords(): Promise<Coords> {
         return await this.getCoords(this._firstHandle);
     }
 
-    async getSecondHandleCoords() {
+    async getSecondHandleCoords(): Promise<Coords> {
         if ( !this._secondHandle ) throw new Error("Second handle doesn't exist");
 
         return await this.getCoords(this._secondHandle);
     }
 
-    async getTooltipCoords() {
+    async getTooltipCoords(): Promise<Coords> {
         if ( !this._tooltip ) throw new Error("tooltip doesn't set");
         return await this.getCoords(this._tooltip);
     }
 
-    async getTooltipValue() {
+    async getTooltipValue(): Promise<number | string> {
         if ( !this._tooltip ) throw new Error("tooltip doesn't set");
 
         return await this._page.evaluate((tooltip: ElementHandle) => {
@@ -144,27 +147,27 @@ export default class SliderPupPage {
         }, this._tooltip);
     }
 
-    static get timeout() {
+    static get timeout(): number {
         return 50000;
     }
 
-    get page() {
+    get page(): Page {
         return this._page;
     }
 
-    async injectJquery() {
-        await this._page.addScriptTag({path: 'node_modules/jquery/dist/jquery.min.js'});
+    async injectJquery(): Promise<void> {
+        await this._page.addScriptTag({path: "node_modules/jquery/dist/jquery.min.js"});
     }
 
-    async injectStyles(path: string) {
+    async injectStyles(path: string): Promise<void> {
         await this._page.addStyleTag({path: path});
     }
 
-    async injectScript(path: string) {
+    async injectScript(path: string): Promise<void> {
         await this._page.addScriptTag({path: path});
     }
 
-    async setViewport(width: number, height: number) {
+    async setViewport(width: number, height: number): Promise<void> {
         await this._page.setViewport({ width, height });
     }
 
@@ -176,18 +179,18 @@ export default class SliderPupPage {
         }, dom);
     }
 
-    async getSliderMiddle() {
+    async getSliderMiddle(): Promise<{ left: number; top: number }> {
         return {
             left: (await this.getCoords(this._slider)).left + (await this.getCoords(this._slider)).width / 2,
             top: (await this.getCoords(this._slider)).top + (await this.getCoords(this._slider)).height / 2
         };
     }
 
-    async moveHandleToCoords (X: number, Y: number, isSecond?: true) {
+    async moveHandleToCoords (X: number, Y: number, isSecond?: true): Promise<void> {
         if ( isSecond && !this._secondHandle ) throw new Error("second handle doesn't exist");
 
         let handleCoords: Coords;
-        if ( !!isSecond ) handleCoords = await this.getCoords(this._secondHandle);
+        if ( isSecond ) handleCoords = await this.getCoords(this._secondHandle);
         else handleCoords = await this.getCoords(this._firstHandle);
 
         await this._page.mouse.move(handleCoords.left + handleCoords.width / 2,
@@ -197,7 +200,7 @@ export default class SliderPupPage {
         await this._page.mouse.up();
     }
 
-    async remove() {
+    async remove(): Promise<void> {
         await this._page.evaluate((root) => {
             root.remove();
         }, this._root);
@@ -210,18 +213,18 @@ export default class SliderPupPage {
         this._tooltip = null;
     }
 
-    private async _defineElements(options: Options | UserOptions) {
-        this._root = await this._page.$('.slider');
-        this._slider = await this._page.$('.jquery-slider');
-        this._range = await this._page.$('.jquery-slider-range');
-        this._firstHandle = await this._page.$('.jquery-slider-handle');
+    private async _defineElements(options: Options | UserOptions): Promise<void> {
+        this._root = await this._page.$(".slider");
+        this._slider = await this._page.$(".jquery-slider");
+        this._range = await this._page.$(".jquery-slider-range");
+        this._firstHandle = await this._page.$(".jquery-slider-handle");
 
         if ( options && options.range === true ) {
             this._secondHandle = (await this._page.$$(".jquery-slider-handle"))[1];
         } else this._secondHandle = null;
 
         if ( options && options.tooltip ) {
-            this._tooltip = await this._page.$('.jquery-slider-tooltip');
+            this._tooltip = await this._page.$(".jquery-slider-tooltip");
         } else this._tooltip = null;
     }
 }

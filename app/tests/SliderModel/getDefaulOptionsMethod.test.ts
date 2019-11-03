@@ -6,7 +6,7 @@ describe("getDefaultOptions method", () => {
         max: 100,
         step: 1,
         value: 0,
-        orientation: 'horizontal',
+        orientation: "horizontal",
         range: false,
         tooltip: false,
         animate: "fast",
@@ -26,7 +26,7 @@ describe("getDefaultOptions method", () => {
        max: 100,
        step: 1,
        value: 0,
-       orientation: 'vertical',
+       orientation: "vertical",
        range: false,
        tooltip: false,
        animate: "fast",
@@ -42,10 +42,10 @@ describe("getDefaultOptions method", () => {
    } ;
 
    test("when orientation = horizontal", () => {
-       expect(SliderModel.getDefaultOptions('horizontal')).toEqual(horizontalDefaults);
+       expect(SliderModel.getDefaultOptions("horizontal")).toEqual(horizontalDefaults);
    });
 
     test("when orientation = vertical", () => {
-        expect(SliderModel.getDefaultOptions('vertical')).toEqual(verticalDefaults);
+        expect(SliderModel.getDefaultOptions("vertical")).toEqual(verticalDefaults);
     });
 });

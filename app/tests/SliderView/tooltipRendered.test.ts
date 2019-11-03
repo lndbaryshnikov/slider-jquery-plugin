@@ -60,7 +60,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
 
         const tooltip = document.querySelector(".jquery-slider-tooltip");
 
-        expect(tooltip.innerHTML).toBe('0$');
+        expect(tooltip.innerHTML).toBe("0$");
 
         const defaultsWithAnotherValue = SliderModel.getDefaultOptions("horizontal");
         defaultsWithAnotherValue.value = 70;

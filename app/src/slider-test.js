@@ -1,4 +1,6 @@
-$('.slider').slider({
+/* global $ */
+
+$(".slider").slider({
     range: false,
     value: 60,
     step: 10,
@@ -10,12 +12,12 @@ $('.slider').slider({
     labels: (value) => `${value}$`
 });
 
-$('.slider').slider("options", {
+$(".slider").slider("options", {
     range: true,
     value: [30, 80]
 });
 
-$('.slider-2').slider({
+$(".slider-2").slider({
     range: true,
     value: [10,70],
     tooltip: (value) => `${value}%`,
@@ -25,21 +27,20 @@ $('.slider-2').slider({
     pips: true
 });
 
-$('.slider-3').slider({
-    range: 'min',
-    orientation: 'vertical',
+$(".slider-3").slider({
+    range: "min",
+    orientation: "vertical",
     value: [20, 60],
-    range: true,
-    tooltip: (value) => value + '%',
+    tooltip: (value) => value + "%",
     animate: false,
     labels: true,
     pips: true,
     step: 20
 });
 
-$('.slider-4').slider({
-    orientation: 'vertical',
-    range: 'min',
+$(".slider-4").slider({
+    orientation: "vertical",
+    range: "min",
     tooltip: (value) => value + "$",
     animate: 300,
     labels: true,
@@ -47,7 +48,7 @@ $('.slider-4').slider({
     step: 25
 });
 
-$('.slider-5').slider({
+$(".slider-5").slider({
     animate: false,
     range: true,
     max: 10,

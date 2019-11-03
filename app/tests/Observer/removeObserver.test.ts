@@ -4,9 +4,9 @@ describe("removeObserver method", () => {
     it("removeObserver method works", () => {
         const observer = new Observer();
 
-        observer.addObserver((str: string) => 'Hello, ' + str);
+        observer.addObserver((str: string) => "Hello, " + str);
         observer.addObserver((str: string) => { console.log(str); });
-        observer.addObserver((str: string) => 'I\'m ' + str );
+        observer.addObserver((str: string) => "I'm " + str );
 
         expect(observer.observers.length).toBe(3);
 
@@ -15,8 +15,8 @@ describe("removeObserver method", () => {
         expect(observer.observers.length).toBe(2);
 
         expect([observer.observers[0].toString(), observer.observers[1].toString()]).toEqual([
-            ( (str: string) => 'Hello, ' + str ).toString(),
-            ( (str: string) => 'I\'m ' + str ).toString()
+            ( (str: string) => "Hello, " + str ).toString(),
+            ( (str: string) => "I'm " + str ).toString()
         ]);
     });
 
@@ -26,7 +26,7 @@ describe("removeObserver method", () => {
         observer.addObserver( (y: number) => y + 1);
         observer.addObserver( (y: number) => { console.log(y) });
 
-        const createFuncForTestError = () => {
+        const createFuncForTestError = (): void => {
             observer.removeObserver( (y: number) => y - 1)
         };
 

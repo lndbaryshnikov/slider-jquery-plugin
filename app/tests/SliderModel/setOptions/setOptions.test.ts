@@ -14,7 +14,7 @@ describe("When options object is passed", () => {
             }
         });
 
-        const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions('horizontal'));
+        const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions("horizontal"));
         testOptions.classes["jquery-slider-range"] = "my-slider-range";
 
         expect(model.getOptions()).toEqual(testOptions);
@@ -23,7 +23,7 @@ describe("When options object is passed", () => {
     test("extends object with max = 60 and min = 20", () => {
         model.setOptions({min: 20, max: 60, value: 30});
 
-        const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions('horizontal'));
+        const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions("horizontal"));
 
         testOptions.min = 20;
         testOptions.max = 60;
@@ -33,7 +33,7 @@ describe("When options object is passed", () => {
     });
 
     test("options.classes and options.orientation depending on orientation", () => {
-        const check = (model: SliderModel, orientation: 'horizontal' | 'vertical' = 'horizontal') => {
+        const check = (model: SliderModel, orientation: "horizontal" | "vertical" = "horizontal") => {
             model.setOptions({ orientation: orientation });
 
             expect((model.getOptions() as Options).orientation).toBe(orientation);
@@ -43,8 +43,8 @@ describe("When options object is passed", () => {
         };
 
         check(model);
-        check(model, 'horizontal');
-        check(model, 'vertical');
+        check(model, "horizontal");
+        check(model, "vertical");
     });
     
     test("options.classes go in order", () => {
@@ -57,11 +57,11 @@ describe("When options object is passed", () => {
         });
 
         const classes = (model.getOptions() as Options).classes;
-        const defaultClasses = SliderModel.getDefaultOptions('horizontal').classes;
+        const defaultClasses = SliderModel.getDefaultOptions("horizontal").classes;
 
         let mainClass: keyof typeof classes;
 
-        for ( mainClass in classes ) classes[mainClass] = '';
+        for ( mainClass in classes ) classes[mainClass] = "";
 
         expect(classes).toEqual(defaultClasses);
 
@@ -82,8 +82,8 @@ describe("When options object is passed", () => {
 
         expect((model.getOptions() as Options).min).toBe(30);
         expect((model.getOptions() as Options).value).toBe(50);
-        expect((model.getOptions() as Options).range).toBe('min');
-        expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions('horizontal').classes);
+        expect((model.getOptions() as Options).range).toBe("min");
+        expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions("horizontal").classes);
 
         model.setOptions({
             max: 154,
@@ -94,29 +94,29 @@ describe("When options object is passed", () => {
 
         expect((model.getOptions() as Options).min).toBe(13);
         expect((model.getOptions() as Options).max).toBe(154);
-        expect((model.getOptions() as Options).range).toBe('max');
-        expect((model.getOptions() as Options).orientation).toBe('vertical');
-        expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions('vertical').classes);
+        expect((model.getOptions() as Options).range).toBe("max");
+        expect((model.getOptions() as Options).orientation).toBe("vertical");
+        expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions("vertical").classes);
     });
 
     test("extension when one option passed", () => {
         model.setOptions();
-        model.setOptions('value', 34);
+        model.setOptions("value", 34);
 
-        const customDefaults = SliderModel.getDefaultOptions('horizontal');
+        const customDefaults = SliderModel.getDefaultOptions("horizontal");
         customDefaults.value = 34;
 
         expect(model.getOptions()).toEqual(customDefaults);
         expect((model.getOptions() as Options).value).toBe(34);
 
         model.setOptions("classes", {
-            'jquery-slider': 'my-slider'
+            "jquery-slider": "my-slider"
         } as UserOptions[keyof UserOptions]);
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-horizontal': 'my-slider',
-            'jquery-slider-range': '',
-            'jquery-slider-handle': ''
+            "jquery-slider jquery-slider-horizontal": "my-slider",
+            "jquery-slider-range": "",
+            "jquery-slider-handle": ""
         });
     });
 
@@ -125,9 +125,9 @@ describe("When options object is passed", () => {
         model.setOptions("classes", "jquery-slider", "my-slider");
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-horizontal': 'my-slider',
-            'jquery-slider-range': '',
-            'jquery-slider-handle': ''
+            "jquery-slider jquery-slider-horizontal": "my-slider",
+            "jquery-slider-range": "",
+            "jquery-slider-handle": ""
         });
 
         expect(model.getOptions("classes", "jquery-slider" as keyof Options["classes"])).toBe("my-slider");
@@ -137,49 +137,49 @@ describe("When options object is passed", () => {
         expect(model.getOptions("orientation")).toBe("vertical");
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-vertical': 'my-slider',
-            'jquery-slider-range': '',
-            'jquery-slider-handle': ''
+            "jquery-slider jquery-slider-vertical": "my-slider",
+            "jquery-slider-range": "",
+            "jquery-slider-handle": ""
         });
 
         model.setOptions("classes", {
-            'jquery-slider': '',
-            'jquery-slider-range': 'my-range',
-            'jquery-slider-handle': ''
+            "jquery-slider": "",
+            "jquery-slider-range": "my-range",
+            "jquery-slider-handle": ""
         });
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-vertical': '',
-            'jquery-slider-range': 'my-range',
-            'jquery-slider-handle': ''
+            "jquery-slider jquery-slider-vertical": "",
+            "jquery-slider-range": "my-range",
+            "jquery-slider-handle": ""
         });
 
         model.setOptions("classes", "jquery-slider-range", "new-slider");
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-vertical': '',
-            'jquery-slider-range': 'new-slider',
-            'jquery-slider-handle': ''
+            "jquery-slider jquery-slider-vertical": "",
+            "jquery-slider-range": "new-slider",
+            "jquery-slider-handle": ""
         });
 
         model.setOptions("classes", "jquery-slider", "second-slider");
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-vertical': 'second-slider',
-            'jquery-slider-range': 'new-slider',
-            'jquery-slider-handle': ''
+            "jquery-slider jquery-slider-vertical": "second-slider",
+            "jquery-slider-range": "new-slider",
+            "jquery-slider-handle": ""
         });
 
         model.setOptions("classes", {
-            'jquery-slider': '',
-            'jquery-slider-range': '',
-            'jquery-slider-handle': 'my-firstHandle'
+            "jquery-slider": "",
+            "jquery-slider-range": "",
+            "jquery-slider-handle": "my-firstHandle"
         });
 
         expect(model.getOptions("classes")).toEqual({
-            'jquery-slider jquery-slider-vertical': '',
-            'jquery-slider-range': '',
-            'jquery-slider-handle': 'my-firstHandle'
+            "jquery-slider jquery-slider-vertical": "",
+            "jquery-slider-range": "",
+            "jquery-slider-handle": "my-firstHandle"
         });
     });
 

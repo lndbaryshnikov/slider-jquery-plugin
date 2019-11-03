@@ -8,8 +8,4 @@ dist/
 # tests-dist
 tests-dist/
 
-# my experiments with jest
-jest/
-babel.config.js
-jest.config.js
 

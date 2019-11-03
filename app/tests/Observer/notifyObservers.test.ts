@@ -5,18 +5,18 @@ describe("notifyObservers", () => {
 
         const observer = new Observer();
 
-        const mock_1 = jest.fn();
-        const mock_2 = jest.fn();
-        const mock_3 = jest.fn();
+        const firstMock = jest.fn();
+        const secondMock = jest.fn();
+        const thirdMock = jest.fn();
 
-        observer.addObserver( (x: number) => mock_1(x + 1) );
-        observer.addObserver( (x: number) => mock_2(x + 2) );
-        observer.addObserver( (x: number) => mock_3(x + 3) );
+        observer.addObserver( (x: number) => firstMock(x + 1) );
+        observer.addObserver( (x: number) => secondMock(x + 2) );
+        observer.addObserver( (x: number) => thirdMock(x + 3) );
 
         observer.notifyObservers(3);
 
-        expect(mock_1).toHaveBeenCalledWith(4);
-        expect(mock_2).toHaveBeenCalledWith(5);
-        expect(mock_3).toHaveBeenCalledWith(6);
+        expect(firstMock).toHaveBeenCalledWith(4);
+        expect(secondMock).toHaveBeenCalledWith(5);
+        expect(thirdMock).toHaveBeenCalledWith(6);
     });
 });

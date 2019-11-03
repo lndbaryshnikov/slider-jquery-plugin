@@ -10,33 +10,37 @@ export default class SliderTooltipView {
         this._create();
     }
 
-    get html() {
+    get html(): HTMLDivElement {
         return this._html;
     }
 
-    get text() {
+    get text(): string | number | null {
         return this._text;
     }
 
-    get state() {
+    get state(): { isRendered: boolean; isSet: boolean } {
         return {
             isRendered: !!this._root,
             isSet: !!(this._orientation && this._text)
         };
     }
 
-    setOptions(text: number, orientation: "horizontal" | "vertical", func?: ValueFunction ) {
+    setOptions(
+        text: number,
+        orientation: "horizontal" | "vertical",
+        func?: ValueFunction
+    ): void {
         this.setText(text, func);
         this.setOrientation(orientation);
     }
 
-    render(root: HTMLElement) {
+    render(root: HTMLElement): void {
         this._root = root;
 
         this._root.append(this._html);
     }
 
-    setText(text: number, func?: ValueFunction) {
+    setText(text: number, func?: ValueFunction): void {
         if ( func ) {
             this._text = func(text);
         } else this._text = text;
@@ -44,25 +48,25 @@ export default class SliderTooltipView {
         this._html.innerHTML = String(this._text);
     }
 
-    setOrientation(orientation: "horizontal" | "vertical") {
+    setOrientation(orientation: "horizontal" | "vertical"): void {
         this._orientation = orientation;
 
         this._setOrientationClass();
     }
 
-    cleanTextField() {
+    cleanTextField(): void {
         this._text = null;
 
         this._html.innerHTML = "";
     }
 
-    remove() {
+    remove(): void {
         this._root.removeChild(this._html);
 
         this._root = null;
     }
 
-    destroy() {
+    destroy(): void {
         if ( this.state.isRendered ) this.remove();
         this.cleanTextField();
         this._orientation = null;
@@ -71,7 +75,7 @@ export default class SliderTooltipView {
         this._html.className = "jquery-slider-tooltip";
     }
 
-    private _create() {
+    private _create(): void {
         const tooltip = document.createElement("div");
         tooltip.setAttribute("class", "jquery-slider-tooltip");
         tooltip.style.position = "absolute";
@@ -79,7 +83,7 @@ export default class SliderTooltipView {
         this._html = tooltip;
     }
 
-    private _setOrientationClass() {
+    private _setOrientationClass(): void {
         this._html.setAttribute("class", "jquery-slider-tooltip");
 
         if ( this._orientation === "horizontal" ) {
