@@ -32,24 +32,38 @@ export default class SliderDemo {
     private _configPanel: ConfigPanel;
     private _wrapper: HTMLDivElement;
 
-    constructor(private _slider: SliderPresenter, private _root: HTMLElement) {
+    constructor(private _slider: SliderPresenter, options: UserOptions, private _root: HTMLElement) {
         this._wrapper = document.createElement("div");
         this._wrapper.setAttribute("class", "slider-demo__wrapper");
 
-        this._slider.setOptions({
-            range: "min",
-            labels: true,
-            tooltip: true,
-            max: 10
-        });
+        this._slider.setOptions(options);
 
         this._createPanel();
+
+        this._slider.setOptions("change", (value: number | number[]) => {
+            const firstInput = this._configPanel.value.firstInput;
+            const secondInput = this._configPanel.value.secondInput;
+
+            if ( Array.isArray(value) ) {
+                firstInput.value = String(value[0]);
+                secondInput.value = String(value[1]);
+            } else {
+                firstInput.value = String(value);
+            }
+        });
+
         this._addHandlers();
     }
 
     render(): void {
         this._root.append(this._wrapper);
-        this._slider.render(this._wrapper);
+
+        const sliderWrapper = document.createElement("div");
+        sliderWrapper.setAttribute("class", "slider-demo__slider");
+
+        this._wrapper.append(sliderWrapper);
+        this._slider.render(sliderWrapper);
+
         this._wrapper.append(this._configPanel.wrapper);
     }
 
@@ -71,22 +85,13 @@ export default class SliderDemo {
             return element;
         };
 
-        type InputSettings = {
-            placeholder: string;
-            value: string | number;
-        }
-
-        type ValueSettings = {
-            placeholder: string;
-            values: [number | string, number | string | null];
-        }
-
-        type SelectSettings = string[];
+        const sliderSettings = this._slider.getOptions() as Options;
 
         const getItem = <T extends "input" | "select" | "value">(
             type: T,
             text: string,
-            settings: InputSettings | SelectSettings | ValueSettings
+            sliderOption: keyof Options,
+            selectValues?: string[]
         ): T extends "input" ? InputItem : T extends "select" ? SelectItem : ValueItem => {
             const wrapper = getItemElement("div", "wrapper") as HTMLDivElement;
             const sign = getItemElement("div", "sign") as HTMLDivElement;
@@ -102,11 +107,13 @@ export default class SliderDemo {
                 wrapper.append(firstInput);
                 wrapper.append(secondInput);
 
-                firstInput.placeholder = secondInput.placeholder = (settings as ValueSettings).placeholder;
+                firstInput.placeholder = secondInput.placeholder = "type value...";
 
-                const values = (settings as ValueSettings).values;
-                firstInput.value = String(values[0]);
-                secondInput.value = values[1] ? String(values[1]) : "";
+                // const value = (settings as ValueSettings).values;
+                const value = sliderSettings.value;
+
+                firstInput.value = String(Array.isArray(value) ? value[0] : value);
+                secondInput.value = Array.isArray(value) ? String(value[1]) : "";
 
                 return {
                     wrapper: wrapper,
@@ -121,7 +128,7 @@ export default class SliderDemo {
             wrapper.append(element);
 
             if ( type === "select" ) {
-                for ( const value of settings as SelectSettings ) {
+                for ( const value of selectValues ) {
                     const option = getItemElement("option", "select-option") as HTMLOptionElement;
 
                     option.value = option.innerHTML = value;
@@ -129,7 +136,7 @@ export default class SliderDemo {
                     element.append(option);
                 }
 
-                (element as HTMLSelectElement).selectedIndex = 0;
+                (element as HTMLSelectElement).value = String(sliderSettings[sliderOption]);
 
                 return {
                     wrapper: wrapper,
@@ -139,8 +146,8 @@ export default class SliderDemo {
             }
 
             if ( type === "input" ) {
-                (element as HTMLInputElement).placeholder = (settings as InputSettings).placeholder;
-                (element as HTMLInputElement).value = String((settings as InputSettings).value);
+                (element as HTMLInputElement).placeholder = "type value...";
+                (element as HTMLInputElement).value = String(sliderSettings[sliderOption]);
 
                 return {
                     wrapper: wrapper,
@@ -152,16 +159,34 @@ export default class SliderDemo {
 
         this._configPanel = {
             wrapper: getPanelBlockDiv("wrapper"),
-            min: getItem("input", "Min:", { placeholder: "type value...", value: 0 }),
-            max: getItem("input", "Max:", { placeholder: "type value...", value: 10 }),
-            step: getItem("input", "Step:", { placeholder: "type value...", value: 1 }),
-            value: getItem("value", "Value:", { placeholder: "", values: [0, null] }),
-            orientation: getItem("select", "Orientation:", ["horizontal", "vertical"]),
-            range: getItem("select", "Range:", ["min", "max", "false", "true"]),
-            tooltip: getItem("select", "Tooltip:", ["true", "false"]),
-            animate: getItem("select", "Animate:", ["fast", "slow", "false"]),
-            labels: getItem("select", "Labels:", ["true", "false"]),
-            pips: getItem("select", "Pips:", ["false", "true"])
+            min: getItem("input", "Min:", "min"),
+            max: getItem("input", "Max:", "max"),
+            step: getItem("input", "Step:", "step"),
+            value: getItem("value", "Value:", "value"),
+            orientation: getItem(
+                "select", "Orientation:",
+                "orientation", ["horizontal", "vertical"]
+            ),
+            range: getItem(
+                "select", "Range:", "range",
+                ["min", "max", "false", "true"]
+            ),
+            tooltip: getItem(
+                "select", "Tooltip:",
+                "tooltip", ["true", "false"]
+            ),
+            animate: getItem(
+                "select", "Animate:",
+                "animate", ["fast", "slow", "false"]
+            ),
+            labels: getItem(
+                "select", "Labels:",
+                "labels", ["true", "false"]
+            ),
+            pips: getItem(
+                "select", "Pips:",
+                "pips", ["false", "true"]
+            )
         };
 
         const items = Object.values(this._configPanel)

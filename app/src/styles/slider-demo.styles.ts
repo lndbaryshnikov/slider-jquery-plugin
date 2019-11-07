@@ -1,5 +1,7 @@
 import "./slider-demo/slider-demo__wrapper.scss"
 import "./slider-demo/config-panel/config-panel__wrapper.scss"
+import "./slider-demo/__slider/slider-demo__slider-wrapper.scss"
+import "./slider-demo/__slider/slider-demo__jquery-slider.scss"
 import "./slider-demo/item/item__wrapper.scss"
 import "./slider-demo/item/item__sign.scss"
 import "./slider-demo/item/item__select.scss"
