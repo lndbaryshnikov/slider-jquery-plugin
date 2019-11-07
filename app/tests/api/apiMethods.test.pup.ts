@@ -1,9 +1,9 @@
-import puppeteer, {Browser, Page} from "puppeteer";
+import puppeteer, {Browser} from "puppeteer";
 import SliderPupPage from "../SliderView/SliderPupPage";
 import SliderModel from "../../src/MVP modules/Slider/SliderModel";
 
 describe("slider API", () => {
-    let browser: Browser, page: Page;
+    let browser: Browser;
     let sliderPage: SliderPupPage;
 
     const timeout = SliderPupPage.timeout;
@@ -13,8 +13,6 @@ describe("slider API", () => {
         sliderPage = new SliderPupPage(browser);
 
         await sliderPage.createPage();
-
-        page = sliderPage.page;
     });
 
     afterAll( async() => {

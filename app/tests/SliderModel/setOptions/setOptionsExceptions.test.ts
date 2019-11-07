@@ -308,6 +308,7 @@ describe("setOptionsMethod exceptions", () => {
         }).toThrow(errors.labels.incorrect);
 
         expect(( ) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             model.setOptions({ pips: true , labels: ((value: number) => {}) as unknown as Options["labels"] } )
         }).toThrow(errors.labels.incorrectFunction);
 
@@ -322,6 +323,7 @@ describe("setOptionsMethod exceptions", () => {
         }).toThrow(errors.labels.incorrect);
 
         expect(( ) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             model.setOptions("labels", ((value: number) => true ) as unknown as Options["labels"]);
         }).toThrow(errors.labels.incorrectFunction);
     });

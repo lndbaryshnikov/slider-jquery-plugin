@@ -23,6 +23,7 @@ describe("slider events", () => {
     });
 
     let sliderCoords: Coords;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let rangeCoords: Coords;
     let firstHandleCoords: Coords;
 

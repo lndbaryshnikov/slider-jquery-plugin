@@ -1,5 +1,5 @@
 import SliderPresenter from "./Slider/SliderPresenter";
-import {Options} from "./Slider/SliderModel";
+import { Options, UserOptions } from "./Slider/SliderModel";
 
 type Item = {
     wrapper: HTMLDivElement;
@@ -37,6 +37,7 @@ export default class SliderDemo {
         this._wrapper.setAttribute("class", "slider-demo__wrapper");
 
         this._slider.setOptions({
+            range: "min",
             labels: true,
             tooltip: true,
             max: 10
@@ -120,10 +121,10 @@ export default class SliderDemo {
             wrapper.append(element);
 
             if ( type === "select" ) {
-                for ( let i = 0; i < (settings as SelectSettings).length; i += 2 ) {
+                for ( const value of settings as SelectSettings ) {
                     const option = getItemElement("option", "select-option") as HTMLOptionElement;
 
-                    option.value = option.innerHTML = (settings as SelectSettings)[i];
+                    option.value = option.innerHTML = value;
 
                     element.append(option);
                 }
@@ -160,7 +161,7 @@ export default class SliderDemo {
             tooltip: getItem("select", "Tooltip:", ["true", "false"]),
             animate: getItem("select", "Animate:", ["fast", "slow", "false"]),
             labels: getItem("select", "Labels:", ["true", "false"]),
-            pips: getItem("select", "Tooltip:", ["true", "false"]),
+            pips: getItem("select", "Pips:", ["false", "true"])
         };
 
         const items = Object.values(this._configPanel)
@@ -172,7 +173,12 @@ export default class SliderDemo {
         this._configPanel.wrapper.append(...items);
     }
 
-    private _refreshSlider(option: keyof Options, value: string | number | boolean | number[]): void {
+    private _refreshSlider(option: keyof Options | UserOptions, value?: string | number | boolean | number[]): void {
+        if ( typeof option === "object") {
+            this._slider.setOptions(option);
+            return;
+        }
+
         this._slider.setOptions(option, value);
     }
 
@@ -182,40 +188,152 @@ export default class SliderDemo {
         let option: keyof ConfigPanel;
 
         for ( option in elements ) {
-            if ( option === "wrapper") continue;
             if ( !elements.hasOwnProperty(option) ) continue;
+            if ( option === "wrapper") continue;
 
-            if ( option === "min" || option === "max" || option === "step" || option === "value" ) {
-                if ( option !== "value" ) {
-                    const input = (elements[option]).input;
+            const optionCopy = option;
+
+            if ( optionCopy === "min" || optionCopy === "max" || optionCopy === "step" || optionCopy === "value" ) {
+                if ( optionCopy !== "value" ) {
+                    const input = (elements[optionCopy]).input;
 
                     input.addEventListener("change", () => {
-                        this._refreshSlider(option as keyof Options, Number(input.value));
+                        this._checkAndTrimPanel();
+                        
+                        const inputValue = Number(input.value);
+                        const lastSliderValue = this._slider.getOptions(optionCopy);
+
+                        try {
+                            this._refreshSlider(optionCopy as keyof Options, inputValue);
+                        } catch (e) {
+                            alert(e);
+
+                            input.value = String(lastSliderValue);
+                        }
                     });
                 } else {
-                    const item = elements[option];
-
-                    const value = this._slider.getOptions("range") === true ?
-                        [Number(item.firstInput.value), Number(item.secondInput.value)] :
-                         Number(item.firstInput.value);
+                    const valueObject = elements[optionCopy];
 
                     const valueHandler = (): void => {
-                        this._refreshSlider(option as keyof Options, value);
+                        this._checkAndTrimPanel();
+                        
+                        const firstInputValue = Number(valueObject.firstInput.value);
+
+                        const secondInputValue = typeof Number(valueObject.secondInput.value) === "number" ?
+                            Number(valueObject.secondInput.value) : null;
+
+                        const lastOptions = this._slider.getOptions() as Options;
+
+                        const value = !secondInputValue ? [firstInputValue] : [firstInputValue, secondInputValue];
+                        let range: Options["range"] = lastOptions.range;
+
+                        if ( value.length === 1 && lastOptions.range === true ) {
+                            value.push(lastOptions.max);
+                            range = true;
+
+                            this._configPanel.value.secondInput.value = String(lastOptions.max);
+                        }
+
+                        if ( value.length === 2 && lastOptions.range !== true ) {
+                            range = true;
+
+                            this._configPanel.range.select.value = "true";
+                        }
+
+                        try {
+                            this._refreshSlider({
+                                value: value.length === 1 ? value[0] : value,
+                                range: range
+                            });
+                        } catch (e) {
+                            alert(e);
+                            if ( Array.isArray(lastOptions.value) ) {
+                                valueObject.firstInput.value = String(lastOptions.value[0]);
+                                valueObject.secondInput.value = String(lastOptions.value[1]);
+                            } else {
+                                valueObject.firstInput.value = String(lastOptions.value);
+                            }
+
+                            this._configPanel.range.select.value = String(lastOptions.range);
+                        }
                     };
 
-                    item.firstInput.addEventListener("change", valueHandler);
-                    item.secondInput.addEventListener("change", valueHandler);
+                    valueObject.firstInput.addEventListener("change", valueHandler);
+                    valueObject.secondInput.addEventListener("change", valueHandler);
                 }
             } else {
-                const select = (elements[option]).select;
+                const select = (elements[optionCopy]).select;
 
                 select.addEventListener("change", () => {
-                    this._refreshSlider(
-                        option as keyof Options,
-                        select.value === "true" ? true : select.value === "false" ? false : select.value
-                    );
+                    const selectValue = select.value === "true" ?
+                        true : select.value === "false" ? false : select.value;
+
+                    const lastOptions = this._slider.getOptions() as Options;
+
+                    let value: number | number[] = lastOptions.value;
+
+                    if ( optionCopy === "range" ) {
+                        if ( selectValue === true && !Array.isArray(lastOptions.value) ) {
+                            value = [lastOptions.value, lastOptions.max];
+
+                            this._configPanel.value.secondInput.value = String(lastOptions.max);
+                        }
+
+                        if ( selectValue !== true && Array.isArray(lastOptions.value) ) {
+                            value = lastOptions.value[0];
+
+                            this._configPanel.value.secondInput.value = "";
+                        }
+                    }
+
+                    try {
+                        this._refreshSlider({
+                            value: value,
+                            [optionCopy]: selectValue
+                        } as UserOptions);
+                    } catch(e) {
+                        alert(e);
+
+                        this._configPanel.value.secondInput.value =
+                            String( (lastOptions.value as number[])[1] ? (lastOptions.value as number[])[1] :
+                                "" );
+
+                        select.value = String(lastOptions[optionCopy]);
+                    }
                 });
             }
         }
+    }
+    
+    private _checkAndTrimPanel(): true | void {
+        const inputObjectsNames: (keyof ConfigPanel)[] = ["min", "max", "step", "value"];
+        
+        for ( const objectName of inputObjectsNames ) {
+            if (objectName === "value") {
+                const valueObject = this._configPanel[objectName];
+
+                const firstValueTrimmed = valueObject.firstInput.value.trim();
+                const secondValueTrimmed = valueObject.secondInput.value.trim();
+
+                const firstIsNumber = typeof Number(firstValueTrimmed) === "number",
+                      isSecondNumberOrEmpty = firstValueTrimmed === "" ||
+                          typeof Number(firstValueTrimmed) === "number";
+                
+                if ( !firstIsNumber || !isSecondNumberOrEmpty ) {
+                    throw new Error("value should be number");
+                }
+
+                valueObject.firstInput.value = firstValueTrimmed;
+                valueObject.secondInput.value = secondValueTrimmed;
+            } else {
+                const valueTrimmed = (this._configPanel[objectName] as InputItem).input.value.trim();
+
+                if ( typeof Number(valueTrimmed) !== "number" ) {
+                    throw new Error(`${objectName} should be number`);
+                }
+            }
+        }
+
+        return true;
     }
 }
