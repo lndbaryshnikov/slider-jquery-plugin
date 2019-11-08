@@ -1,0 +1,109 @@
+.jquery-slider-horizontal {
+  width: 20em;
+  height: 7px; }
+.jquery-slider-vertical {
+  width: 7px;
+  height: 20em; }
+.jquery-slider {
+  background-color: lightgrey;
+  margin: 5em;
+  border-radius: 5px; }
+.jquery-slider-range {
+  background-color: grey;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px; }
+
+.jquery-slider-horizontal .jquery-slider-range {
+  height: 100%; }
+
+.jquery-slider-vertical .jquery-slider-range {
+  width: 100%; }
+.jquery-slider-handle {
+  background-color: sandybrown;
+  border-radius: 50%; }
+
+.jquery-slider-horizontal .jquery-slider-handle {
+  height: 1.1em;
+  width: 1.1em;
+  top: -60%; }
+
+.jquery-slider-vertical .jquery-slider-handle {
+  height: 1.1em;
+  width: 1.1em;
+  left: -70%; }
+.jquery-slider-tooltip {
+  background-color: sandybrown;
+  font-size: 1.1em;
+  text-align: center;
+  border-radius: 20%;
+  line-height: 28px;
+  color: whitesmoke;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.jquery-slider-tooltip::after {
+  content: "";
+  position: absolute;
+  border-width: 5px;
+  border-style: solid; }
+.jquery-slider-tooltip-horizontal {
+  top: -35px;
+  left: -12.5px;
+  width: 2.5em;
+  height: 28px; }
+
+.jquery-slider-tooltip-horizontal::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -5.5px;
+  border-color: sandybrown transparent transparent transparent; }
+.jquery-slider-tooltip-vertical {
+  top: -8px;
+  right: -3em;
+  width: 2.5em;
+  height: 28px; }
+
+.jquery-slider-tooltip-vertical::after {
+  top: 50%;
+  right: 100%;
+  margin-top: -4px;
+  border-color: transparent sandybrown transparent transparent; }
+.jquery-slider-label {
+  user-select: none;
+  cursor: pointer;
+  font-size: 1em;
+  text-align: center; }
+
+.jquery-slider-label-horizontal {
+  width: 1em;
+  height: 1.2em;
+  bottom: 0; }
+
+.jquery-slider-label-vertical {
+  width: 1.5em;
+  height: 1em;
+  right: 0; }
+.jquery-slider-pip {
+  background-color: black; }
+
+.jquery-slider-pip-horizontal {
+  bottom: 100%;
+  width: 0.1em;
+  height: 0.5em; }
+
+.jquery-slider-pip-vertical {
+  left: 110%;
+  height: 0.1em;
+  width: 0.5em; }
+.jquery-slider-labels-scale-horizontal {
+  top: 1em;
+  height: 1.7em; }
+
+.jquery-slider-labels-scale-vertical {
+  right: 1.5em;
+  width: 2em; }
+
+/*# sourceMappingURL=jquery-slider.css.map*/

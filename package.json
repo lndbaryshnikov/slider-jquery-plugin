@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git+https://github.com/lndbaryshnikov/slider-jquery-plugin.git"
   },
-  "author": "",
+  "author": "Leonid Baryshnikov",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lndbaryshnikov/slider-jquery-plugin/issues"
