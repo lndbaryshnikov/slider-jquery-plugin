@@ -1,0 +1,19 @@
+.slider-demo__jquery-slider-handle-white {
+  background-color: white;
+  border: 1px solid black;
+}
+
+.slider-demo__jquery-slider-handle-white .jquery-slider-tooltip {
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  top: -38px;
+}
+
+.jquery-slider-horizontal .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip::after {
+  border-color: black transparent transparent transparent;
+}
+
+.jquery-slider-vertical .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip::after {
+  border-color: transparent black transparent transparent;
+}

@@ -107,9 +107,6 @@ export default class SliderDemo {
                 wrapper.append(firstInput);
                 wrapper.append(secondInput);
 
-                firstInput.placeholder = secondInput.placeholder = "type value...";
-
-                // const value = (settings as ValueSettings).values;
                 const value = sliderSettings.value;
 
                 firstInput.value = String(Array.isArray(value) ? value[0] : value);
@@ -226,7 +223,8 @@ export default class SliderDemo {
                         this._checkAndTrimPanel();
                         
                         const inputValue = Number(input.value);
-                        const lastSliderValue = this._slider.getOptions(optionCopy);
+                        const lastSliderSettings = this._slider.getOptions() as Options;
+                        const lastSliderValue = lastSliderSettings[optionCopy];
 
                         try {
                             this._refreshSlider(optionCopy as keyof Options, inputValue);
@@ -234,6 +232,7 @@ export default class SliderDemo {
                             alert(e);
 
                             input.value = String(lastSliderValue);
+
                         }
                     });
                 } else {

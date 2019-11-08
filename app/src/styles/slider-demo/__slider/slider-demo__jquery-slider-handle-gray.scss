@@ -1,0 +1,16 @@
+.slider-demo__jquery-slider-handle-gray {
+  background-color: grey;
+
+}
+
+.slider-demo__jquery-slider-handle-gray .jquery-slider-tooltip {
+  background-color: grey;
+}
+
+.jquery-slider-horizontal .slider-demo__jquery-slider-handle-gray .jquery-slider-tooltip::after {
+  border-color: grey transparent transparent transparent;
+}
+
+.jquery-slider-vertical .slider-demo__jquery-slider-handle-gray .jquery-slider-tooltip::after {
+  border-color: transparent grey transparent transparent;
+}

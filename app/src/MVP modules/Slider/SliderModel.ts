@@ -439,10 +439,10 @@ class SliderModel {
                     }
                 }
                 if ( Array.isArray(this._options.value) ) {
-                    if ( (option === "min" && restOptions[0] > this._options.value[0] ||
-                    restOptions[0] > this._options.value[1]) ||
-                        (option === "max" && restOptions[0] < this._options.value[0] ||
-                    restOptions[0] < this._options.value[1]) ) {
+                    if ( (option === "min" && (restOptions[0] > this._options.value[0] ||
+                    restOptions[0] > this._options.value[1])) ||
+                        (option === "max" && (restOptions[0] < this._options.value[0] ||
+                    restOptions[0] < this._options.value[1])) ) {
 
                         this._throw(errors.minAndMax.lessOrMore(option,
                             option === "min" ? "more" : "less"));
