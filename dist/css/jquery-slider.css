@@ -1,13 +1,13 @@
+.jquery-slider {
+  background-color: lightgrey;
+  margin: 5em;
+  border-radius: 5px; }
 .jquery-slider-horizontal {
   width: 20em;
   height: 7px; }
 .jquery-slider-vertical {
   width: 7px;
   height: 20em; }
-.jquery-slider {
-  background-color: lightgrey;
-  margin: 5em;
-  border-radius: 5px; }
 .jquery-slider-range {
   background-color: grey;
   -webkit-border-radius: 5px;
