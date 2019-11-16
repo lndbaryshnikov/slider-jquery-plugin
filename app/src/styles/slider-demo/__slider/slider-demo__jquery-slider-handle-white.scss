@@ -3,17 +3,31 @@
   border: 1px solid black;
 }
 
+.jquery-slider-horizontal .slider-demo__jquery-slider-handle-white {
+  top: -95%;
+}
+
 .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip {
   background-color: white;
   border: 1px solid black;
   color: black;
+}
+
+.jquery-slider-horizontal .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip {
   top: -38px;
+  left: -13.25px;
+}
+
+.jquery-slider-vertical .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip {
+  top: -7px;
 }
 
 .jquery-slider-horizontal .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip::after {
   border-color: black transparent transparent transparent;
+  margin-left: -5px;
 }
 
 .jquery-slider-vertical .slider-demo__jquery-slider-handle-white .jquery-slider-tooltip::after {
   border-color: transparent black transparent transparent;
+  margin-top: -5px;
 }

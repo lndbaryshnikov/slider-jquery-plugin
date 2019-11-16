@@ -68,4 +68,18 @@ new SliderDemo(getSlider(), {
     }
 }, wrapper).render();
 
+new SliderDemo(getSlider(), {
+    range: "min",
+    tooltip: true,
+    max: 20,
+    value: 10,
+    labels: false,
+    pips: true,
+    classes: {
+        "jquery-slider": "slider-demo__jquery-slider-default",
+        "jquery-slider-range": "slider-demo__jquery-slider-range-orange",
+        "jquery-slider-handle": "slider-demo__jquery-slider-handle-white"
+    }
+}, wrapper).render();
+
 document.body.append(sign);

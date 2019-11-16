@@ -276,6 +276,7 @@ export default class SliderDemo {
                                 valueObject.secondInput.value = String(lastOptions.value[1]);
                             } else {
                                 valueObject.firstInput.value = String(lastOptions.value);
+                                valueObject.secondInput.value = "";
                             }
 
                             this._configPanel.range.select.value = String(lastOptions.range);
