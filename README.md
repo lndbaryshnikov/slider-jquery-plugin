@@ -26,4 +26,6 @@
 фреймворка Jest. Тесты отображения реализованы и запускаются с 
 с помощью библиотеки Puppeteer. 
 
+**UML диаграмма архитектуры приложения:**
+
 ![UML Diagram](https://github.com/lndbaryshnikov/slider-jquery-plugin/raw/master/jquery-slider-plugin-uml.png)
