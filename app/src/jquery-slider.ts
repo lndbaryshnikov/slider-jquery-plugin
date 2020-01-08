@@ -15,51 +15,63 @@ interface SliderMethods {
 }
 
 (( $ ) => {
+    const getData = (element: JQueryElementWithSlider): JQuery => {
+        return element.data("slider");
+    };
+
+    const setData = (root: JQueryElementWithSlider, slider: SliderPresenter): void => {
+        root.data("slider", {
+            root: root,
+            slider: slider
+        });
+    };
+
+    const throwErr = (existsOrNot: boolean): void => {
+        if ( existsOrNot ) {
+            throw new Error("jQuery.slider already exists on this DOM element");
+        }
+
+        if ( !existsOrNot ) {
+        throw new Error("jQuery.slider doesn't exist on this DOM element");
+        }
+
+        throw new Error("Incorrect argument");
+    };
+
     const sliderMethods = {
-        getData(element: JQueryElementWithSlider): JQuery {
-            return element.data("slider");
-        },
-
-        setData(root: JQueryElementWithSlider, slider: SliderPresenter): void {
-            root.data("slider", {
-                root: root,
-                slider: slider
-            });
-        },
-
-        throwErr(existsOrNot: boolean): void {
-            if ( existsOrNot ) {
-                throw new Error("jQuery.slider already exists on this DOM element");
-            }
-
-            if ( !existsOrNot ) {
-                throw new Error("jQuery.slider doesn't exist on this DOM element");
-            }
-
-            throw new Error("Incorrect argument");
-        },
-
         init(userOptions?: UserOptions): void | JQuery {
             const $this = (this as unknown as JQueryElementWithSlider).eq(0);
 
-            if ( !sliderMethods.getData($this) ) {
+            if ( !getData($this) ) {
                 const slider = new SliderPresenter(new SliderView(), new SliderModel());
 
                 slider.initialize($this[0], userOptions);
 
-                sliderMethods.setData($this, slider);
+                setData($this, slider);
 
                 return $this;
             } else {
-                sliderMethods.throwErr(true);
+                throwErr(true);
             }
 
+        },
+
+        destroy() {
+            const $this = (this as unknown as JQueryElementWithSlider).eq(0);
+            const data = getData($this);
+
+            if ( data ) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                data.slider.destroy();
+                $this.removeData("slider");
+            } else throwErr(false);
         },
 
         options(...userOptions: (UserOptions | string)[] ) {
             const $this = (this as unknown as JQueryElementWithSlider).eq(0);
 
-            const data = sliderMethods.getData($this);
+            const data = getData($this);
             if ( data ) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
@@ -105,7 +117,7 @@ interface SliderMethods {
                 throw new Error("Passed options are incorrect");
 
             } else {
-                sliderMethods.throwErr(false);
+                throwErr(false);
             }
         }
     };

@@ -1,6 +1,42 @@
 # slider-jquery-plugin
     Кастомизируемый плагин-бегунок для JQuery с множеством опций для настрйоки нужного внешнего вида и поведения.
 
+Для ознакомления страница выложена на 
+[GitHub Pages](https://lndbaryshnikov.github.io/slider-jquery-plugin/).
+
+Для развертывания данного проекта локально необходимо клонировать 
+репозиторий и запустить команду "npm init" для установки необходимых
+зависимостей.
+
+Для сборки проекта использовался модульный сборщик Webpack.
+Также использованы следующие препроцессоры, фреймворки, 
+библиотеки и плагины:
+* [SCSS](https://github.com/sass/sass) для CSS
+* [JQuery](https://www.npmjs.com/package/jquery)
+* [Jest](https://www.npmjs.com/package/jest) для тестирования
+* [Puppeteer](https://www.npmjs.com/package/puppeteer)
+
+Также среди зависимостей приложения есть 
+[Babel](https://babeljs.io/) - транспайлер для ES6 и 
+[ESLint](https://www.npmjs.com/package/eslint) 
+- инструмент для обнаружения ошибок.
+
+Все вышеперечисленные пакеты устанавливаются с помощью менеджера 
+пакетов npm командой _"npm install"_. Все пакеты, использованные 
+в данном проекте и их версии можно посмотреть в package.json.
+
+Для работы приложению необходима одна глобальная зависимость - 
+библиотека JQuery, которая должна быть подключена выше в коде. 
+
+Также в package.json прописаны все необходимые npm-скрипты. Ниже 
+приведены наиболее важные из них:
+* "jest" - запуск jest-тестов
+* "watchJest" - запуск тестов в режиме watch
+* "jestPup" - запуск связки jest-puppeteer для тестирования View
+(используется отдельный конфиг jest)
+* "watchJestPup" - связка jest-puppeteer в режиме watch для View
+* "eslint" - проверка кода линтером
+
 Архитектура приложения построена на принципах MVP-архитектуры 
 с Passive View.
 
@@ -26,6 +62,46 @@
 фреймворка Jest. Тесты отображения реализованы и запускаются с 
 с помощью библиотеки Puppeteer. 
 
+Плагин добавляет в объект JQuery метод слайдер, который при инициализации 
+вешает бегунок на элемент по селектору:
+При инициализации возможна либо передача объекта опций, либо инициализация
+без ничего (тогда слайдре унаследует настрйоки по умолчанию).
+В дальнейшем возможно, с помощью параметров метода slider,
+получение объекта настроек или конкретной опции, установка также настроек 
+объектом или по отдельности:
+
+```js
+    $("#selector").slider(); //инициализация с настройками по умолчанию
+    $("#selector").slider({min: 10, tooltip: true }); //инициализация с пользовательскими настройками
+    $("#selector").slider("options"); //возвращает объект текущих настроек
+    $("#selector").slider("options", "pips"); //возвращает значение конкретной опции
+    $("#selector").slider("options", { range: false, orientation: "vertical" }); //устанавливает новые опции
+    $("#selector").slider("options", "step", 10); //устанавливает конкретную опцию
+    $("#selector").slider("destroy"); //удаляет слайдер и его связь с элементом ".selector"
+```
+
+Сладер предусматривает следующии опции для конфигурации:
+```js
+    type Options = {
+        min: number;
+        max: number;
+        step: number;
+        value: number | number[];
+        orientation: "horizontal" | "vertical";
+        range: "min" | "max" | boolean;
+        tooltip: boolean | ValueFunction;
+        animate: "slow" | "fast" | false | number;
+        labels: true | false | ValueFunction;
+        pips: boolean;
+        change: ChangeFunction | false;
+        classes: {
+                "jquery-slider"?: string;
+                "jquery-slider-range"?: string;
+                "jquery-slider-handle"?: string;
+            };
+    };
+```
+ 
 **UML диаграмма архитектуры приложения:**
 
 ![UML Diagram](https://github.com/lndbaryshnikov/slider-jquery-plugin/raw/master/jquery-slider-plugin-uml.png)
