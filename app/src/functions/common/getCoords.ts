@@ -1,4 +1,4 @@
-export interface Coords {
+interface Coords {
     top: number;
     bottom: number;
     left: number;
@@ -21,3 +21,4 @@ const getCoords = (domElem: HTMLElement): Coords => {
 };
 
 export default getCoords;
+export { Coords };
