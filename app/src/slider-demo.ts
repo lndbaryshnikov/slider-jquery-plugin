@@ -19,7 +19,7 @@ const wrapper = getDiv("samples-wrapper");
 
 const header = getDiv(
     "header",
-    "JQuery-Slider plugin demo page"
+    "slider-jquery-plugin demo page"
 );
 
 const sign = getDiv(
