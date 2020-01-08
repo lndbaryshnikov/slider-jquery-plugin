@@ -1,36 +1,37 @@
-import SliderView from "../../src/MVP modules/Slider/SliderView";
-import SliderModel from "../../src/MVP modules/Slider/SliderModel";
-import {getClassList} from "../../src/functions/common/getClassList";
+import SliderView from '../../src/MVP modules/Slider/SliderView';
+import SliderModel from '../../src/MVP modules/Slider/SliderModel';
+import getClassList from '../../src/functions/common/getClassList';
 
-describe("destroy and cleanDom methods", () => {
-    let sliderView: SliderView, root: HTMLElement;
+describe('destroy and cleanDom methods', () => {
+  let sliderView: SliderView; let
+    root: HTMLElement;
 
-    const defaultOptions = SliderModel.getDefaultOptions("horizontal");
+  const defaultOptions = SliderModel.getDefaultOptions('horizontal');
 
-    beforeEach(() => {
-        sliderView = new SliderView();
+  beforeEach(() => {
+    sliderView = new SliderView();
 
-        sliderView.setOptions(defaultOptions);
+    sliderView.setOptions(defaultOptions);
 
-        root = document.body;
+    root = document.body;
 
-        sliderView.render(root);
-    });
+    sliderView.render(root);
+  });
 
-    test("cleanDom method works correctly", () => {
-        sliderView.cleanDom();
+  test('cleanDom method works correctly', () => {
+    sliderView.cleanDom();
 
-        expect(document.querySelectorAll("div").length).toBe(0);
-        expect(document.querySelector(".jquery-slider")).toBe(null);
-        expect(document.querySelector(".jquery-slider-range")).toBe(null);
-        expect(document.querySelector(".jquery-slider-handle")).toBe(null);
-    });
+    expect(document.querySelectorAll('div').length).toBe(0);
+    expect(document.querySelector('.jquery-slider')).toBe(null);
+    expect(document.querySelector('.jquery-slider-range')).toBe(null);
+    expect(document.querySelector('.jquery-slider-handle')).toBe(null);
+  });
 
-    test("destroy method works", () => {
-        sliderView.destroy();
+  test('destroy method works', () => {
+    sliderView.destroy();
 
-        expect(sliderView.html).toBe(undefined);
-        expect(document.querySelectorAll("div").length).toBe(3);
-        expect(getClassList($("div"))).toEqual(defaultOptions.classes);
-    });
+    expect(sliderView.html).toBe(undefined);
+    expect(document.querySelectorAll('div').length).toBe(3);
+    expect(getClassList($('div'))).toEqual(defaultOptions.classes);
+  });
 });

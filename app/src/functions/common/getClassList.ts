@@ -1,23 +1,30 @@
-const addClassProperty = (classList: { [key: string]: string }, classesArray: string[], deleteCount: number) => {
-    const mainClass = classesArray.splice(0, deleteCount);
+const addClassProperty = (
+  classList: { [key: string]: string },
+  classesArray: string[],
+  deleteCount: number,
+) => {
+  const mainClass = classesArray.splice(0, deleteCount);
 
-    classList[mainClass.join(" ")] = classesArray.length !== 0 ? classesArray.join(" ") : "";
+  // eslint-disable-next-line no-param-reassign
+  classList[mainClass.join(' ')] = classesArray.length !== 0 ? classesArray.join(' ') : '';
 };
 
-type MainClasses = "jquery-slider" | "jquery-slider-range" | "jquery-slider-handle";
+type MainClasses = 'jquery-slider' | 'jquery-slider-range' | 'jquery-slider-handle';
 
-export const getClassList = (elements: JQuery): Record<MainClasses, string> => {
-    const classList: any = {};
+const getClassList = (elements: JQuery): Record<MainClasses, string> => {
+  const classList: any = {};
 
-    for (let i = 0; i < elements.length; i++) {
-        const classesArray = elements[i].className.split(" ");
+  for (let i = 0; i < elements.length; i += 1) {
+    const classesArray = elements[i].className.split(' ');
 
-        if ( i === 0 ) {
-            addClassProperty(classList, classesArray, 2);
-        } else {
-            addClassProperty(classList, classesArray, 1);
-        }
+    if (i === 0) {
+      addClassProperty(classList, classesArray, 2);
+    } else {
+      addClassProperty(classList, classesArray, 1);
     }
+  }
 
-    return classList;
+  return classList;
 };
+
+export default getClassList;

@@ -1,16 +1,16 @@
 const clone = (obj) => {
-    class Create {
-        constructor() {
-            for (const item in obj) {
-                if (obj.hasOwnProperty(item)) {
-                    this[item] = (typeof obj[item] ===
-                        "object") ? clone(obj[item]) : obj[item];
-                }
-            }
+  class Create {
+    constructor() {
+      Object.keys(obj).forEach((item) => {
+        if (Object.prototype.hasOwnProperty.call(obj, item)) {
+          this[item] = (typeof obj[item]
+                === 'object') ? clone(obj[item]) : obj[item];
         }
+      });
     }
+  }
 
-    return new Create();
+  return new Create();
 };
 
 export default clone;

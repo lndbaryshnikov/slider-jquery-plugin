@@ -1,131 +1,129 @@
-import SliderLabelsView, {LabelOptions} from "../../src/MVP modules/SliderLabelsView";
+import SliderLabelsView, { LabelOptions } from '../../src/MVP modules/SliderLabelsView';
 
-const extractValue = (value: string) => {
-    return value.replace(/\d+px/, "")
-    // eslint-disable-next-line no-useless-escape
-        .replace( /[<>="\\ a-z\/\-:;]/gi, "");
-};
+const extractValue = (value: string) => value.replace(/\d+px/, '')
+// eslint-disable-next-line no-useless-escape
+  .replace(/[<>="\\ a-z\/\-:;]/gi, '');
 
-describe("tooltip works correctly", () => {
-    let labels: SliderLabelsView;
-    let root: HTMLDivElement;
-    let labelsOnDom: NodeListOf<Element>;
+describe('tooltip works correctly', () => {
+  let labels: SliderLabelsView;
+  let root: HTMLDivElement;
+  let labelsOnDom: NodeListOf<Element>;
 
-    const labelsOptionsFull: LabelOptions = {
-        labels: true,
-        pips: true,
-        orientation: "horizontal",
-        min: 0,
-        max: 10,
-        step: 1,
-        valueFunc: (value: number) => value + "$"
-    };
+  const labelsOptionsFull: LabelOptions = {
+    labels: true,
+    pips: true,
+    orientation: 'horizontal',
+    min: 0,
+    max: 10,
+    step: 1,
+    valueFunc: (value: number) => `${value}$`,
+  };
 
-    const labelsOptionsVertical = $.extend({}, labelsOptionsFull);
-    labelsOptionsVertical.orientation = "vertical";
+  const labelsOptionsVertical = $.extend({}, labelsOptionsFull);
+  labelsOptionsVertical.orientation = 'vertical';
 
-    const labelsOptionsPipsFalse = $.extend({}, labelsOptionsFull);
-    labelsOptionsPipsFalse.pips = false;
+  const labelsOptionsPipsFalse = $.extend({}, labelsOptionsFull);
+  labelsOptionsPipsFalse.pips = false;
 
-    const labelsOptionsLabelsFalse = $.extend({}, labelsOptionsFull);
-    labelsOptionsLabelsFalse.labels = false;
+  const labelsOptionsLabelsFalse = $.extend({}, labelsOptionsFull);
+  labelsOptionsLabelsFalse.labels = false;
 
-    beforeEach(() => {
-        root = document.createElement("div");
-        root.style.width = "200px";
-        root.style.height = "5px";
-        root.style.margin = "100px";
+  beforeEach(() => {
+    root = document.createElement('div');
+    root.style.width = '200px';
+    root.style.height = '5px';
+    root.style.margin = '100px';
 
-        document.body.append(root);
+    document.body.append(root);
 
-        labels = new SliderLabelsView();
-        labels.setOptions(labelsOptionsFull);
+    labels = new SliderLabelsView();
+    labels.setOptions(labelsOptionsFull);
 
-        labels.render(root);
+    labels.render(root);
 
-        labelsOnDom = document.querySelectorAll(".jquery-slider-label");
+    labelsOnDom = document.querySelectorAll('.jquery-slider-label');
+  });
+
+  afterEach(() => {
+    root.remove();
+  });
+
+  test('complete label exists and contain pips', () => {
+    const pipsOnDom = document.querySelectorAll('.jquery-slider-pip');
+
+    labels.labels.forEach((label) => {
+      expect(root.contains(label)).toBeTruthy();
     });
 
-    afterEach(() => {
-        root.remove();
+    for (let i = 0; i < pipsOnDom.length; i += 1) {
+      expect(pipsOnDom[i]).not.toBe(null);
+      expect(labelsOnDom[i].contains(pipsOnDom[i])).toBeTruthy();
+    }
+  });
+
+  test("labels' values is correct", () => {
+    for (let i = 0, value = labelsOptionsFull.min;
+      i < labelsOnDom.length; i += 1, value += labelsOptionsFull.step) {
+      const label = labelsOnDom[i];
+      const formattedValue = labelsOptionsFull.valueFunc(value);
+      const inner = extractValue(label.innerHTML);
+
+      expect(inner).toBe(formattedValue);
+    }
+  });
+
+  test('remove methods', () => {
+    labels.remove();
+
+    expect(labels.labels).toBeTruthy();
+
+    labels.labels.forEach((label) => {
+      expect(root.contains(label)).toBe(false);
     });
+  });
 
-    test("complete label exists and contain pips", () => {
-        const pipsOnDom = document.querySelectorAll(".jquery-slider-pip");
+  test('destroy method works', () => {
+    labels.destroy();
 
-        for (const label of labels.labels) {
-            expect(root.contains(label)).toBeTruthy();
-        }
+    expect(labels.labels).toBe(null);
+  });
 
-        for ( let i = 0; i < pipsOnDom.length; i++ ) {
-            expect(pipsOnDom[i]).not.toBe(null);
-            expect(labelsOnDom[i].contains(pipsOnDom[i])).toBeTruthy();
-        }
-    });
+  test('setClasses', () => {
+    expect(labelsOnDom[0].className).toBe('jquery-slider-label jquery-slider-label-horizontal');
 
-    test("labels' values is correct", () => {
-        for ( let i = 0, value = labelsOptionsFull.min;
-            i < labelsOnDom.length; i++, value += labelsOptionsFull.step) {
-            const label = labelsOnDom[i];
-            const formattedValue = labelsOptionsFull.valueFunc(value);
-            const inner = extractValue(label.innerHTML);
+    expect(labelsOnDom[0].children[0].className).toBe('jquery-slider-pip jquery-slider-pip-horizontal');
 
-            expect(inner).toBe(formattedValue);
-        }
-    });
+    labels.setOptions(labelsOptionsVertical);
 
-    test("remove methods", () => {
-        labels.remove();
+    labelsOnDom = document.querySelectorAll('.jquery-slider-label');
 
-        expect(labels.labels).toBeTruthy();
+    expect(labelsOnDom[0].className).toBe('jquery-slider-label jquery-slider-label-vertical');
+    expect(labelsOnDom[0].children[0].className).toBe('jquery-slider-pip jquery-slider-pip-vertical');
+  });
 
-        for (const label of labels.labels) {
-            expect(root.contains(label)).toBe(false);
-        }
-    });
+  test('when pips are false', () => {
+    expect(!!labelsOnDom[0].querySelector('.jquery-slider-pip')).toBeTruthy();
+    const value0 = extractValue(labelsOnDom[0].innerHTML);
 
-    test("destroy method works", () => {
-        labels.destroy();
+    console.log(labelsOnDom[0].innerHTML);
 
-        expect(labels.labels).toBe(null);
-    });
+    expect(value0).toBe('0$');
 
-    test("setClasses", () => {
-        expect(labelsOnDom[0].className).toBe("jquery-slider-label jquery-slider-label-horizontal");
+    labels.setOptions(labelsOptionsPipsFalse);
+    labelsOnDom = document.querySelectorAll('.jquery-slider-label');
 
-        expect(labelsOnDom[0].children[0].className).toBe("jquery-slider-pip jquery-slider-pip-horizontal");
+    expect(!!labelsOnDom[0].querySelector('.jquery-slider-pip')).toBeFalsy();
+  });
 
-        labels.setOptions(labelsOptionsVertical);
+  test('when labels are false', () => {
+    labels.setOptions(labelsOptionsLabelsFalse);
+    labelsOnDom = document.querySelectorAll('.jquery-slider-label');
 
-        labelsOnDom = document.querySelectorAll(".jquery-slider-label");
+    expect(labelsOnDom.length).not.toBe(0);
+    expect(labelsOnDom[0].querySelector('.jquery-slider-pip')).not.toBe(null);
 
-        expect(labelsOnDom[0].className).toBe("jquery-slider-label jquery-slider-label-vertical");
-        expect(labelsOnDom[0].children[0].className).toBe("jquery-slider-pip jquery-slider-pip-vertical");
-    });
+    const value = extractValue(labelsOnDom[0].innerHTML);
 
-    test("when pips are false", () => {
-        expect(!!labelsOnDom[0].querySelector(".jquery-slider-pip")).toBeTruthy();
-        const value0 = extractValue(labelsOnDom[0].innerHTML);
-
-        console.log(labelsOnDom[0].innerHTML);
-
-        expect(value0).toBe("0$");
-
-        labels.setOptions(labelsOptionsPipsFalse);
-        labelsOnDom = document.querySelectorAll(".jquery-slider-label");
-
-        expect(!!labelsOnDom[0].querySelector(".jquery-slider-pip")).toBeFalsy();
-    });
-
-    test("when labels are false", () => {
-        labels.setOptions(labelsOptionsLabelsFalse);
-        labelsOnDom = document.querySelectorAll(".jquery-slider-label");
-
-        expect(labelsOnDom.length).not.toBe(0);
-        expect(labelsOnDom[0].querySelector(".jquery-slider-pip")).not.toBe(null);
-
-        const value = extractValue(labelsOnDom[0].innerHTML);
-
-        expect(value).toBe("");
-    });
+    expect(value).toBe('');
+  });
 });

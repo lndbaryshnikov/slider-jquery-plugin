@@ -1,18 +1,17 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
-    const e = $.Event(type);
+  const e = $.Event(type);
 
-    if (x !== "empty") {
-        if (typeof x === "number") {
-            e.pageX = x;
-        }
+  if (x !== 'empty') {
+    if (typeof x === 'number') {
+      e.pageX = x;
     }
+  }
 
-    if (y !== "empty"){
-        if (typeof y === "number") {
-            e.pageY = y;
-        }
+  if (y !== 'empty') {
+    if (typeof y === 'number') {
+      e.pageY = y;
     }
+  }
 
-    return e;
+  return e;
 };

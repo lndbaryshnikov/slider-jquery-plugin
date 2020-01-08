@@ -1,4 +1,4 @@
-import getCoords from "./getCoords";
+import getCoords from './getCoords';
 
 interface Shift {
   x: number;
@@ -6,15 +6,15 @@ interface Shift {
 }
 
 const getShift = (event: MouseEvent, elem: HTMLElement): Shift => {
-    const elemCoords = getCoords(elem);
+  const elemCoords = getCoords(elem);
 
-    return {
-        x: event.pageX - elemCoords.left,
-        y: event.pageY - elemCoords.top
-    };
+  return {
+    x: event.pageX - elemCoords.left,
+    y: event.pageY - elemCoords.top,
+  };
 };
 
 export {
-    Shift,
-    getShift
-}
+  Shift,
+  getShift,
+};

@@ -1,20 +1,22 @@
-export const hasAnArrayElements = (array: any[], sourceArray: any[]) => {
-    let has: boolean;
+const hasAnArrayElements = (array: any[], sourceArray: any[]) => {
+  let has: boolean;
 
-    for (let i = 0; i < array.length; i++) {
-        has = false;
+  for (let i = 0; i < array.length; i += 1) {
+    has = false;
 
-        for (let j = 0; j < sourceArray.length; j++) {
-            if (array[i] === sourceArray[j]) {
-                has = true;
+    for (let j = 0; j < sourceArray.length; j += 1) {
+      if (array[i] === sourceArray[j]) {
+        has = true;
 
-                break;
-            }
-        }
-
-        if (has === false) {
-            break;
-        }
+        break;
+      }
     }
-    return has;
+
+    if (has === false) {
+      break;
+    }
+  }
+  return has;
 };
+
+export default hasAnArrayElements;

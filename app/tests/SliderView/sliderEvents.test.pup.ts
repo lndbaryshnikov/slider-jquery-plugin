@@ -1,822 +1,868 @@
-import puppeteer, {Browser, Page} from "puppeteer";
-import SliderPupPage, {Coords} from "./SliderPupPage"
-import {Options} from "../../src/MVP modules/Slider/SliderModel";
-import {JQueryElementWithSlider} from "../../src/jquery-slider";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import puppeteer, { Browser, Page } from 'puppeteer';
 
-describe("slider events", () => {
-    let browser: Browser, page: Page;
-    let sliderPage: SliderPupPage;
+import SliderPupPage, { Coords } from './SliderPupPage';
+import { Options } from '../../src/MVP modules/Slider/SliderModel';
+import { JQueryElementWithSlider } from '../../src/jquery-slider';
 
-    const timeout = SliderPupPage.timeout;
+describe('slider events', () => {
+  let browser: Browser; let
+    page: Page;
+  let sliderPage: SliderPupPage;
 
-    beforeAll(async () => {
-        browser = await puppeteer.launch();
-        sliderPage = new SliderPupPage(browser);
+  const { timeout } = SliderPupPage;
 
-        await sliderPage.createPage();
+  beforeAll(async () => {
+    browser = await puppeteer.launch();
+    sliderPage = new SliderPupPage(browser);
 
-        page = sliderPage.page;
+    await sliderPage.createPage();
+
+    page = sliderPage.page;
+  });
+
+  afterAll(() => {
+    browser.close();
+  });
+
+  let sliderCoords: Coords;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let rangeCoords: Coords;
+  let firstHandleCoords: Coords;
+
+  let sliderMiddle: { left: number; top: number };
+
+  describe('vertical slider events', () => {
+    beforeEach(async () => {
+      await sliderPage.createSlider({ orientation: 'vertical', animate: false });
+
+      sliderCoords = await sliderPage.getSliderCoords();
+      rangeCoords = await sliderPage.getRangeCoords();
+      firstHandleCoords = await sliderPage.getFirstHandleCoords();
+
+      sliderMiddle = await sliderPage.getSliderMiddle();
     });
 
-    afterAll(() => {
-        browser.close();
+    afterEach(async () => {
+      await sliderPage.remove();
     });
 
-    let sliderCoords: Coords;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let rangeCoords: Coords;
-    let firstHandleCoords: Coords;
+    test('move handle to specific coordinates inside the slider', async () => {
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderMiddle.top);
 
-    let sliderMiddle: { left: number; top: number };
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-    describe("vertical slider events", () => {
-        beforeEach(async () => {
-            await sliderPage.createSlider({ orientation: "vertical", animate: false });
+      const newCoords = {
+        top: newHandleCoords.top,
+        left: newHandleCoords.left,
+      };
+      const testCoords = {
+        top: sliderMiddle.top - firstHandleCoords.height / 2,
+        left: firstHandleCoords.left,
+      };
 
-            sliderCoords = await sliderPage.getSliderCoords();
-            rangeCoords = await sliderPage.getRangeCoords();
-            firstHandleCoords = await sliderPage.getFirstHandleCoords();
+      expect(newCoords.left).toBe(testCoords.left);
+      expect(newCoords.top).toBe(testCoords.top);
+    }, timeout);
 
-            sliderMiddle = await sliderPage.getSliderMiddle();
-        });
+    test('handle stays within the slider when the cursor goes outside', async () => {
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderCoords.top - 50);
 
-        afterEach(async () => {
-            await sliderPage.remove();
-        });
+      const newHandleCoordsTop = await sliderPage.getFirstHandleCoords();
 
-        test("move handle to specific coordinates inside the slider", async () => {
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderMiddle.top);
+      const firstNewTop = newHandleCoordsTop.top - sliderCoords.top;
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      await sliderPage.moveHandleToCoords(newHandleCoordsTop.left, sliderCoords.bottom + 50);
 
-            const newCoords = {
-                top: newHandleCoords.top,
-                left: newHandleCoords.left
-            };
-            const testCoords = {
-                top: sliderMiddle.top - firstHandleCoords.height / 2,
-                left: firstHandleCoords.left
-            };
+      const newHandleCoordsBottom = await sliderPage.getFirstHandleCoords();
 
-            expect(newCoords.left).toBe(testCoords.left);
-            expect(newCoords.top).toBe(testCoords.top);
-        }, timeout);
+      const secondNewTop = newHandleCoordsBottom.top - sliderCoords.top;
 
-        test("handle stays within the slider when the cursor goes outside", async () => {
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderCoords.top - 50);
+      const bottomEdge = sliderCoords.height - newHandleCoordsBottom.height;
 
-            const newHandleCoordsTop = await sliderPage.getFirstHandleCoords();
+      expect(firstNewTop).toBe(0 - firstHandleCoords.height / 2);
+      expect(secondNewTop).toBe(bottomEdge + firstHandleCoords.height / 2);
+    }, timeout);
 
-            const firstNewTop = newHandleCoordsTop.top - sliderCoords.top;
+    test("range changes correctly when options.range = 'min'", async () => {
+      await sliderPage.setOptions({ range: 'min' });
 
-            await sliderPage.moveHandleToCoords(newHandleCoordsTop.left, sliderCoords.bottom + 50);
+      const { range } = sliderPage.elements;
+      const newModeRangeCoords = await page.evaluate((rangeForCoords) => {
+        console.log(rangeForCoords.className);
+        const {
+          left, top, right, bottom, width, height,
+        } = rangeForCoords.getBoundingClientRect();
 
-            const newHandleCoordsBottom = await sliderPage.getFirstHandleCoords();
+        return {
+          left, top, right, bottom, width, height,
+        };
+      }, range);
+      expect(newModeRangeCoords.height).toBe(0);
+      expect(newModeRangeCoords.bottom).toBe(sliderCoords.bottom);
 
-            const secondNewTop = newHandleCoordsBottom.top - sliderCoords.top;
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left,
+        (await sliderPage.getSliderMiddle()).top);
 
-            const bottomEdge = sliderCoords.height - newHandleCoordsBottom.height;
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            expect(firstNewTop).toBe(0 - firstHandleCoords.height / 2);
-            expect(secondNewTop).toBe(bottomEdge + firstHandleCoords.height / 2);
-        }, timeout);
+      const newRangeCoords = await page.evaluate((rangeForCoords) => {
+        const {
+          left, top, right, bottom, width, height,
+        } = rangeForCoords.getBoundingClientRect();
 
-        test("range changes correctly when options.range = 'min'", async () => {
-            await sliderPage.setOptions({ range: "min" });
+        return {
+          left, top, right, bottom, width, height,
+        };
+      }, range);
 
-            const range = sliderPage.elements.range;
-            const newModeRangeCoords = await page.evaluate((range) => {
-                console.log(range.className);
-                const {left, top, right, bottom, width, height} = range.getBoundingClientRect();
-
-                return {left, top, right, bottom, width, height};
-            }, range);
-            expect(newModeRangeCoords.height).toBe(0);
-            expect(newModeRangeCoords.bottom).toBe(sliderCoords.bottom);
-
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left,
-                (await sliderPage.getSliderMiddle()).top);
-
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
-
-            const newRangeCoords = await page.evaluate((range) => {
-                const {left, top, right, bottom, width, height} = range.getBoundingClientRect();
-
-                return {left, top, right, bottom, width, height};
-            }, range);
-
-            expect(newRangeCoords.bottom).toBe(sliderCoords.bottom);
-            expect(newRangeCoords.top).toBe(newHandleCoords.top + newHandleCoords.height / 2);
-            expect(newRangeCoords.height).toBe(sliderCoords.bottom -  newHandleCoords.bottom
+      expect(newRangeCoords.bottom).toBe(sliderCoords.bottom);
+      expect(newRangeCoords.top).toBe(newHandleCoords.top + newHandleCoords.height / 2);
+      expect(newRangeCoords.height).toBe(sliderCoords.bottom - newHandleCoords.bottom
                 + newHandleCoords.height / 2);
-        }, timeout);
+    }, timeout);
 
-        test("range changes correctly when options.range = 'max'", async () => {
-            await sliderPage.setOptions({range: "max"});
+    test("range changes correctly when options.range = 'max'", async () => {
+      await sliderPage.setOptions({ range: 'max' });
 
-            const newModeRangeCoords = await sliderPage.getRangeCoords();
+      const newModeRangeCoords = await sliderPage.getRangeCoords();
 
-            expect(newModeRangeCoords.height).toBe(sliderCoords.height);
-            expect(newModeRangeCoords.top).toBe(sliderCoords.top);
-            expect(newModeRangeCoords.bottom).toBe(sliderCoords.bottom);
+      expect(newModeRangeCoords.height).toBe(sliderCoords.height);
+      expect(newModeRangeCoords.top).toBe(sliderCoords.top);
+      expect(newModeRangeCoords.bottom).toBe(sliderCoords.bottom);
 
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, (await sliderPage.getSliderMiddle()).top);
+      await sliderPage.moveHandleToCoords(
+        firstHandleCoords.left,
+        (await sliderPage.getSliderMiddle()).top,
+      );
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
-            const newRangeCoords = await sliderPage.getRangeCoords();
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      const newRangeCoords = await sliderPage.getRangeCoords();
 
-            expect(newRangeCoords.top).toBe(sliderCoords.top);
-            expect(newRangeCoords.bottom).toBe(newHandleCoords.top + newHandleCoords.height / 2);
-            expect(newRangeCoords.height).toBe(newHandleCoords.top + newHandleCoords.height / 2
+      expect(newRangeCoords.top).toBe(sliderCoords.top);
+      expect(newRangeCoords.bottom).toBe(newHandleCoords.top + newHandleCoords.height / 2);
+      expect(newRangeCoords.height).toBe(newHandleCoords.top + newHandleCoords.height / 2
                 - sliderCoords.top);
+    }, timeout);
 
-        }, timeout);
+    test("handle sets correctly depending on 'value' option", async () => {
+      await sliderPage.setOptions('value', 10);
 
-        test("handle sets correctly depending on 'value' option", async () => {
-            await sliderPage.setOptions("value", 10);
+      const handleTopWhenValueIsTen = sliderCoords.top + sliderCoords.height
+                - sliderCoords.height * 0.1 - firstHandleCoords.height / 2;
 
-            const handleTopWhenValueIsTen = sliderCoords.top + sliderCoords.height -
-                sliderCoords.height * 0.1 - firstHandleCoords.height / 2;
+      let newHandleCoords: Coords;
 
-            let newHandleCoords: Coords;
+      newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            newHandleCoords = await sliderPage.getFirstHandleCoords();
+      expect(newHandleCoords.top).toBe(handleTopWhenValueIsTen);
 
-            expect(newHandleCoords.top).toBe(handleTopWhenValueIsTen);
+      await sliderPage.setOptions('value', 90);
 
-            await sliderPage.setOptions("value", 90);
+      const handleTopWhenValueIsNinety = sliderCoords.top + sliderCoords.height
+        * 0.1 - firstHandleCoords.height / 2;
 
-            const handleTopWhenValueIsNinety = sliderCoords.top + sliderCoords.height * 0.1 - firstHandleCoords.height / 2;
+      newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            newHandleCoords = await sliderPage.getFirstHandleCoords();
+      expect(newHandleCoords.top).toBe(handleTopWhenValueIsNinety);
+    }, timeout);
 
-            expect(newHandleCoords.top).toBe(handleTopWhenValueIsNinety);
-        }, timeout);
+    test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
+      let value: Options['value'];
 
-        test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
-            let value: Options["value"];
+      const getValue = async (): Promise<Options['value']> => await sliderPage.getOptions('value') as Options['value'];
 
-            const getValue = async (): Promise<Options["value"]> => {
-                return await sliderPage.getOptions("value") as Options["value"];
-            };
+      value = await getValue();
+      expect(value).toBe(0);
 
-            value = await getValue();
-            expect(value).toBe(0);
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderMiddle.top);
 
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderMiddle.top);
+      value = await getValue();
+      expect(value).toBe(50);
 
-            value = await getValue();
-            expect(value).toBe(50);
+      const positionForValueOfThirty = sliderCoords.top + sliderCoords.height
+        - sliderCoords.height * 0.3;
 
-            const positionForValueOfThirty = sliderCoords.top + sliderCoords.height - sliderCoords.height * 0.3;
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left, positionForValueOfThirty);
 
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, positionForValueOfThirty);
+      value = await getValue();
+      expect(value).toBe(30);
 
-            value = await getValue();
-            expect(value).toBe(30);
+      const positionForValueOfSeventy = sliderCoords.top + sliderCoords.height * 0.3;
 
-            const positionForValueOfSeventy = sliderCoords.top + sliderCoords.height * 0.3;
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left, positionForValueOfSeventy);
 
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, positionForValueOfSeventy);
+      value = await getValue();
+      expect(value).toBe(70);
+    }, timeout);
 
-            value = await getValue();
-            expect(value).toBe(70);
+    test("options 'value' with not default 'min', 'max', 'value' and 'step'", async () => {
+      await sliderPage.setOptions({
+        min: 133,
+        max: 233,
+        step: 5,
+        value: 138,
+      });
 
-        }, timeout);
+      const testValue = async (yRelative: number, valueExpected: number): Promise<void> => {
+        const yToMove = sliderCoords.top + sliderCoords.height * (1 - yRelative);
+        await sliderPage.moveHandleToCoords(firstHandleCoords.left, yToMove);
 
-        test("options 'value' with not default 'min', 'max', 'value' and 'step'", async () => {
-            await sliderPage.setOptions({
-                min: 133,
-                max: 233,
-                step: 5,
-                value: 138
-            });
+        const value = await sliderPage.getOptions('value') as Options['value'];
 
-            const testValue = async (yRelative: number, valueExpected: number): Promise<void> => {
-                const yToMove = sliderCoords.top + sliderCoords.height * (1 - yRelative);
-                await sliderPage.moveHandleToCoords(firstHandleCoords.left, yToMove);
+        expect(value).toBe(valueExpected);
+      };
 
-                const value = await sliderPage.getOptions("value") as Options["value"];
+      await testValue(0.1, 143);
+      await testValue(0.34, 168);
+      await testValue(0.87, 218);
+      await testValue(0.98, 233);
+    }, timeout);
 
-                expect(value).toBe(valueExpected);
-            };
+    test('handle moves correctly when step is wide', async () => {
+      await sliderPage.setOptions({ step: 20 });
 
-            await testValue(0.1, 143);
-            await testValue(0.34, 168);
-            await testValue(0.87, 218);
-            await testValue(0.98, 233);
+      const testPosition = async (
+        yMoveRelative: number,
+        yExpectedRelative: number,
+      ): Promise<void> => {
+        const yToMove = sliderCoords.top + sliderCoords.height * (1 - yMoveRelative);
+        const yExpected = sliderCoords.top + sliderCoords.height
+          * (1 - yExpectedRelative) - firstHandleCoords.height / 2;
 
-        }, timeout);
+        await sliderPage.moveHandleToCoords(firstHandleCoords.left, yToMove);
 
-        test("handle moves correctly when step is wide", async() => {
-            await sliderPage.setOptions({"step": 20});
+        const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            const testPosition = async (yMoveRelative: number, yExpectedRelative: number): Promise<void> => {
-                const yToMove = sliderCoords.top + sliderCoords.height * (1 - yMoveRelative);
-                const yExpected = sliderCoords.top + sliderCoords.height * (1 - yExpectedRelative) - firstHandleCoords.height / 2;
+        expect(newHandleCoords.top).toBe(yExpected);
+      };
 
-                await sliderPage.moveHandleToCoords(firstHandleCoords.left, yToMove);
+      await testPosition(0.07, 0);
+      await testPosition(0.1, 0.2);
+      await testPosition(0.13, 0.2);
+      await testPosition(0.5, 0.6);
+      await testPosition(0.73, 0.8);
+      await testPosition(0.84, 0.8);
+      await testPosition(0.9, 1);
+    }, timeout);
 
-                const newHandleCoords = await sliderPage.getFirstHandleCoords();
+    test('tooltip moves correctly', async () => {
+      await sliderPage.setOptions('tooltip', true);
 
-                expect(newHandleCoords.top).toBe(yExpected);
-            };
+      const tooltipCoords = await sliderPage.getTooltipCoords();
+      const tooltipText = await sliderPage.getTooltipValue();
 
-            await testPosition(0.07, 0);
-            await testPosition(0.1, 0.2);
-            await testPosition(0.13, 0.2);
-            await testPosition(0.5, 0.6);
-            await testPosition(0.73, 0.8);
-            await testPosition(0.84, 0.8);
-            await testPosition(0.9, 1);
-        }, timeout);
+      await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderMiddle.top);
 
-        test("tooltip moves correctly", async () => {
-            await sliderPage.setOptions("tooltip", true);
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      const newTooltipCoords = await sliderPage.getTooltipCoords();
+      const newTooltipText = await sliderPage.getTooltipValue();
 
-            const tooltipCoords = await sliderPage.getTooltipCoords();
-            const tooltipText = await sliderPage.getTooltipValue();
+      const handleRangeY = newHandleCoords.top - firstHandleCoords.top;
+      const tooltipRangeY = newTooltipCoords.top - tooltipCoords.top;
 
-            await sliderPage.moveHandleToCoords(firstHandleCoords.left, sliderMiddle.top);
+      expect(tooltipRangeY).toBe(handleRangeY);
+      expect(tooltipCoords.left).toBe(newTooltipCoords.left);
+      expect(tooltipText).toBe('0');
+      expect(newTooltipText).toBe('50');
+    }, timeout);
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
-            const newTooltipCoords = await sliderPage.getTooltipCoords();
-            const newTooltipText = await sliderPage.getTooltipValue();
+    test('tooltip moves correctly when user clicks on slider', async () => {
+      await page.mouse.click(sliderCoords.left + 1, (sliderCoords.top + sliderCoords.height * 0.3));
 
-            const handleRangeY = newHandleCoords.top - firstHandleCoords.top;
-            const tooltipRangeY = newTooltipCoords.top - tooltipCoords.top;
+      let newHandleCoords = await sliderPage.getFirstHandleCoords();
+      let value = await sliderPage.getOptions('value');
 
-            expect(tooltipRangeY).toBe(handleRangeY);
-            expect(tooltipCoords.left).toBe(newTooltipCoords.left);
-            expect(tooltipText).toBe("0");
-            expect(newTooltipText).toBe("50");
-        }, timeout);
+      expect(value).toBe(70);
+      expect(Math.round(newHandleCoords.top))
+        .toBe(Math.round(sliderCoords.top + sliderCoords.height
+          * 0.3 - firstHandleCoords.height / 2));
 
-        test("tooltip moves correctly when user clicks on slider", async () => {
-            await page.mouse.click(sliderCoords.left + 1, (sliderCoords.top + sliderCoords.height * 0.3));
+      await page.mouse.click(sliderCoords.left, sliderMiddle.top);
 
-            let newHandleCoords = await sliderPage.getFirstHandleCoords();
-            let value = await sliderPage.getOptions("value");
+      newHandleCoords = await sliderPage.getFirstHandleCoords();
+      value = await sliderPage.getOptions('value');
 
-            expect(value).toBe(70);
-            expect(Math.round(newHandleCoords.top))
-                .toBe(Math.round(sliderCoords.top + sliderCoords.height * 0.3 - firstHandleCoords.height / 2));
+      expect(value).toBe(50);
+      expect(Math.round(newHandleCoords.top))
+        .toBe(Math.round(sliderMiddle.top - firstHandleCoords.height / 2));
+    }, timeout);
 
-            await page.mouse.click(sliderCoords.left, sliderMiddle.top);
+    test("handle doesn't move when user click on it, not on slider's scale", async () => {
+      await page.mouse.click(firstHandleCoords.left + 1, firstHandleCoords.top + 1);
 
-            newHandleCoords = await sliderPage.getFirstHandleCoords();
-            value = await sliderPage.getOptions("value");
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            expect(value).toBe(50);
-            expect(Math.round(newHandleCoords.top))
-                .toBe(Math.round(sliderMiddle.top - firstHandleCoords.height / 2));
-        }, timeout);
+      expect(newHandleCoords).toEqual(firstHandleCoords);
+    }, timeout);
 
-        test("handle doesn't move when user click on it, not on slider's scale", async () => {
-            await page.mouse.click(firstHandleCoords.left + 1, firstHandleCoords.top + 1);
+    test('labels coords are right', async () => {
+      await sliderPage.setOptions({
+        labels: true,
+        pips: true,
+        step: 10,
+      });
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      for (let X = 0, label = 1; X <= 1; X += 0.1, label += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await sliderPage
+          .moveHandleToCoords(
+            firstHandleCoords.left,
+            sliderCoords.top + sliderCoords.height * (1 - X),
+          );
 
-            expect(newHandleCoords).toEqual(firstHandleCoords);
-        }, timeout);
+        // eslint-disable-next-line no-await-in-loop
+        const newHandleCoords = await sliderPage.getFirstHandleCoords();
+        const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
 
-        test("labels coords are right", async () => {
-            await sliderPage.setOptions({
-                labels: true,
-                pips: true,
-                step: 10
-            });
+        // eslint-disable-next-line no-await-in-loop
+        const labelCoords = await sliderPage
+          .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
-            for ( let X = 0, label = 1; X <= 1; X += 0.1, label++ ) {
-                await sliderPage
-                    .moveHandleToCoords(firstHandleCoords.left, sliderCoords.top + sliderCoords.height * (1 - X));
 
-                const newHandleCoords = await sliderPage.getFirstHandleCoords();
-                const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
+        const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
 
-                const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
+        const pipMiddle = labelCoords.pip.top + labelCoords.pip.height / 2;
 
+        expect(labelMiddle).toBe(handleMiddle);
+        expect(pipMiddle).toBe(handleMiddle);
+      }
+    }, timeout);
 
-                const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
+    test('handle moves after label click', async () => {
+      await sliderPage.setOptions({
+        labels: true,
+        pips: true,
+        step: 10,
+      });
 
-                const pipMiddle = labelCoords.pip.top + labelCoords.pip.height / 2;
+      for (let label = 1; label <= 11; label += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        const labelCoords = await sliderPage
+          .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
-                expect(labelMiddle).toBe(handleMiddle);
-                expect(pipMiddle).toBe(handleMiddle);
-            }
-        }, timeout);
+        // eslint-disable-next-line no-await-in-loop
+        await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
 
-        test("handle moves after label click", async () => {
-            await sliderPage.setOptions({
-                labels: true,
-                pips: true,
-                step: 10
-            });
+        // eslint-disable-next-line no-await-in-loop
+        const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            for ( let label = 1; label <= 11; label++ ) {
-                const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
+        const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
+        const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
 
-                await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
+        expect(handleMiddle).toBe(labelMiddle);
+      }
+    }, timeout);
 
-                const newHandleCoords = await sliderPage.getFirstHandleCoords();
+    test("handles move correctly when 'range' is true", async () => {
+      await sliderPage.setOptions({
+        range: true,
+        value: [0, 1000],
+        max: 1000,
+      });
 
-                const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
-                const labelMiddle = labelCoords.label.top + labelCoords.label.height / 2;
+      expect(sliderPage.elements.secondHandle).not.toBe(null);
 
-                expect(handleMiddle).toBe(labelMiddle);
-            }
+      let newRangeCoords: Coords;
+      let newFirstHandleCoords: Coords;
+      let newSecondHandleCoords: Coords;
+      let valueOption: Options['value'];
 
-        }, timeout);
+      const refreshValues = async (): Promise<void> => {
+        newRangeCoords = await sliderPage.getRangeCoords();
+        newFirstHandleCoords = await sliderPage.getFirstHandleCoords();
+        newSecondHandleCoords = await sliderPage.getSecondHandleCoords();
+        valueOption = await sliderPage.getOptions('value') as Options['value'];
+      };
 
-        test("handles move correctly when 'range' is true", async () => {
-            await sliderPage.setOptions({
-                range: true,
-                value: [0, 1000],
-                max: 1000
-            });
+      await refreshValues();
 
-            expect(sliderPage.elements.secondHandle).not.toBe(null);
+      expect(valueOption).toEqual([0, 1000]);
 
-            let newRangeCoords: Coords;
-            let newFirstHandleCoords: Coords;
-            let newSecondHandleCoords: Coords;
-            let valueOption: Options["value"];
+      expect(firstHandleCoords.bottom).toBe(sliderCoords.bottom + firstHandleCoords.height / 2);
+      expect(newSecondHandleCoords.bottom).toBe(sliderCoords.top
+        + newSecondHandleCoords.height / 2);
+      expect(newRangeCoords.height).toBe(sliderCoords.height);
 
-            const refreshValues = async (): Promise<void> => {
-                newRangeCoords = await sliderPage.getRangeCoords();
-                newFirstHandleCoords = await sliderPage.getFirstHandleCoords();
-                newSecondHandleCoords = await sliderPage.getSecondHandleCoords();
-                valueOption = await sliderPage.getOptions("value") as Options["value"];
-            };
+      const handleLeft = firstHandleCoords.left;
 
-            await refreshValues();
+      await sliderPage.moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.7);
+      await sliderPage.moveHandleToCoords(
+        handleLeft,
+        sliderCoords.top + sliderCoords.height * 0.3,
+        true,
+      );
 
-            expect(valueOption).toEqual([0, 1000]);
+      await refreshValues();
 
-            expect(firstHandleCoords.bottom).toBe(sliderCoords.bottom + firstHandleCoords.height / 2);
-            expect(newSecondHandleCoords.bottom).toBe(sliderCoords.top + newSecondHandleCoords.height / 2);
-            expect(newRangeCoords.height).toBe(sliderCoords.height);
+      expect(newFirstHandleCoords.top)
+        .toBe(sliderCoords.top + sliderCoords.height * 0.7 - firstHandleCoords.height / 2);
+      expect(newSecondHandleCoords.top)
+        .toBe(sliderCoords.top + sliderCoords.height * 0.3 - newSecondHandleCoords.height / 2);
 
-            const handleLeft = firstHandleCoords.left;
+      expect(newRangeCoords.height).toBe(sliderCoords.height * 0.4);
+      expect(newRangeCoords.bottom)
+        .toBe(newFirstHandleCoords.top + newFirstHandleCoords.height / 2);
+      expect(newRangeCoords.top)
+        .toBe(newSecondHandleCoords.top + newSecondHandleCoords.height / 2);
 
-            await sliderPage.moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.7);
-            await sliderPage.moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.3, true);
+      expect(valueOption).toEqual([300, 700]);
 
-            await refreshValues();
+      await sliderPage.moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.1);
 
-            expect(newFirstHandleCoords.top)
-                .toBe(sliderCoords.top + sliderCoords.height * 0.7 - firstHandleCoords.height / 2);
-            expect(newSecondHandleCoords.top)
-                .toBe(sliderCoords.top + sliderCoords.height * 0.3 - newSecondHandleCoords.height / 2);
+      await refreshValues();
 
-            expect(newRangeCoords.height).toBe(sliderCoords.height * 0.4);
-            expect(newRangeCoords.bottom).toBe(newFirstHandleCoords.top + newFirstHandleCoords.height / 2);
-            expect(newRangeCoords.top).toBe(newSecondHandleCoords.top + newSecondHandleCoords.height / 2);
+      expect(newSecondHandleCoords.top)
+        .toBe(sliderCoords.top + sliderCoords.height * 0.3 - newSecondHandleCoords.height / 2);
 
-            expect(valueOption).toEqual([300, 700]);
+      expect(Math.floor(newFirstHandleCoords.top))
+        .toBe(Math.floor(newSecondHandleCoords.bottom));
 
-            await sliderPage.moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.1);
+      expect(newRangeCoords.bottom)
+        .toBe(newFirstHandleCoords.top + newFirstHandleCoords.height / 2);
+      expect(Math.round(newRangeCoords.top))
+        .toBe(newSecondHandleCoords.top + newSecondHandleCoords.height / 2);
 
-            await refreshValues();
+      expect(Math.ceil(newRangeCoords.height)).toBe(Math.ceil(newFirstHandleCoords.height));
+    }, timeout);
+  });
 
-            expect(newSecondHandleCoords.top)
-                .toBe(sliderCoords.top + sliderCoords.height * 0.3 - newSecondHandleCoords.height / 2);
+  describe('horizontal slider events', () => {
+    beforeEach(async () => {
+      await sliderPage.createSlider({ animate: false });
 
-            expect(Math.floor(newFirstHandleCoords.top))
-                .toBe(Math.floor(newSecondHandleCoords.bottom));
+      sliderCoords = await sliderPage.getSliderCoords();
+      rangeCoords = await sliderPage.getRangeCoords();
+      firstHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            expect(newRangeCoords.bottom).toBe(newFirstHandleCoords.top + newFirstHandleCoords.height / 2);
-            expect(Math.round(newRangeCoords.top))
-                .toBe(newSecondHandleCoords.top + newSecondHandleCoords.height / 2);
-
-            expect(Math.ceil(newRangeCoords.height)).toBe(Math.ceil(newFirstHandleCoords.height));
-        }, timeout);
+      sliderMiddle = await sliderPage.getSliderMiddle();
     });
 
-    describe("horizontal slider events", () => {
-        beforeEach(async () => {
-            await sliderPage.createSlider({ animate: false });
+    afterEach(async () => {
+      await sliderPage.remove();
+    });
 
-            sliderCoords = await sliderPage.getSliderCoords();
-            rangeCoords = await sliderPage.getRangeCoords();
-            firstHandleCoords = await sliderPage.getFirstHandleCoords();
+    test('move jquery-slider-handle to specific coordinates inside the slider', async () => {
+      await sliderPage.moveHandleToCoords(sliderMiddle.left,
+        firstHandleCoords.top);
 
-            sliderMiddle = await sliderPage.getSliderMiddle();
-        });
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-        afterEach(async () => {
-            await sliderPage.remove();
-        });
+      const newCoords = {
+        top: newHandleCoords.top,
+        left: newHandleCoords.left,
+      };
+      const testCoords = {
+        top: firstHandleCoords.top,
+        left: sliderMiddle.left - firstHandleCoords.width / 2,
+      };
 
-        test("move jquery-slider-handle to specific coordinates inside the slider", async () => {
-            await sliderPage.moveHandleToCoords(sliderMiddle.left,
-                firstHandleCoords.top);
+      expect(newCoords.top).toBe(testCoords.top);
+      expect(Math.floor(newCoords.left)).toBe(Math.floor(testCoords.left));
+    }, timeout);
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
+    test('firstHandle stays within the slider when the cursor goes outside', async () => {
+      await sliderPage.moveHandleToCoords(sliderCoords.left - 50,
+        firstHandleCoords.top);
 
-            const newCoords = {
-                top: newHandleCoords.top,
-                left: newHandleCoords.left
-            };
-            const testCoords = {
-                top: firstHandleCoords.top,
-                left: sliderMiddle.left - firstHandleCoords.width / 2
-            };
+      const newHandleCoordsLeft = await sliderPage.getFirstHandleCoords();
 
-            expect(newCoords.top).toBe(testCoords.top);
-            expect(Math.floor( newCoords.left )).toBe( Math.floor(testCoords.left) );
-        }, timeout);
+      const firstNewLeft = newHandleCoordsLeft.left - sliderCoords.left;
 
-        test("firstHandle stays within the slider when the cursor goes outside", async () => {
-            await sliderPage.moveHandleToCoords(sliderCoords.left - 50,
-                firstHandleCoords.top);
+      await sliderPage.moveHandleToCoords(sliderCoords.right + 50,
+        newHandleCoordsLeft.top);
 
-            const newHandleCoordsLeft = await sliderPage.getFirstHandleCoords();
+      const newHandleCoordsRight = await sliderPage.getFirstHandleCoords();
 
-            const firstNewLeft = newHandleCoordsLeft.left - sliderCoords.left;
+      const secondNewLeft = newHandleCoordsRight.left - sliderCoords.left;
 
-            await sliderPage.moveHandleToCoords(sliderCoords.right + 50,
-                newHandleCoordsLeft.top);
+      const rightEdge = sliderCoords.width - newHandleCoordsRight.width;
 
-            const newHandleCoordsRight = await sliderPage.getFirstHandleCoords();
+      expect(firstNewLeft).toBe(0 - firstHandleCoords.width / 2);
+      expect(secondNewLeft).toBe(rightEdge + firstHandleCoords.width / 2);
+    }, timeout);
 
-            const secondNewLeft = newHandleCoordsRight.left - sliderCoords.left;
+    test("range changes correctly when options.range = 'min'", async () => {
+      await sliderPage.setOptions({ range: 'min' });
 
-            const rightEdge = sliderCoords.width - newHandleCoordsRight.width;
+      const newModeRangeCoords = await sliderPage.getRangeCoords();
 
-            expect(firstNewLeft).toBe(0 - firstHandleCoords.width / 2);
-            expect(secondNewLeft).toBe(rightEdge + firstHandleCoords.width / 2);
-        }, timeout);
+      expect(newModeRangeCoords.width).toBe(0);
+      expect(newModeRangeCoords.left).toBe(sliderCoords.left);
 
-        test("range changes correctly when options.range = 'min'", async () => {
-            await sliderPage.setOptions({ range: "min" });
+      await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
+        firstHandleCoords.top);
 
-            const newModeRangeCoords = await sliderPage.getRangeCoords();
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      const newRangeCoords = await sliderPage.getRangeCoords();
 
-            expect(newModeRangeCoords.width).toBe(0);
-            expect(newModeRangeCoords.left).toBe(sliderCoords.left);
-
-            await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
-                firstHandleCoords.top);
-
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
-            const newRangeCoords = await sliderPage.getRangeCoords();
-
-            expect(newRangeCoords.left).toBe(sliderCoords.left);
-            expect(newRangeCoords.right).toBe(newHandleCoords.left + newHandleCoords.width / 2);
-            expect(newRangeCoords.width).toBe(newHandleCoords.left + newHandleCoords.width / 2
+      expect(newRangeCoords.left).toBe(sliderCoords.left);
+      expect(newRangeCoords.right).toBe(newHandleCoords.left + newHandleCoords.width / 2);
+      expect(newRangeCoords.width).toBe(newHandleCoords.left + newHandleCoords.width / 2
                 - sliderCoords.left);
-        }, timeout);
+    }, timeout);
 
-        test("range changes correctly when options.range = 'max'", async () => {
-            await sliderPage.setOptions({range: "max"});
+    test("range changes correctly when options.range = 'max'", async () => {
+      await sliderPage.setOptions({ range: 'max' });
 
-            const newModeRangeCoords = await sliderPage.getRangeCoords();
+      const newModeRangeCoords = await sliderPage.getRangeCoords();
 
-            expect(newModeRangeCoords.width).toBe(sliderCoords.width);
-            expect(newModeRangeCoords.right).toBe(sliderCoords.right);
-            expect(newModeRangeCoords.left).toBe(sliderCoords.left);
+      expect(newModeRangeCoords.width).toBe(sliderCoords.width);
+      expect(newModeRangeCoords.right).toBe(sliderCoords.right);
+      expect(newModeRangeCoords.left).toBe(sliderCoords.left);
 
-            await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
-                firstHandleCoords.top);
+      await sliderPage.moveHandleToCoords((await sliderPage.getSliderMiddle()).left,
+        firstHandleCoords.top);
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
-            const newRangeCoords = await sliderPage.getRangeCoords();
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      const newRangeCoords = await sliderPage.getRangeCoords();
 
-            expect(newRangeCoords.right).toBe(sliderCoords.right);
-            expect(newRangeCoords.left).toBe(newHandleCoords.left + newHandleCoords.width / 2);
-            expect(newRangeCoords.width).toBe(sliderCoords.right
+      expect(newRangeCoords.right).toBe(sliderCoords.right);
+      expect(newRangeCoords.left).toBe(newHandleCoords.left + newHandleCoords.width / 2);
+      expect(newRangeCoords.width).toBe(sliderCoords.right
                 - newHandleCoords.left - newHandleCoords.width / 2);
+    }, timeout);
 
-        }, timeout);
+    test("firstHandle sets correctly depending on 'value' option", async () => {
+      await sliderPage.setOptions('value', 10);
 
-        test("firstHandle sets correctly depending on 'value' option", async () => {
-            await sliderPage.setOptions("value", 10);
+      const handleLeftWhenValueIsTen = sliderCoords.left
+        + sliderCoords.width * 0.1 - firstHandleCoords.width / 2;
 
-            const handleLeftWhenValueIsTen = sliderCoords.left + sliderCoords.width * 0.1 - firstHandleCoords.width / 2;
+      let newHandleCoords: Coords;
 
-            let newHandleCoords: Coords;
+      newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            newHandleCoords = await sliderPage.getFirstHandleCoords();
+      expect(newHandleCoords.left).toBe(handleLeftWhenValueIsTen);
 
-            expect(newHandleCoords.left).toBe(handleLeftWhenValueIsTen);
+      await sliderPage.setOptions('value', 90);
 
-            await sliderPage.setOptions("value", 90);
+      const handleLeftWhenValueIsNinety = sliderCoords.left + sliderCoords.width
+        * 0.9 - firstHandleCoords.width / 2;
 
-            const handleLeftWhenValueIsNinety = sliderCoords.left + sliderCoords.width * 0.9 - firstHandleCoords.width / 2;
+      newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            newHandleCoords = await sliderPage.getFirstHandleCoords();
+      expect(newHandleCoords.left).toBe(handleLeftWhenValueIsNinety);
+    }, timeout);
 
-            expect(newHandleCoords.left).toBe(handleLeftWhenValueIsNinety);
-        }, timeout);
+    test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
+      let value: Options['value'];
 
-        test("option 'value' changes correctly with default options ('min' = 0, 'max' = 100, 'step' = 1)", async () => {
-            let value: Options["value"];
+      const getValue = async (): Promise<Options['value']> => await sliderPage.getOptions('value') as Options['value'];
 
-            const getValue = async(): Promise<Options["value"]> => {
-                return await sliderPage.getOptions("value") as Options["value"];
-            };
+      value = await getValue();
+      expect(value).toBe(0);
 
-            value = await getValue();
-            expect(value).toBe(0);
+      await sliderPage.moveHandleToCoords(sliderMiddle.left, firstHandleCoords.top);
 
-            await sliderPage.moveHandleToCoords(sliderMiddle.left, firstHandleCoords.top);
+      value = await getValue();
+      expect(value).toBe(50);
 
-            value = await getValue();
-            expect(value).toBe(50);
+      const positionForValueOfThirty = sliderCoords.left + sliderCoords.width * 0.3;
 
-            const positionForValueOfThirty = sliderCoords.left + sliderCoords.width * 0.3;
+      await sliderPage.moveHandleToCoords(positionForValueOfThirty, firstHandleCoords.top);
 
-            await sliderPage.moveHandleToCoords(positionForValueOfThirty, firstHandleCoords.top);
+      value = await getValue();
+      expect(value).toBe(30);
 
-            value = await getValue();
-            expect(value).toBe(30);
+      const positionForValueOfSeventy = sliderCoords.left + sliderCoords.width * 0.7;
 
-            const positionForValueOfSeventy = sliderCoords.left + sliderCoords.width * 0.7;
+      await sliderPage.moveHandleToCoords(positionForValueOfSeventy, firstHandleCoords.top);
 
-            await sliderPage.moveHandleToCoords(positionForValueOfSeventy, firstHandleCoords.top);
+      value = await getValue();
+      expect(value).toBe(70);
+    }, timeout);
 
-            value = await getValue();
-            expect(value).toBe(70);
-        }, timeout);
+    test("options 'value' with not default 'min', 'max', 'value' and 'step'", async () => {
+      await sliderPage.setOptions({
+        min: 133,
+        max: 233,
+        step: 5,
+        value: 138,
+      });
 
-        test("options 'value' with not default 'min', 'max', 'value' and 'step'", async () => {
-            await sliderPage.setOptions({
-                min: 133,
-                max: 233,
-                step: 5,
-                value: 138
-            });
+      const testValue = async (xRelative: number, valueExpected: number): Promise<void> => {
+        const xToMove = sliderCoords.left + sliderCoords.width * xRelative;
+        await sliderPage.moveHandleToCoords(xToMove, firstHandleCoords.top);
 
-            const testValue = async (xRelative: number, valueExpected: number): Promise<void> => {
-                const xToMove = sliderCoords.left + sliderCoords.width * xRelative;
-                await sliderPage.moveHandleToCoords(xToMove, firstHandleCoords.top);
+        const value = await sliderPage.getOptions('value') as Options['value'];
 
-                const value = await sliderPage.getOptions("value") as Options["value"];
+        expect(value).toBe(valueExpected);
+      };
 
-                expect(value).toBe(valueExpected);
-            };
+      await testValue(0.1, 143);
+      await testValue(0.34, 168);
+      await testValue(0.87, 218);
+      await testValue(0.98, 233);
+    }, timeout);
 
-            await testValue(0.1, 143);
-            await testValue(0.34, 168);
-            await testValue(0.87, 218);
-            await testValue(0.98, 233);
-        }, timeout);
+    test('firstHandle moves correctly when step is wide', async () => {
+      await sliderPage.setOptions('step', 20);
 
-        test("firstHandle moves correctly when step is wide", async() => {
-            await sliderPage.setOptions("step", 20);
+      const testPosition = async (
+        xMoveRelative: number,
+        xExpectedRelative: number,
+      ): Promise<void> => {
+        const xToMove = sliderCoords.left + sliderCoords.width * xMoveRelative;
+        const xExpected = sliderCoords.left + sliderCoords.width
+          * xExpectedRelative - firstHandleCoords.width / 2;
 
-            const testPosition = async (xMoveRelative: number, xExpectedRelative: number): Promise<void> => {
-                const xToMove = sliderCoords.left + sliderCoords.width * xMoveRelative;
-                const xExpected = sliderCoords.left + sliderCoords.width * xExpectedRelative - firstHandleCoords.width / 2;
+        await sliderPage.moveHandleToCoords(xToMove, firstHandleCoords.top);
 
-                await sliderPage.moveHandleToCoords(xToMove, firstHandleCoords.top);
+        const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-                const newHandleCoords = await sliderPage.getFirstHandleCoords();
+        expect(newHandleCoords.left).toBe(xExpected);
+      };
 
-                expect(newHandleCoords.left).toBe(xExpected);
-            };
+      await testPosition(0.07, 0);
+      await testPosition(0.1, 0.2);
+      await testPosition(0.13, 0.2);
+      await testPosition(0.5, 0.6);
+      await testPosition(0.73, 0.8);
+      await testPosition(0.84, 0.8);
+      await testPosition(0.9, 1);
+    }, timeout);
 
-            await testPosition(0.07, 0);
-            await testPosition(0.1, 0.2);
-            await testPosition(0.13, 0.2);
-            await testPosition(0.5, 0.6);
-            await testPosition(0.73, 0.8);
-            await testPosition(0.84, 0.8);
-            await testPosition(0.9, 1);
-        }, timeout);
+    test('tooltip moves correctly', async () => {
+      await sliderPage.setOptions('tooltip', true);
 
-        test("tooltip moves correctly", async () => {
-            await sliderPage.setOptions("tooltip", true);
+      const tooltipCoords = await sliderPage.getTooltipCoords();
+      const tooltipText = await sliderPage.getTooltipValue();
 
-            const tooltipCoords = await sliderPage.getTooltipCoords();
-            const tooltipText = await sliderPage.getTooltipValue();
+      await sliderPage.moveHandleToCoords(sliderMiddle.left, firstHandleCoords.top);
 
-            await sliderPage.moveHandleToCoords(sliderMiddle.left, firstHandleCoords.top);
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      const newTooltipCoords = await sliderPage.getTooltipCoords();
+      const newTooltipText = await sliderPage.getTooltipValue();
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
-            const newTooltipCoords = await sliderPage.getTooltipCoords();
-            const newTooltipText = await sliderPage.getTooltipValue();
+      const handleRangeX = newHandleCoords.left - firstHandleCoords.left;
+      const tooltipRangeX = newTooltipCoords.left - tooltipCoords.left;
 
-            const handleRangeX = newHandleCoords.left - firstHandleCoords.left;
-            const tooltipRangeX = newTooltipCoords.left - tooltipCoords.left;
+      expect(tooltipRangeX).toBe(handleRangeX);
+      expect(tooltipCoords.top).toBe(newTooltipCoords.top);
+      expect(tooltipText).toBe('0');
+      expect(newTooltipText).toBe('50');
+    }, timeout);
 
-            expect(tooltipRangeX).toBe(handleRangeX);
-            expect(tooltipCoords.top).toBe(newTooltipCoords.top);
-            expect(tooltipText).toBe("0");
-            expect(newTooltipText).toBe("50");
-        }, timeout);
+    test('firstHandle moves correctly when user clicks on slider', async () => {
+      await page.mouse.click((sliderCoords.left + sliderCoords.width * 0.3), sliderCoords.top + 1);
 
-        test("firstHandle moves correctly when user clicks on slider", async () => {
-            await page.mouse.click((sliderCoords.left + sliderCoords.width * 0.3), sliderCoords.top + 1);
+      let newHandleCoords = await sliderPage.getFirstHandleCoords();
+      let value = await sliderPage.getOptions('value');
 
-            let newHandleCoords = await sliderPage.getFirstHandleCoords();
-            let value = await sliderPage.getOptions("value");
+      expect(value).toBe(30);
+      expect(Math.round(newHandleCoords.left))
+        .toBe(Math.round(sliderCoords.left + sliderCoords.width
+          * 0.3 - firstHandleCoords.width / 2));
 
-            expect(value).toBe(30);
-            expect(Math.round(newHandleCoords.left))
-                .toBe(Math.round(sliderCoords.left + sliderCoords.width * 0.3 - firstHandleCoords.width / 2));
+      await page.mouse.click(sliderMiddle.left, sliderCoords.top);
 
-            await page.mouse.click(sliderMiddle.left, sliderCoords.top);
+      newHandleCoords = await sliderPage.getFirstHandleCoords();
+      value = await sliderPage.getOptions('value');
 
-            newHandleCoords = await sliderPage.getFirstHandleCoords();
-            value = await sliderPage.getOptions("value");
+      expect(value).toBe(50);
+      expect(Math.round(newHandleCoords.left))
+        .toBe(Math.round(sliderMiddle.left - firstHandleCoords.width / 2));
+    }, timeout);
 
-            expect(value).toBe(50);
-            expect(Math.round(newHandleCoords.left))
-                .toBe(Math.round(sliderMiddle.left - firstHandleCoords.width / 2));
-        }, timeout);
+    test("firstHandle doesn't move when user click on it, not on slider's scale", async () => {
+      await page.mouse.click(firstHandleCoords.right - 1, firstHandleCoords.top + 1);
 
-        test("firstHandle doesn't move when user click on it, not on slider's scale", async () => {
-            await page.mouse.click(firstHandleCoords.right - 1, firstHandleCoords.top + 1);
+      const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-            const newHandleCoords = await sliderPage.getFirstHandleCoords();
+      expect(newHandleCoords).toEqual(firstHandleCoords);
+    }, timeout);
 
-            expect(newHandleCoords).toEqual(firstHandleCoords);
-        }, timeout);
+    test('labels coords are right', async () => {
+      await sliderPage.setOptions({
+        labels: true,
+        pips: true,
+        step: 10,
+      });
 
-        test("labels coords are right", async () => {
-            await sliderPage.setOptions({
-                labels: true,
-                pips: true,
-                step: 10
-            });
+      for (let X = 0, label = 1; X <= 1; X += 0.1, label += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await sliderPage.moveHandleToCoords(
+          sliderCoords.left + sliderCoords.width * X,
+          firstHandleCoords.top,
+        );
 
-            for ( let X = 0, label = 1; X <= 1; X += 0.1, label++ ) {
-                await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * X, firstHandleCoords.top);
+        // eslint-disable-next-line no-await-in-loop
+        const newHandleCoords = await sliderPage.getFirstHandleCoords();
+        const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
 
-                const newHandleCoords = await sliderPage.getFirstHandleCoords();
-                const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
+        // eslint-disable-next-line no-await-in-loop
+        const labelCoords = await sliderPage
+          .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
-                const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
 
+        const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
 
-                const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
+        const pipMiddle = labelCoords.pip.left + labelCoords.pip.width / 2;
 
-                const pipMiddle = labelCoords.pip.left + labelCoords.pip.width / 2;
+        expect(labelMiddle).toBe(handleMiddle);
+        expect(pipMiddle).toBe(handleMiddle);
+      }
+    }, timeout);
 
-                expect(labelMiddle).toBe(handleMiddle);
-                expect(pipMiddle).toBe(handleMiddle);
-            }
-        }, timeout);
+    test('firstHandle moves after label click', async () => {
+      await sliderPage.setOptions({
+        labels: true,
+        pips: true,
+        step: 10,
+      });
 
-        test("firstHandle moves after label click", async () => {
-            await sliderPage.setOptions({
-                labels: true,
-                pips: true,
-                step: 10
-            });
+      for (let label = 1; label <= 11; label += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        const labelCoords = await sliderPage
+          .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
-            for ( let label = 1; label <= 11; label++ ) {
-                const labelCoords = await sliderPage
-                    .getLabelData("coords", label) as { label: Coords; pip: Coords };
+        // eslint-disable-next-line no-await-in-loop
+        await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
 
-                await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
+        // eslint-disable-next-line no-await-in-loop
+        const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-                const newHandleCoords = await sliderPage.getFirstHandleCoords();
+        const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
+        const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
 
-                const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
-                const labelMiddle = labelCoords.label.left + labelCoords.label.width / 2;
+        expect(handleMiddle).toBe(labelMiddle);
+      }
+    }, timeout);
 
-                expect(handleMiddle).toBe(labelMiddle);
-            }
+    test("handles move correctly when 'range' is true", async () => {
+      await sliderPage.setOptions({
+        range: true,
+        value: [0, 1000],
+        max: 1000,
+      });
 
-        }, timeout);
+      expect(sliderPage.elements.secondHandle).not.toBe(null);
 
-        test("handles move correctly when 'range' is true", async () => {
-            await sliderPage.setOptions({
-                range: true,
-                value: [0, 1000],
-                max: 1000
-            });
+      let newRangeCoords: Coords;
+      let newFirstHandleCoords: Coords;
+      let newSecondHandleCoords: Coords;
+      let valueOption: Options['value'];
 
-            expect(sliderPage.elements.secondHandle).not.toBe(null);
 
-            let newRangeCoords: Coords;
-            let newFirstHandleCoords: Coords;
-            let newSecondHandleCoords: Coords;
-            let valueOption: Options["value"];
+      const refreshValues = async (): Promise<void> => {
+        newRangeCoords = await sliderPage.getRangeCoords();
+        newFirstHandleCoords = await sliderPage.getFirstHandleCoords();
+        newSecondHandleCoords = await sliderPage.getSecondHandleCoords();
+        valueOption = await sliderPage.getOptions('value') as Options['value'];
+      };
 
+      await refreshValues();
 
-            const refreshValues = async (): Promise<void> => {
-                newRangeCoords = await sliderPage.getRangeCoords();
-                newFirstHandleCoords = await sliderPage.getFirstHandleCoords();
-                newSecondHandleCoords = await sliderPage.getSecondHandleCoords();
-                valueOption = await sliderPage.getOptions("value") as Options["value"];
-            };
+      expect(valueOption).toEqual([0, 1000]);
 
-            await refreshValues();
+      expect(firstHandleCoords.left).toBe(sliderCoords.left - firstHandleCoords.width / 2);
+      expect(newSecondHandleCoords.left).toBe(sliderCoords.right - newSecondHandleCoords.width / 2);
+      expect(newRangeCoords.width).toBe(sliderCoords.width);
 
-            expect(valueOption).toEqual([0, 1000]);
+      const handleTop = firstHandleCoords.top;
 
-            expect(firstHandleCoords.left).toBe(sliderCoords.left - firstHandleCoords.width / 2);
-            expect(newSecondHandleCoords.left).toBe(sliderCoords.right - newSecondHandleCoords.width / 2);
-            expect(newRangeCoords.width).toBe(sliderCoords.width);
+      await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * 0.3, handleTop);
+      await sliderPage.moveHandleToCoords(
+        sliderCoords.left + sliderCoords.width * 0.7,
+        handleTop, true,
+      );
 
-            const handleTop = firstHandleCoords.top;
+      await refreshValues();
 
-            await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * 0.3, handleTop);
-            await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * 0.7, handleTop, true);
+      expect(newFirstHandleCoords.left)
+        .toBe(sliderCoords.left + sliderCoords.width * 0.3 - firstHandleCoords.width / 2);
+      expect(newSecondHandleCoords.left)
+        .toBe(sliderCoords.left + sliderCoords.width * 0.7 - newSecondHandleCoords.width / 2);
 
-            await refreshValues();
+      expect(newRangeCoords.width).toBe(sliderCoords.width * 0.4);
+      expect(newRangeCoords.left).toBe(newFirstHandleCoords.left + newFirstHandleCoords.width / 2);
+      expect(newRangeCoords.right)
+        .toBe(newSecondHandleCoords.left + newSecondHandleCoords.width / 2);
 
-            expect(newFirstHandleCoords.left)
-                .toBe(sliderCoords.left + sliderCoords.width * 0.3 - firstHandleCoords.width / 2);
-            expect(newSecondHandleCoords.left)
-                .toBe(sliderCoords.left + sliderCoords.width * 0.7 - newSecondHandleCoords.width / 2);
+      expect(valueOption).toEqual([300, 700]);
 
-            expect(newRangeCoords.width).toBe(sliderCoords.width * 0.4);
-            expect(newRangeCoords.left).toBe(newFirstHandleCoords.left + newFirstHandleCoords.width / 2);
-            expect(newRangeCoords.right).toBe(newSecondHandleCoords.left + newSecondHandleCoords.width / 2);
+      await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * 0.9, handleTop);
 
-            expect(valueOption).toEqual([300, 700]);
+      await refreshValues();
 
-            await sliderPage.moveHandleToCoords(sliderCoords.left + sliderCoords.width * 0.9, handleTop);
+      expect(newSecondHandleCoords.left)
+        .toBe(sliderCoords.left + sliderCoords.width * 0.7 - newSecondHandleCoords.width / 2);
 
-            await refreshValues();
+      expect(Math.floor(newFirstHandleCoords.right))
+        .toBe(Math.floor(newSecondHandleCoords.left));
 
-            expect(newSecondHandleCoords.left)
-                .toBe(sliderCoords.left + sliderCoords.width * 0.7 - newSecondHandleCoords.width / 2);
+      expect(newRangeCoords.left).toBe(newFirstHandleCoords.left + newFirstHandleCoords.width / 2);
+      expect(Math.round(newRangeCoords.right))
+        .toBe(newSecondHandleCoords.left + newSecondHandleCoords.width / 2);
 
-            expect(Math.floor(newFirstHandleCoords.right))
-                .toBe(Math.floor(newSecondHandleCoords.left));
+      expect(Math.ceil(newRangeCoords.width)).toBe(Math.ceil(newFirstHandleCoords.width));
+    }, timeout);
+  });
 
-            expect(newRangeCoords.left).toBe(newFirstHandleCoords.left + newFirstHandleCoords.width / 2);
-            expect(Math.round(newRangeCoords.right))
-                .toBe(newSecondHandleCoords.left + newSecondHandleCoords.width / 2);
+  describe('common events', () => {
+    beforeEach(async () => {
+      await sliderPage.createSlider({ animate: false });
 
-            expect(Math.ceil(newRangeCoords.width)).toBe(Math.ceil(newFirstHandleCoords.width));
-        }, timeout);
+      sliderCoords = await sliderPage.getSliderCoords();
+      rangeCoords = await sliderPage.getRangeCoords();
+      firstHandleCoords = await sliderPage.getFirstHandleCoords();
+
+      sliderMiddle = await sliderPage.getSliderMiddle();
     });
 
-    describe("common events", () => {
-        beforeEach(async () => {
-            await sliderPage.createSlider({ animate: false });
-
-            sliderCoords = await sliderPage.getSliderCoords();
-            rangeCoords = await sliderPage.getRangeCoords();
-            firstHandleCoords = await sliderPage.getFirstHandleCoords();
-
-            sliderMiddle = await sliderPage.getSliderMiddle();
-        });
-
-        afterEach(async () => {
-            await sliderPage.remove();
-        });
-
-        test("option change works with input for value", async () => {
-            await page.evaluate(() => {
-                const input = document.createElement("input");
-                document.body.appendChild(input);
-
-                const changeFunction = (value: number | number[]) => {
-                    if ( !Array.isArray(value) ) {
-                        input.value = String(value);
-                    } else {
-                        input.value = `${value[0]} - ${value[1]}`
-                    }
-                };
-                ($(".slider") as JQueryElementWithSlider)
-                    .slider("options", "change", changeFunction);
-            });
-
-            const compareValue = async (): Promise<void> => {
-                const inputValue = await page.evaluate(() => {
-                    return (document.querySelector("input")).value;
-                });
-
-                const valueOption = await sliderPage.getOptions("value");
-
-                expect(String(inputValue))
-                    .toBe(Array.isArray(valueOption) ? `${valueOption[0]} - ${valueOption[1]}` :
-                        String(valueOption));
-            };
-
-            const testValues = async (mode: "set" | "move", valueOrPercent: number): Promise<void> => {
-                if ( mode === "set" ) {
-                    await sliderPage.setOptions("value", valueOrPercent);
-                }
-
-                if ( mode === "move" ) {
-                    await sliderPage
-                        .moveHandleToCoords(sliderCoords.left + sliderCoords.width * valueOrPercent / 100,
-                            firstHandleCoords.top);
-                }
-
-                await compareValue();
-            };
-
-            await testValues("set", 30);
-            await testValues("move", 50);
-            await testValues("set", 70);
-            await testValues("move", 70);
-
-            await page.evaluate(() => {
-                document.querySelector("input").remove();
-            });
-        }, timeout);
+    afterEach(async () => {
+      await sliderPage.remove();
     });
+
+    test('option change works with input for value', async () => {
+      await page.evaluate(() => {
+        const input = document.createElement('input');
+        document.body.appendChild(input);
+
+        const changeFunction = (value: number | number[]) => {
+          if (!Array.isArray(value)) {
+            input.value = String(value);
+          } else {
+            input.value = `${value[0]} - ${value[1]}`;
+          }
+        };
+        ($('.slider') as JQueryElementWithSlider)
+          .slider('options', 'change', changeFunction);
+      });
+
+      const compareValue = async (): Promise<void> => {
+        const inputValue = await page.evaluate(() => (document.querySelector('input')).value);
+
+        const valueOption = await sliderPage.getOptions('value');
+
+        expect(String(inputValue))
+          .toBe(Array.isArray(valueOption) ? `${valueOption[0]} - ${valueOption[1]}`
+            : String(valueOption));
+      };
+
+      const testValues = async (mode: 'set' | 'move', valueOrPercent: number): Promise<void> => {
+        if (mode === 'set') {
+          await sliderPage.setOptions('value', valueOrPercent);
+        }
+
+        if (mode === 'move') {
+          await sliderPage
+            .moveHandleToCoords(sliderCoords.left + (sliderCoords.width * valueOrPercent) / 100,
+              firstHandleCoords.top);
+        }
+
+        await compareValue();
+      };
+
+      await testValues('set', 30);
+      await testValues('move', 50);
+      await testValues('set', 70);
+      await testValues('move', 70);
+
+      await page.evaluate(() => {
+        document.querySelector('input').remove();
+      });
+    }, timeout);
+  });
 });

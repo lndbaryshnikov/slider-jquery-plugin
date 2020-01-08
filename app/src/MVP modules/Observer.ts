@@ -1,52 +1,51 @@
 interface ObserversStorage {
-    addObserver(observer: Function): void;
-    removeObserver(observer: Function): void;
-    notifyObservers(data: any): void;
+  addObserver(observer: Function): void;
+  removeObserver(observer: Function): void;
+  notifyObservers(data: any): void;
 }
 
-class Observer implements ObserversStorage{
-    observers: Function[];
+class Observer implements ObserversStorage {
+  observers: Function[];
 
-    constructor() {
-        this.observers = [];
+  constructor() {
+    this.observers = [];
+  }
+
+  addObserver(observer: Function): void {
+    if (typeof observer !== 'function') {
+      throw new Error('Observer must be a function');
     }
 
-    addObserver(observer: Function): void {
-        if(typeof observer !== "function") {
-            throw new Error("Observer must be a function");
-        }
-
-        for (let i = 0; i < this.observers.length; i++) {
-            if (this.observers[i].toString() === observer.toString()) {
-                throw new Error("Observer already in the list");
-            }
-        }
-
-        this.observers.push(observer);
+    for (let i = 0; i < this.observers.length; i += 1) {
+      if (this.observers[i].toString() === observer.toString()) {
+        throw new Error('Observer already in the list');
+      }
     }
 
-    removeObserver(observer: Function): void {
-        for (let i = 0; i < this.observers.length; i++) {
-            if (this.observers[i].toString() === observer.toString()) {
-                this.observers.splice(i, 1);
+    this.observers.push(observer);
+  }
 
-                return;
-            }
-        }
+  removeObserver(observer: Function): void {
+    for (let i = 0; i < this.observers.length; i += 1) {
+      if (this.observers[i].toString() === observer.toString()) {
+        this.observers.splice(i, 1);
 
-        throw new Error("Could not find observer in list of observers");
+        return;
+      }
     }
 
-    notifyObservers(data?: any): void {
-        // Make a copy of observer list in case the list
-        // is mutated during the notifications.
-        const observersSnapshot = this.observers.slice(0);
+    throw new Error('Could not find observer in list of observers');
+  }
 
-        for (let i = 0; i < observersSnapshot.length; i++) {
-            observersSnapshot[i](data);
-        }
+  notifyObservers(data?: any): void {
+    // Make a copy of observer list in case the list
+    // is mutated during the notifications.
+    const observersSnapshot = this.observers.slice(0);
+
+    for (let i = 0; i < observersSnapshot.length; i += 1) {
+      observersSnapshot[i](data);
     }
+  }
 }
 
 export default Observer;
-

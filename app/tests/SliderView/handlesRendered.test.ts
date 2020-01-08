@@ -1,51 +1,51 @@
-import SliderView from "../../src/MVP modules/Slider/SliderView";
-import SliderModel from "../../src/MVP modules/Slider/SliderModel";
+import SliderView from '../../src/MVP modules/Slider/SliderView';
+import SliderModel from '../../src/MVP modules/Slider/SliderModel';
 
 describe("handles rendered depending on 'range'", () => {
-   let view: SliderView;
-   let root: HTMLDivElement;
+  let view: SliderView;
+  let root: HTMLDivElement;
 
 
-    const getDefaultsWithRange = (range: boolean | "min" | "max") => {
-       const defaults = SliderModel.getDefaultOptions("horizontal");
-       defaults.range = range;
+  const getDefaultsWithRange = (range: boolean | 'min' | 'max') => {
+    const defaults = SliderModel.getDefaultOptions('horizontal');
+    defaults.range = range;
 
-       return defaults;
-   };
+    return defaults;
+  };
 
-    const defaultsRangeMin = getDefaultsWithRange("min");
-    const defaultsRangeTrue = getDefaultsWithRange(true);
-    const defaultsRangeFalse = getDefaultsWithRange(false);
+  const defaultsRangeMin = getDefaultsWithRange('min');
+  const defaultsRangeTrue = getDefaultsWithRange(true);
+  const defaultsRangeFalse = getDefaultsWithRange(false);
 
 
-    beforeEach(() => {
-        root = document.createElement("div");
-        document.body.append(root);
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.append(root);
 
-        view = new SliderView();
-    });
+    view = new SliderView();
+  });
 
-    afterEach(() => {
-        root.remove();
-    });
+  afterEach(() => {
+    root.remove();
+  });
 
-   test("one firstHandle rendered if 'range' is false and 'min'", () => {
-       view.setOptions(defaultsRangeFalse);
+  test("one firstHandle rendered if 'range' is false and 'min'", () => {
+    view.setOptions(defaultsRangeFalse);
 
-       view.render(root);
+    view.render(root);
 
-       expect(document.querySelectorAll(".jquery-slider-handle").length).toBe(1);
+    expect(document.querySelectorAll('.jquery-slider-handle').length).toBe(1);
 
-       view.setOptions(defaultsRangeMin);
+    view.setOptions(defaultsRangeMin);
 
-       expect(document.querySelectorAll(".jquery-slider-handle").length).toBe(1);
-   });
+    expect(document.querySelectorAll('.jquery-slider-handle').length).toBe(1);
+  });
 
-   test("two handles rendered when 'range' is true", () => {
-       view.setOptions(defaultsRangeTrue);
+  test("two handles rendered when 'range' is true", () => {
+    view.setOptions(defaultsRangeTrue);
 
-       view.render(root);
+    view.render(root);
 
-       expect(document.querySelectorAll(".jquery-slider-handle").length).toBe(2);
-   });
+    expect(document.querySelectorAll('.jquery-slider-handle').length).toBe(2);
+  });
 });
