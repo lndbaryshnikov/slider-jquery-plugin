@@ -1,11 +1,11 @@
 import getCoords from "./getCoords";
 
-export interface Shift {
+interface Shift {
   x: number;
   y: number;
 }
 
-export const countShift = (event: MouseEvent, elem: HTMLElement): Shift => {
+const getShift = (event: MouseEvent, elem: HTMLElement): Shift => {
     const elemCoords = getCoords(elem);
 
     return {
@@ -13,3 +13,8 @@ export const countShift = (event: MouseEvent, elem: HTMLElement): Shift => {
         y: event.pageY - elemCoords.top
     };
 };
+
+export {
+    Shift,
+    getShift
+}

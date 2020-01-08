@@ -89,18 +89,23 @@
         value: number | number[];
         orientation: "horizontal" | "vertical";
         range: "min" | "max" | boolean;
-        tooltip: boolean | ValueFunction;
+        tooltip: boolean | (value?: Options["value"]);
         animate: "slow" | "fast" | false | number;
-        labels: true | false | ValueFunction;
+        labels: true | false | (value?: Options["value"]) => string | number;
         pips: boolean;
-        change: ChangeFunction | false;
+        change: ((value: number | number[]) => void) | false;
+
         classes: {
-                "jquery-slider"?: string;
-                "jquery-slider-range"?: string;
-                "jquery-slider-handle"?: string;
+                "jquery-slider": string;
+                "jquery-slider-range": string;
+                "jquery-slider-handle": string;
             };
     };
 ```
+
+Опции labels и tooltip принимают функции для последующей отрисовки value.
+Предусмотрена опция change, которая принимает функцию для пользовательской 
+обработки события изменения value слайдера. 
  
 **UML диаграмма архитектуры приложения:**
 

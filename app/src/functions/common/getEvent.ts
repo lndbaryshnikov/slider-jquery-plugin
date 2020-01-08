@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const createEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
+const getEvent = (type: string, x?: number | string, y?: number | string): JQuery.Event => {
     const e = $.Event(type);
 
     if (x !== "empty") {

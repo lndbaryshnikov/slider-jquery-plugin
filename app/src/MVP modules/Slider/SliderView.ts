@@ -1,9 +1,9 @@
-import {HorizontalClasses, Options, VerticalClasses} from "./SliderModel";
-import { countShift, Shift } from "../../functions/common/countShift";
+import { getShift, Shift } from "../../functions/common/getShift";
 import getCoords, {Coords} from "../../functions/common/getCoords";
 import Observer from "../Observer";
 import SliderTooltipView from "../SliderTooltipView";
 import SliderLabelsView from "../SliderLabelsView";
+import {HorizontalClasses, Options, VerticalClasses} from "./SliderModel";
 
 interface Html {
     wrapper: HTMLDivElement | null;
@@ -31,17 +31,21 @@ export default class SliderView {
 
                 const orientation = this._options.orientation;
 
-                if ( this._options.range !== true && targetHandle === this._html.firstHandle ) {
+                const isRangeTrue = this._options.range === true;
+                const isFirstHandleTarget = targetHandle === this._html.firstHandle;
+                const isSecondHandleTarget = targetHandle === this._html.secondHandle;
+
+                if ( !isRangeTrue && isFirstHandleTarget ) {
                     freeSpaceCoords = this._getCoords().wrapper;
                 }
 
-                if ( this._options.range === true ) {
+                if ( isRangeTrue ) {
                     freeSpaceCoords = this._getCoords().wrapper;
 
                     const firstHandleCoords = this._getCoords().firstHandle;
                     const secondHandleCoords = this._getCoords().secondHandle;
 
-                    if ( targetHandle === this._html.firstHandle ) {
+                    if ( isFirstHandleTarget ) {
                         if ( orientation === "horizontal" ) {
                             freeSpaceCoords.right = secondHandleCoords.left -
                                 firstHandleCoords.width / 2;
@@ -56,7 +60,7 @@ export default class SliderView {
                         }
                     }
 
-                    if ( targetHandle === this._html.secondHandle ) {
+                    if ( isSecondHandleTarget ) {
                         if ( orientation === "horizontal" ) {
                             freeSpaceCoords.left = firstHandleCoords.right +
                                 secondHandleCoords.width / 2;
@@ -73,8 +77,8 @@ export default class SliderView {
 
                 let handleNumber: "first" | "second";
 
-                if ( targetHandle === this._html.firstHandle ) handleNumber = "first";
-                if ( targetHandle === this._html.secondHandle ) handleNumber = "second";
+                if ( isFirstHandleTarget ) handleNumber = "first";
+                if ( isSecondHandleTarget ) handleNumber = "second";
 
                 const handleShift = this._countHandleShift(mouseDownEvent, handleNumber);
 
@@ -138,8 +142,10 @@ export default class SliderView {
             }
         },
         sliderClick: (clickEvent: MouseEvent): void => {
-            if ( clickEvent.target === this._html.firstHandle
-                || clickEvent.target === this._html.secondHandle ) {
+            const areHandlesTargets = clickEvent.target === this._html.firstHandle
+                || clickEvent.target === this._html.secondHandle;
+
+            if ( areHandlesTargets ) {
                 return;
             }
 
@@ -199,7 +205,9 @@ export default class SliderView {
     }  
 
     cleanDom(): void {
-        if ( !!this._root || this._root.contains(this._html.wrapper) ) {
+        const isRendered = !!this._root || this._root.contains(this._html.wrapper);
+
+        if ( isRendered ) {
             this._html.wrapper.remove();
         }
 
@@ -238,6 +246,112 @@ export default class SliderView {
         this._setHandlePositionInPixels();
         this._renderHandlePositions();
         this._renderRange();
+    }
+
+    renderPlugin(
+        plugin: string,
+        pluginView: SliderLabelsView | SliderTooltipView,
+        number?: "first" | "second"
+    ): void {
+        if ( plugin === "labels" ) {
+            pluginView.render(this._html.wrapper);
+        }
+
+        if ( plugin === "tooltip" ) {
+            if ( !number ) number = "first";
+
+            const doesFirstHandleContainsTooltip = this._html.firstHandle
+                .contains((pluginView as SliderTooltipView).html);
+
+            if ( number === "first" ) {
+                if ( !doesFirstHandleContainsTooltip ) {
+                    pluginView.render(this._html.firstHandle);
+                }
+            }
+
+            if ( number === "second" ) {
+                if ( this._html.secondHandle && !doesFirstHandleContainsTooltip ) {
+                    pluginView.render(this._html.secondHandle);
+                }
+            }
+        }
+    }
+
+    destroyPlugin(plugin: "labels" | "tooltip", pluginView: SliderLabelsView | SliderTooltipView): void {
+        if ( plugin === "labels" || plugin === "tooltip" ) {
+            pluginView.destroy();
+        }
+    }
+
+    refreshValue(currentHandleCoordinate: number, handleNumber?: "first" | "second"): void {
+        if ( !handleNumber ) {
+            if ( this._options.range !== true ) handleNumber = "first";
+            else {
+                handleNumber = this._getClosestHandleNumber(currentHandleCoordinate);
+            }
+        }
+        const range = this._options.max - this._options.min;
+        const orientation = this._options.orientation;
+        const wrapperCoords = this._getCoords().wrapper;
+
+        const isHorizontal = orientation === "horizontal";
+
+        const wrapperStart =  isHorizontal ? wrapperCoords.left : wrapperCoords.top;
+        const wrapperEnd =  isHorizontal ? wrapperCoords.right : wrapperCoords.bottom;
+
+        if ( currentHandleCoordinate > wrapperEnd ) {
+            this._valueChangedSubject
+                .notifyObservers([isHorizontal ? this._options.max : this._options.min, handleNumber]);
+
+            return;
+        }
+
+        if ( currentHandleCoordinate < wrapperStart ) {
+            this._valueChangedSubject
+                .notifyObservers([isHorizontal ? this._options.min : this._options.max, handleNumber]);
+
+            return;
+        }
+
+        const currentHandlePosition = orientation === "horizontal" ?
+            currentHandleCoordinate - wrapperCoords.left :
+            wrapperCoords.height - (currentHandleCoordinate - wrapperCoords.top);
+
+        const getValuesArray = (): number[] => {
+            const valuesArray: number[] = [];
+
+            for ( let currentValue = this._options.min;
+                  currentValue <= this._options.max; currentValue += this._options.step ) {
+
+                valuesArray.push(currentValue);
+            }
+
+            return valuesArray;
+        };
+
+        const valuesArray = getValuesArray();
+
+        const valueInPercents = this._options.orientation === "horizontal" ?
+            currentHandlePosition / this._getCoords().wrapper.width :
+            currentHandlePosition / this._getCoords().wrapper.height;
+
+        const approximateValue = valueInPercents * range + this._options.min;
+
+        let value: number;
+
+        for (let i = 0; i < valuesArray.length; i++ ) {
+            if ( approximateValue >= valuesArray[i] && approximateValue <= valuesArray[i + 1] ) {
+                const rangeFromFirst = approximateValue - valuesArray[i];
+                const rangeFromSecond = valuesArray[i + 1] - approximateValue;
+
+                value = rangeFromFirst < rangeFromSecond ?
+                    valuesArray[i] : valuesArray[i + 1];
+
+                break;
+            }
+        }
+
+        this._valueChangedSubject.notifyObservers([value, handleNumber]);
     }
 
     private _renderOptions(): void {
@@ -332,8 +446,6 @@ export default class SliderView {
     }
 
     private _setSliderClasses(): void {
-        // if ( this._classesHash && !this._hasClassesChanged() ) return;
-
         const defaultClasses = Object.keys(this._options.classes) as
             (keyof (VerticalClasses | HorizontalClasses))[];
         const wrapper = defaultClasses[0];
@@ -357,15 +469,12 @@ export default class SliderView {
             this._html.secondHandle.style.position = "absolute";
             $(this._html.secondHandle).addClass(this._options.classes[handle]);
         }
-
-        // this._classesHash = $.extend({}, this._options.classes);
     }
 
     private _setTransition(): void {
         const animate = this._options.animate;
 
         const handleProp = this._options.orientation === "horizontal" ? "left" : "bottom";
-        // const rangeProp = this._options.orientation === "horizontal" ? "width" : "height";
 
         const transitionMs: number = animate === "fast" ? 300 :
             animate === "slow" ? 700 : typeof animate === "number" ? animate : 0;
@@ -420,77 +529,6 @@ export default class SliderView {
 
     }
 
-    refreshValue(currentHandleCoordinate: number, handleNumber?: "first" | "second"): void {
-        if ( !handleNumber ) {
-            if ( this._options.range !== true ) handleNumber = "first";
-                else {
-                    handleNumber = this._getClosestHandleNumber(currentHandleCoordinate);
-            }
-        }
-        const range = this._options.max - this._options.min;
-        const orientation = this._options.orientation;
-        const wrapperCoords = this._getCoords().wrapper;
-
-        const isHorizontal = orientation === "horizontal";
-
-        const wrapperStart =  isHorizontal ? wrapperCoords.left : wrapperCoords.top;
-        const wrapperEnd =  isHorizontal ? wrapperCoords.right : wrapperCoords.bottom;
-
-        if ( currentHandleCoordinate > wrapperEnd ) {
-            this._valueChangedSubject
-                .notifyObservers([isHorizontal ? this._options.max : this._options.min, handleNumber]);
-
-            return;
-        }
-
-        if ( currentHandleCoordinate < wrapperStart ) {
-            this._valueChangedSubject
-                .notifyObservers([isHorizontal ? this._options.min : this._options.max, handleNumber]);
-
-            return;
-        }
-
-        const currentHandlePosition = orientation === "horizontal" ?
-            currentHandleCoordinate - wrapperCoords.left :
-            wrapperCoords.height - (currentHandleCoordinate - wrapperCoords.top);
-
-        const getValuesArray = (): number[] => {
-            const valuesArray: number[] = [];
-
-            for ( let currentValue = this._options.min;
-                  currentValue <= this._options.max; currentValue += this._options.step ) {
-
-                valuesArray.push(currentValue);
-            }
-
-            return valuesArray;
-        };
-
-        const valuesArray = getValuesArray();
-
-        const valueInPercents = this._options.orientation === "horizontal" ?
-            currentHandlePosition / this._getCoords().wrapper.width :
-            currentHandlePosition / this._getCoords().wrapper.height;
-
-        const approximateValue = valueInPercents * range + this._options.min;
-
-        let value: number;
-
-        for (let i = 0; i < valuesArray.length; i++ ) {
-            if ( approximateValue >= valuesArray[i] && approximateValue <= valuesArray[i + 1] ) {
-                const rangeFromFirst = approximateValue - valuesArray[i];
-                const rangeFromSecond = valuesArray[i + 1] - approximateValue;
-
-                value = rangeFromFirst < rangeFromSecond ?
-                    valuesArray[i] : valuesArray[i + 1];
-
-                break;
-            }
-        }
-
-        this._valueChangedSubject.notifyObservers([value, handleNumber]);
-    }
-
     private _setSliderElements(): void {
         const secondHandle = this._options.range === true ? document.createElement("div") : null;
 
@@ -510,7 +548,7 @@ export default class SliderView {
     private _countHandleShift(mouseDownEvent: MouseEvent, handleNumber: "first" | "second"): Shift {
         const handle = handleNumber === "first" ? this._html.firstHandle : this._html.secondHandle;
 
-        return countShift(mouseDownEvent, handle);
+        return getShift(mouseDownEvent, handle);
     }
 
     private _hasClassesChanged(): boolean {
@@ -577,39 +615,6 @@ export default class SliderView {
         }
 
         return handleNumber;
-    }
-
-    renderPlugin(
-        plugin: string,
-        pluginView: SliderLabelsView | SliderTooltipView,
-        number?: "first" | "second"
-    ): void {
-        if ( plugin === "labels" ) {
-            pluginView.render(this._html.wrapper);
-        }
-
-        if ( plugin === "tooltip" ) {
-            if ( !number ) number = "first";
-
-            if ( number === "first" ) {
-                if ( !this._html.firstHandle.contains((pluginView as SliderTooltipView).html) ) {
-                    pluginView.render(this._html.firstHandle);
-                }
-            }
-
-            if ( number === "second" ) {
-                if ( this._html.secondHandle &&
-                    !this._html.firstHandle.contains((pluginView as SliderTooltipView).html) ) {
-                    pluginView.render(this._html.secondHandle);
-                }
-            }
-        }
-    }
-
-    destroyPlugin(plugin: "labels" | "tooltip", pluginView: SliderLabelsView | SliderTooltipView): void {
-        if ( plugin === "labels" || plugin === "tooltip" ) {
-            pluginView.destroy();
-        }
     }
 }
 

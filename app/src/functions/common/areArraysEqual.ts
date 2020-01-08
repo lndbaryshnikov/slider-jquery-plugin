@@ -1,4 +1,4 @@
-const arrayEquals = (firstArray: any[], secondArray: any[]): boolean => {
+const areArraysEqual = (firstArray: any[], secondArray: any[]): boolean => {
 
     if (!firstArray || !secondArray) return false;
 
@@ -8,7 +8,7 @@ const arrayEquals = (firstArray: any[], secondArray: any[]): boolean => {
         // Check if we have nested arrays
         if (firstArray[i] instanceof Array && secondArray[i] instanceof Array) {
             // recurse into the nested arrays
-            if (!arrayEquals(firstArray[i], secondArray[i])) return false;
+            if (!areArraysEqual(firstArray[i], secondArray[i])) return false;
         }
         else if (firstArray[i] !== secondArray[i]) {
             // Warning - two different object instances
@@ -19,4 +19,4 @@ const arrayEquals = (firstArray: any[], secondArray: any[]): boolean => {
     return true;
 };
 
-export default arrayEquals;
+export default areArraysEqual;

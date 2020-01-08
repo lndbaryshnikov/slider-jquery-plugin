@@ -1,6 +1,6 @@
 import SliderDemo from "./MVP modules/SliderDemo";
 import SliderPresenter from "./MVP modules/Slider/SliderPresenter";
-import SliderModel, { UserOptions } from "./MVP modules/Slider/SliderModel";
+import SliderModel  from "./MVP modules/Slider/SliderModel";
 import SliderView from "./MVP modules/Slider/SliderView";
 
 import "./styles/jquery-slider.styles"

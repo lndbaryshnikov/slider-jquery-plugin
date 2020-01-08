@@ -1,7 +1,7 @@
 import getCoords from "../functions/common/getCoords";
 import Observer from "./Observer";
 
-export interface LabelOptions {
+interface LabelOptions {
     labels: boolean;
     pips: boolean;
     orientation: "horizontal" | "vertical";
@@ -189,3 +189,7 @@ export default class SliderLabelsView {
         }
     }
 }
+
+export {
+    LabelOptions
+};
