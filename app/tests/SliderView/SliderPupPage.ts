@@ -211,9 +211,13 @@ export default class SliderPupPage {
   async moveHandleToCoords(X: number, Y: number, isSecond?: true): Promise<void> {
     if (isSecond && !this._secondHandle) throw new Error("second handle doesn't exist");
 
+    // console.log(isSecond);
+
     let handleCoords: Coords;
-    if (isSecond) handleCoords = await this.getCoords(this._secondHandle);
-    else handleCoords = await this.getCoords(this._firstHandle);
+
+    if (isSecond) {
+      handleCoords = await this.getCoords(this._secondHandle);
+    } else handleCoords = await this.getCoords(this._firstHandle);
 
     await this._page.mouse.move(handleCoords.left + handleCoords.width / 2,
       handleCoords.top + handleCoords.height / 2);
@@ -242,7 +246,8 @@ export default class SliderPupPage {
     this._firstHandle = await this._page.$('.jquery-slider-handle');
 
     if (options && options.range === true) {
-      [this._secondHandle] = (await this._page.$$('.jquery-slider-handle'));
+      // eslint-disable-next-line prefer-destructuring
+      this._secondHandle = (await this._page.$$('.jquery-slider-handle'))[1];
     } else this._secondHandle = null;
 
     if (options && options.tooltip) {
