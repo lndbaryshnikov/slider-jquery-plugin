@@ -259,18 +259,18 @@ export default class SliderView {
     }
 
     if (plugin === 'tooltip') {
-      if (!number) number = 'first';
+      const correctNumber = !number ? 'first' : number;
 
       const doesFirstHandleContainsTooltip = this._html.firstHandle
         .contains((pluginView as SliderTooltipView).html);
 
-      if (number === 'first') {
+      if (correctNumber === 'first') {
         if (!doesFirstHandleContainsTooltip) {
           pluginView.render(this._html.firstHandle);
         }
       }
 
-      if (number === 'second') {
+      if (correctNumber === 'second') {
         if (this._html.secondHandle && !doesFirstHandleContainsTooltip) {
           pluginView.render(this._html.secondHandle);
         }
@@ -278,6 +278,7 @@ export default class SliderView {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   destroyPlugin(plugin: 'labels' | 'tooltip', pluginView: SliderLabelsView | SliderTooltipView): void {
     if (plugin === 'labels' || plugin === 'tooltip') {
       pluginView.destroy();
@@ -285,12 +286,15 @@ export default class SliderView {
   }
 
   refreshValue(currentHandleCoordinate: number, handleNumber?: 'first' | 'second'): void {
+    let correctHandleNumber: string;
+
     if (!handleNumber) {
-      if (this._options.range !== true) handleNumber = 'first';
+      if (this._options.range !== true) correctHandleNumber = 'first';
       else {
-        handleNumber = this._getClosestHandleNumber(currentHandleCoordinate);
+        correctHandleNumber = this._getClosestHandleNumber(currentHandleCoordinate);
       }
-    }
+    } else correctHandleNumber = handleNumber;
+
     const range = this._options.max - this._options.min;
     const { orientation } = this._options;
     const wrapperCoords = this._getCoords().wrapper;
@@ -302,14 +306,18 @@ export default class SliderView {
 
     if (currentHandleCoordinate > wrapperEnd) {
       this._valueChangedSubject
-        .notifyObservers([isHorizontal ? this._options.max : this._options.min, handleNumber]);
+        .notifyObservers([isHorizontal
+          ? this._options.max
+          : this._options.min, correctHandleNumber]);
 
       return;
     }
 
     if (currentHandleCoordinate < wrapperStart) {
       this._valueChangedSubject
-        .notifyObservers([isHorizontal ? this._options.min : this._options.max, handleNumber]);
+        .notifyObservers([isHorizontal
+          ? this._options.min
+          : this._options.max, correctHandleNumber]);
 
       return;
     }
@@ -339,7 +347,7 @@ export default class SliderView {
 
     let value: number;
 
-    for (let i = 0; i < valuesArray.length; i++) {
+    for (let i = 0; i < valuesArray.length; i += 1) {
       if (approximateValue >= valuesArray[i] && approximateValue <= valuesArray[i + 1]) {
         const rangeFromFirst = approximateValue - valuesArray[i];
         const rangeFromSecond = valuesArray[i + 1] - approximateValue;
@@ -351,7 +359,7 @@ export default class SliderView {
       }
     }
 
-    this._valueChangedSubject.notifyObservers([value, handleNumber]);
+    this._valueChangedSubject.notifyObservers([value, correctHandleNumber]);
   }
 
   private _renderOptions(): void {
@@ -366,6 +374,7 @@ export default class SliderView {
     const addHandleMovingHandler = (handle: HTMLElement): void => {
       handle.addEventListener('mousedown', this._eventListeners.handleMoving.handleMouseDown);
 
+      // eslint-disable-next-line no-param-reassign
       handle.ondragstart = this._eventListeners.handleMoving.handleOnDragStart;
     };
 
@@ -474,19 +483,23 @@ export default class SliderView {
 
     const handleProp = this._options.orientation === 'horizontal' ? 'left' : 'bottom';
 
-    const transitionMs: number = animate === 'fast' ? 300
-      : animate === 'slow' ? 700 : typeof animate === 'number' ? animate : 0;
+    const maybeNull = typeof animate === 'number' ? animate : 0;
+    const mayneSevenHundredOrNull = animate === 'slow' ? 700 : maybeNull;
+
+    const transitionMs: number = animate === 'fast' ? 300 : mayneSevenHundredOrNull;
 
     this._html.firstHandle.style.transition = `${handleProp} ${transitionMs}ms`;
     this._html.range.style.transition = `${transitionMs}ms`;
 
     const addTransitionToHandle = (handle: HTMLElement) => {
       handle.addEventListener('mousedown', () => {
+        // eslint-disable-next-line no-param-reassign
         handle.style.transition = '0ms';
         this._html.range.style.transition = '0ms';
       });
 
       document.addEventListener('mouseup', () => {
+        // eslint-disable-next-line no-param-reassign
         handle.style.transition = `${handleProp} ${transitionMs}ms`;
         this._html.range.style.transition = `${transitionMs}ms`;
       });
@@ -507,7 +520,8 @@ export default class SliderView {
 
     const range = this._options.max - this._options.min;
 
-    const firstValueInPercents = ((this._options.range === true ? (this._options.value as number[])[0]
+    const firstValueInPercents = ((this._options.range === true
+      ? (this._options.value as number[])[0]
       : this._options.value as number) - this._options.min) / range;
 
     const addHandlePosition = (handleValueInPercents: number): void => {
@@ -519,7 +533,8 @@ export default class SliderView {
     addHandlePosition(firstValueInPercents);
 
     if (this._options.range === true) {
-      const secondValueInPercents = ((this._options.value as number[])[1] - this._options.min) / range;
+      const secondValueInPercents = ((this._options.value as number[])[1]
+        - this._options.min) / range;
 
       addHandlePosition(secondValueInPercents);
     }
@@ -553,15 +568,13 @@ export default class SliderView {
     const { classes } = this._options;
     const hash = this._classesHash;
 
-    let mainClass: keyof Options['classes'];
-
-    for (mainClass in this._options.classes) {
-      if (!this._options.classes.hasOwnProperty(mainClass)) continue;
-
-      if (!(mainClass in hash && classes[mainClass] === hash[mainClass])) {
-        return true;
+    Object.keys(this._options.classes).forEach((mainClass: keyof Options['classes']) => {
+      if (Object.prototype.hasOwnProperty.call(this._options.classes, mainClass)) {
+        if (!(mainClass in hash && classes[mainClass] === hash[mainClass])) {
+          return true;
+        }
       }
-    }
+    });
 
     return false;
   }
