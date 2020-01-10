@@ -26,7 +26,6 @@ describe('slider events', () => {
   });
 
   let sliderCoords: Coords;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let rangeCoords: Coords;
   let firstHandleCoords: Coords;
 
@@ -304,18 +303,15 @@ describe('slider events', () => {
       });
 
       for (let X = 0, label = 1; X <= 1; X += 0.1, label += 1) {
-        // eslint-disable-next-line no-await-in-loop
         await sliderPage
           .moveHandleToCoords(
             firstHandleCoords.left,
             sliderCoords.top + sliderCoords.height * (1 - X),
           );
 
-        // eslint-disable-next-line no-await-in-loop
         const newHandleCoords = await sliderPage.getFirstHandleCoords();
         const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
 
-        // eslint-disable-next-line no-await-in-loop
         const labelCoords = await sliderPage
           .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
@@ -337,14 +333,11 @@ describe('slider events', () => {
       });
 
       for (let label = 1; label <= 11; label += 1) {
-        // eslint-disable-next-line no-await-in-loop
         const labelCoords = await sliderPage
           .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
-        // eslint-disable-next-line no-await-in-loop
         await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
 
-        // eslint-disable-next-line no-await-in-loop
         const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
         const handleMiddle = newHandleCoords.top + newHandleCoords.height / 2;
@@ -359,6 +352,10 @@ describe('slider events', () => {
         range: true,
         value: [0, 1000],
         max: 1000,
+        step: 1,
+        labels: false,
+        pips: false,
+        tooltip: false,
       });
 
       expect(sliderPage.elements.secondHandle).not.toBe(null);
@@ -376,6 +373,12 @@ describe('slider events', () => {
       };
 
       await refreshValues();
+
+      console.log(
+        newSecondHandleCoords.top,
+        newFirstHandleCoords.top,
+        newFirstHandleCoords.left,
+      );
 
       expect(valueOption).toEqual([0, 1000]);
 
@@ -395,6 +398,12 @@ describe('slider events', () => {
 
       await refreshValues();
 
+      console.log(
+        newSecondHandleCoords.top,
+        newFirstHandleCoords.top,
+        newFirstHandleCoords.left,
+      );
+
       expect(newFirstHandleCoords.top)
         .toBe(sliderCoords.top + sliderCoords.height * 0.7 - firstHandleCoords.height / 2);
       expect(newSecondHandleCoords.top)
@@ -408,9 +417,16 @@ describe('slider events', () => {
 
       expect(valueOption).toEqual([300, 700]);
 
-      await sliderPage.moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.1);
+      await sliderPage
+        .moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.1);
 
       await refreshValues();
+
+      console.log(
+        newSecondHandleCoords.top,
+        newFirstHandleCoords.top,
+        newFirstHandleCoords.left,
+      );
 
       expect(newSecondHandleCoords.top)
         .toBe(sliderCoords.top + sliderCoords.height * 0.3 - newSecondHandleCoords.height / 2);
@@ -681,17 +697,14 @@ describe('slider events', () => {
       });
 
       for (let X = 0, label = 1; X <= 1; X += 0.1, label += 1) {
-        // eslint-disable-next-line no-await-in-loop
         await sliderPage.moveHandleToCoords(
           sliderCoords.left + sliderCoords.width * X,
           firstHandleCoords.top,
         );
 
-        // eslint-disable-next-line no-await-in-loop
         const newHandleCoords = await sliderPage.getFirstHandleCoords();
         const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
 
-        // eslint-disable-next-line no-await-in-loop
         const labelCoords = await sliderPage
           .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
@@ -713,14 +726,11 @@ describe('slider events', () => {
       });
 
       for (let label = 1; label <= 11; label += 1) {
-        // eslint-disable-next-line no-await-in-loop
         const labelCoords = await sliderPage
           .getLabelData('coords', label) as { label: Coords; pip: Coords };
 
-        // eslint-disable-next-line no-await-in-loop
         await page.mouse.click(labelCoords.label.left + 1, labelCoords.label.top + 1);
 
-        // eslint-disable-next-line no-await-in-loop
         const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
         const handleMiddle = newHandleCoords.left + newHandleCoords.width / 2;
