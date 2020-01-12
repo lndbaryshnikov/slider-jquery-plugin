@@ -4,10 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "mocha-test": "cross-env TESTBUILD=true webpack --env development --mode development && mocha tests-dist/tests.js --require source-map-support/register && rd /s/q tests-dist",
-    "buildTests": "cross-env TESTBUILD=true webpack --env development --mode development",
-    "watchTests": "cross-env TESTBUILD=true webpack --env development --mode development --watch",
-    "test-server": "cross-env TESTBUILD=true webpack-dev-server --mode development --open --env development",
     "jest": "jest -c jest.config.js",
     "watchJest": "jest -c jest.config.js --watchAll",
     "jestPup": "jest -c jest.config.pup.js",
@@ -18,7 +14,6 @@
     "server": "webpack-dev-server --mode development --open --env development",
     "deploy": "gh-pages -d dist",
     "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx app",
-    "eslint:dump": "eslint --print-config dist/.eslintrc.json"
   },
   "repository": {
     "type": "git",
