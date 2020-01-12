@@ -3,7 +3,9 @@ const path = require('path');
 module.exports = function() {
     return {
         devServer: {
-            stats: 'optionsErrors-only'
+            stats: 'errors-only',
+            contentBase: path.join(__dirname, '../dist'),
+            compress: true
         }
     };
 };
