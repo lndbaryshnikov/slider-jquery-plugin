@@ -29,6 +29,14 @@ const common = merge([
             filename: "./js/[name].js"
         },
 
+        plugins: [
+            new HtmlWebpackPlugin({
+                filename: 'index.html',
+                chunks: ['jquery-slider-demo'],
+                template: PATHS.src + 'slider-demo.html',
+            }),
+        ],
+
         externals: {
             jquery: "jQuery"
         },
