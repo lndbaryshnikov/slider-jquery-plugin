@@ -1,14 +1,15 @@
-.slider-demo__wrapper {
+.slider-demo {
   border: 2px dashed grey;
   margin: 0.5em;
   width: 25em;
   height: 25em;
-
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   align-content: center;
-
   user-select: none;
+
+  &__slider {
+  }
 }

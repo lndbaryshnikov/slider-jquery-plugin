@@ -1,0 +1,50 @@
+.config-item {
+  margin: 5px;
+  display: flex;
+  justify-content: space-between;
+
+  &__sign {
+    float: left;
+    margin-right: 5px;
+  }
+
+  &__first-input {
+    background-color: grey;
+    border: none;
+    border-radius: 5px;
+    width: 3em;
+    padding: 0.2em;
+    color: whitesmoke;
+    text-align: center;
+    margin-right: 0.3em;
+  }
+
+  &__second-input {
+    background-color: grey;
+    border: none;
+    border-radius: 5px;
+    width: 3em;
+    padding: 0.2em;
+    color: whitesmoke;
+    text-align: center;
+  }
+
+  &__input {
+    background-color: grey;
+    border: none;
+    border-radius: 5px;
+    width: 3em;
+    padding: 0.2em;
+    color: whitesmoke;
+    text-align: center;
+  }
+
+  &__select {
+    background-color: grey;
+    border: none;
+    border-radius: 5px;
+    padding: 0.2em;
+    color: whitesmoke;
+    text-align: center;
+  }
+}

@@ -35,7 +35,7 @@ export default class SliderDemo {
 
   constructor(private _slider: SliderPresenter, options: UserOptions, private _root: HTMLElement) {
     this._wrapper = document.createElement('div');
-    this._wrapper.setAttribute('class', 'slider-demo__wrapper');
+    this._wrapper.setAttribute('class', 'slider-demo');
 
     this._slider.setOptions(options);
 
@@ -70,12 +70,16 @@ export default class SliderDemo {
 
   private _createPanel(): void {
     const panelBlockClass = 'config-panel';
-    const itemBlockClass = 'item';
+    const itemBlockClass = 'config-item';
 
-    const getPanelBlockDiv = (className: string): HTMLDivElement => {
+    const getPanelBlockDiv = (className?: string): HTMLDivElement => {
       const div = document.createElement('div');
-      div.setAttribute('class', `${panelBlockClass}__${className}`);
 
+      if (!className) {
+        div.setAttribute('class', `${panelBlockClass}`);
+      } else {
+        div.setAttribute('class', `${panelBlockClass}__${className}`);
+      }
       return div;
     };
 
@@ -94,7 +98,9 @@ export default class SliderDemo {
       sliderOption: keyof Options,
       selectValues?: string[],
     ): T extends 'input' ? InputItem : T extends 'select' ? SelectItem : ValueItem => {
-      const wrapper = getItemElement('div', 'wrapper') as HTMLDivElement;
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('class', 'config-item');
+
       const sign = getItemElement('div', 'sign') as HTMLDivElement;
 
       sign.innerHTML = text;
@@ -157,7 +163,7 @@ export default class SliderDemo {
     };
 
     this._configPanel = {
-      wrapper: getPanelBlockDiv('wrapper'),
+      wrapper: getPanelBlockDiv(),
       min: getItem('input', 'Min:', 'min'),
       max: getItem('input', 'Max:', 'max'),
       step: getItem('input', 'Step:', 'step'),

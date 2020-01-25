@@ -38,7 +38,7 @@ new SliderDemo(getSlider(), {
   max: 10,
   value: 3,
   classes: {
-    'jquery-slider': 'slider-demo__jquery-slider-default',
+    'jquery-slider': 'slider',
   },
 }, wrapper).render();
 
@@ -50,9 +50,9 @@ new SliderDemo(getSlider(), {
   labels: true,
   tooltip: true,
   classes: {
-    'jquery-slider': 'slider-demo__jquery-slider-default',
-    'jquery-slider-range': 'slider-demo__jquery-slider-range-orange',
-    'jquery-slider-handle': 'slider-demo__jquery-slider-handle-gray',
+    'jquery-slider': 'slider',
+    'jquery-slider-range': 'slider__range_color_orange',
+    'jquery-slider-handle': 'slider__handle_color_gray',
   },
 }, wrapper).render();
 
@@ -63,8 +63,8 @@ new SliderDemo(getSlider(), {
   value: 5,
   labels: false,
   classes: {
-    'jquery-slider': 'slider-demo__jquery-slider-default',
-    'jquery-slider-handle': 'slider-demo__jquery-slider-handle-white',
+    'jquery-slider': 'slider',
+    'jquery-slider-handle': 'slider__handle_color_white',
   },
 }, wrapper).render();
 
@@ -76,9 +76,9 @@ new SliderDemo(getSlider(), {
   labels: false,
   pips: true,
   classes: {
-    'jquery-slider': 'slider-demo__jquery-slider-default',
-    'jquery-slider-range': 'slider-demo__jquery-slider-range-orange',
-    'jquery-slider-handle': 'slider-demo__jquery-slider-handle-white',
+    'jquery-slider': 'slider',
+    'jquery-slider-range': 'slider__range_color_orange',
+    'jquery-slider-handle': 'slider__handle_color_white',
   },
 }, wrapper).render();
 

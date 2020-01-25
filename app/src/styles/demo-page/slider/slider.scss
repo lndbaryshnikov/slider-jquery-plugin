@@ -1,0 +1,87 @@
+.slider {
+  @at-root {
+    .jquery-slider-vertical#{&} {
+      margin: 2em 4em;
+    }
+
+    .jquery-slider-horizontal#{&} {
+      margin: 3em 3em 4em 2em;
+    }
+  }
+
+  &__range {
+    &_color {
+      &_orange {
+        background-color: orangered;
+      }
+    }
+  }
+
+  &__handle {
+    &_color {
+      &_gray {
+        background-color: grey;
+
+        .jquery-slider-tooltip {
+          background-color: grey;
+
+          &::after {
+            @at-root {
+              .jquery-slider-horizontal #{&} {
+                border-color: grey transparent transparent transparent;
+              }
+
+              .jquery-slider-vertical #{&} {
+                border-color: transparent grey transparent transparent;
+              }
+            }
+          }
+        }
+      }
+
+      &_white {
+        background-color: white;
+        border: 1px solid black;
+
+        @at-root {
+          .jquery-slider-horizontal #{&} {
+            top: -95%;
+          }
+        }
+
+        .jquery-slider-tooltip {
+          background-color: white;
+          border: 1px solid black;
+          color: black;
+
+          @at-root {
+            .jquery-slider-horizontal #{&} {
+              top: -38px;
+              left: -13.25px;
+            }
+
+            .jquery-slider-vertical #{&} {
+              top: -7px;
+            }
+          }
+
+          &::after {
+            @at-root {
+              .jquery-slider-horizontal #{&} {
+                border-color: black transparent transparent transparent;
+                margin-left: -5px;
+              }
+
+              .jquery-slider-vertical #{&} {
+                border-color: transparent black transparent transparent;
+                margin-top: -5px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+

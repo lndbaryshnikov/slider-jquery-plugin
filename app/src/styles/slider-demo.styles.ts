@@ -1,17 +1,7 @@
-import "./slider-demo/header.scss"
-import "./slider-demo/samples-wrapper.scss"
-import "./slider-demo/sign.scss"
-import "./slider-demo/slider-demo__wrapper.scss"
-import "./slider-demo/slider-demo__wrapper.scss"
-import "./slider-demo/config-panel/config-panel__wrapper.scss"
-import "./slider-demo/__slider/slider-demo__slider-wrapper.scss"
-import "./slider-demo/__slider/slider-demo__jquery-slider-default.scss"
-import "./slider-demo/__slider/slider-demo__jquery-slider-range-orange.scss"
-import "./slider-demo/__slider/slider-demo__jquery-slider-handle-gray.scss"
-import "./slider-demo/__slider/slider-demo__jquery-slider-handle-white.scss"
-import "./slider-demo/item/item__wrapper.scss"
-import "./slider-demo/item/item__sign.scss"
-import "./slider-demo/item/item__select.scss"
-import "./slider-demo/item/item__input.scss"
-import "./slider-demo/item/item__first-input.scss"
-import "./slider-demo/item/item__second-input.scss"
+import './demo-page/header.scss';
+import './demo-page/samples-wrapper.scss';
+import './demo-page/sign.scss';
+import './demo-page/slider-demo/slider-demo.scss';
+
+import './demo-page/slider/slider.scss';
+import './demo-page/config-item/config-item.scss';
