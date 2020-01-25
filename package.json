@@ -13,7 +13,7 @@
     "watch": "webpack --mode development --watch --env development",
     "server": "webpack-dev-server --mode development --open --env development",
     "deploy": "gh-pages -d dist",
-    "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx app",
+    "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx app"
   },
   "repository": {
     "type": "git",
