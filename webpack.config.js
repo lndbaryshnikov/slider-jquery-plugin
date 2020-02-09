@@ -14,31 +14,31 @@ const favicons = require('./webpack/favicons');
 
 const PATHS = {
   src: path.join(__dirname, 'app/src/'),
-  dist: path.join(__dirname, 'dist')
+  dist: path.join(__dirname, 'dist'),
 };
 
 const common = merge([
   {
     entry: {
-      'jquery-slider': PATHS.src + 'jquery-slider.ts',
-      'jquery-slider-demo': PATHS.src + 'slider-demo.ts'
+      'jquery-slider': `${PATHS.src}jquery-slider.ts`,
+      'jquery-slider-demo': `${PATHS.src}slider-demo.ts`,
     },
 
     output: {
       path: PATHS.dist,
-      filename: './js/[name].js'
+      filename: './js/[name].js',
     },
 
     plugins: [
       new HtmlWebpackPlugin({
         filename: 'index.html',
         chunks: ['jquery-slider-demo'],
-        template: PATHS.src + 'slider-demo.pug',
+        template: `${PATHS.src}slider-demo.pug`,
       }),
     ],
 
     externals: {
-      jquery: 'jQuery'
+      jquery: 'jQuery',
     },
 
     devtool: 'source-map',
@@ -50,7 +50,7 @@ const common = merge([
   fonts(),
   provideJQuery(),
   typescript(),
-  favicons('./app/src/images/favicon.png')
+  favicons('./app/src/images/favicon.png'),
 ]);
 
 
@@ -62,7 +62,7 @@ module.exports = function (env) {
     return merge([
       {},
       common,
-      devserver()
+      devserver(),
     ]);
   }
 };

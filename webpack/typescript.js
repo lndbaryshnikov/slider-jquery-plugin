@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path');
 
 module.exports = function () {
   return {
@@ -6,14 +6,14 @@ module.exports = function () {
       rules: [
         {
           test: /\.tsx?$/,
-          include: path.resolve(__dirname, "../app"),
-          use: "ts-loader"
+          include: path.resolve(__dirname, '../app'),
+          use: 'ts-loader',
         },
-      ]
+      ],
     },
 
     resolve: {
-      extensions: [".tsx", ".ts", ".js"]
+      extensions: ['.tsx', '.ts', '.js'],
     },
   };
 };

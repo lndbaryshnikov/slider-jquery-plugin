@@ -1,6 +1,0 @@
-#Configs
-webpack/*
-jest.config.js
-jest.config.pup.js
-setup-jest.js
-webpack.config.js

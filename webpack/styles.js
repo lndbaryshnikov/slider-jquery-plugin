@@ -50,12 +50,12 @@ module.exports = function () {
               options: { sourceMap: true, config: { path: './postcss.config.js' } },
             },
           ],
-        }
-      ]
+        },
+      ],
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: "./css/[name].css",
+        filename: './css/[name].css',
       }),
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
@@ -65,6 +65,6 @@ module.exports = function () {
           },
         },
       }),
-    ]
+    ],
   };
 };

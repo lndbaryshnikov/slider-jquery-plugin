@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path');
 
 module.exports = function () {
   return {
@@ -6,13 +6,13 @@ module.exports = function () {
       rules: [
         {
           test: /\.(jpg|png|svg)$/,
-          exclude: path.resolve(__dirname, "../app/fonts"),
-          loader: "file-loader",
+          exclude: path.resolve(__dirname, '../app/fonts'),
+          loader: 'file-loader',
           options: {
-            name: "images/[name].[ext]"
+            name: 'images/[name].[ext]',
           },
-        }
-      ]
-    }
+        },
+      ],
+    },
   };
 };

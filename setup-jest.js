@@ -1,2 +1,4 @@
-import $ from "jquery";
-global.$ = global.jQuery = $;
+import $ from 'jquery';
+
+global.$ = $;
+global.jQuery = $;

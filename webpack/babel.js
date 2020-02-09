@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path');
 
 module.exports = function () {
   return {
@@ -6,15 +6,15 @@ module.exports = function () {
       rules: [
         {
           test: /\.js$/,
-          include: path.resolve(__dirname, "../app"),
+          include: path.resolve(__dirname, '../app'),
           use: {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: ["@babel/preset-env"],
-            }
-          }
+              presets: ['@babel/preset-env'],
+            },
+          },
         },
-      ]
+      ],
     },
   };
 };
