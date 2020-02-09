@@ -19,23 +19,9 @@
   },
   "plugins": ["@typescript-eslint", "jest"],
   "rules": {
-//    "no-prototype-builtins": "off",
-//    "quotes": "error",
-//    "eqeqeq": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/indent": ["error", 2],
-
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        "js": "never",
-        "jsx": "never",
-        "ts": "never",
-        "tsx": "never"
-      }
-    ],
 
     "linebreak-style": ["error", "windows"],
     "no-underscore-dangle": "off",
