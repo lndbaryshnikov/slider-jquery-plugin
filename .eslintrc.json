@@ -3,7 +3,8 @@
     "browser": true,
     "es6": true,
     "es2017": true,
-    "jest/globals": true
+    "jest/globals": true,
+    "jquery": true
   },
   "extends": [
     "airbnb",
@@ -31,6 +32,7 @@
     "no-console": "off",
     "no-return-await": "off",
     "no-await-in-loop": "off",
+    "class-methods-use-this": "off",
 
     "import/extensions": ["error", "ignorePackages", {
       "ts": "never",
