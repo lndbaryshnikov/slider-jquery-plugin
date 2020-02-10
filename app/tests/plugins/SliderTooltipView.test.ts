@@ -1,4 +1,4 @@
-import SliderTooltipView from '../../src/MVP modules/SliderTooltipView';
+import SliderTooltipView from '../../src/components/SliderTooltipView/SliderTooltipView';
 
 describe('tooltip works correctly', () => {
   let tooltip: SliderTooltipView;

@@ -1,8 +1,8 @@
-import { getShift, Shift } from '../../functions/common/getShift';
-import getCoords, { Coords } from '../../functions/common/getCoords';
-import Observer from '../Observer';
-import SliderTooltipView from '../SliderTooltipView';
-import SliderLabelsView from '../SliderLabelsView';
+import { getShift, Shift } from '../../common/getShift';
+import getCoords, { Coords } from '../../common/getCoords';
+import Observer from '../Observer/Observer';
+import SliderTooltipView from '../SliderTooltipView/SliderTooltipView';
+import SliderLabelsView from '../SliderLabelsView/SliderLabelsView';
 import { HorizontalClasses, Options, VerticalClasses } from './SliderModel';
 
 interface Html {

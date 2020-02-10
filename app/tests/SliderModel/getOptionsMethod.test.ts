@@ -1,4 +1,4 @@
-import SliderModel, { Options } from '../../src/MVP modules/Slider/SliderModel';
+import SliderModel, { Options } from '../../src/components/Slider/SliderModel';
 
 describe('getOptions method', () => {
   let model: SliderModel;

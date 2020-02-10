@@ -13,15 +13,15 @@ const typescript = require('./webpack/typescript');
 const favicons = require('./webpack/favicons');
 
 const PATHS = {
-  src: path.join(__dirname, 'app/src/'),
+  src: path.join(__dirname, 'app/src'),
   dist: path.join(__dirname, 'dist'),
 };
 
 const common = merge([
   {
     entry: {
-      'jquery-slider': `${PATHS.src}jquery-slider.ts`,
-      'jquery-slider-demo': `${PATHS.src}slider-demo.ts`,
+      'jquery-slider': `${PATHS.src}/components/jquery-slider.ts`,
+      'jquery-slider-demo': `${PATHS.src}/slider-demo/slider-demo.ts`,
     },
 
     output: {
@@ -33,7 +33,7 @@ const common = merge([
       new HtmlWebpackPlugin({
         filename: 'index.html',
         chunks: ['jquery-slider-demo'],
-        template: `${PATHS.src}slider-demo.pug`,
+        template: `${PATHS.src}/slider-demo/slider-demo.pug`,
       }),
     ],
 

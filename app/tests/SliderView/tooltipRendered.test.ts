@@ -1,6 +1,6 @@
-import SliderView from '../../src/MVP modules/Slider/SliderView';
-import SliderModel from '../../src/MVP modules/Slider/SliderModel';
-import SliderTooltipView from '../../src/MVP modules/SliderTooltipView';
+import SliderView from '../../src/components/Slider/SliderView';
+import SliderModel from '../../src/components/Slider/SliderModel';
+import SliderTooltipView from '../../src/components/SliderTooltipView/SliderTooltipView';
 
 describe("tooltip exists on dom and contains 'value'", () => {
   let view: SliderView;

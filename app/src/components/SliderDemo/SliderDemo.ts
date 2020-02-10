@@ -1,5 +1,5 @@
-import SliderPresenter from './Slider/SliderPresenter';
-import { Options, UserOptions } from './Slider/SliderModel';
+import SliderPresenter from '../Slider/SliderPresenter';
+import { Options, UserOptions } from '../Slider/SliderModel';
 
 type Item = {
   wrapper: HTMLDivElement;

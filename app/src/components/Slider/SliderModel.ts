@@ -1,5 +1,5 @@
-import areArraysEqual from '../../functions/common/areArraysEqual';
-import Observer from '../Observer';
+import areArraysEqual from '../../common/areArraysEqual';
+import Observer from '../Observer/Observer';
 
 type HorizontalClasses = {
   'jquery-slider jquery-slider-horizontal': string;

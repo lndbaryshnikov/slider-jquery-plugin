@@ -1,6 +1,6 @@
-import SliderTooltipView from '../SliderTooltipView';
-import SliderLabelsView, { LabelOptions } from '../SliderLabelsView';
-import SliderPluginsFactory from '../SliderPluginsFactory';
+import SliderTooltipView from '../SliderTooltipView/SliderTooltipView';
+import SliderLabelsView, { LabelOptions } from '../SliderLabelsView/SliderLabelsView';
+import SliderPluginsFactory from '../SliderPluginsFactory/SliderPluginsFactory';
 import SliderView from './SliderView';
 import SliderModel, { Options, UserOptions } from './SliderModel';
 

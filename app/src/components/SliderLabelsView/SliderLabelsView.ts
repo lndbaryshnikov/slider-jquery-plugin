@@ -1,5 +1,5 @@
-import getCoords from '../functions/common/getCoords';
-import Observer from './Observer';
+import getCoords from '../../common/getCoords';
+import Observer from '../Observer/Observer';
 
 interface LabelOptions {
   labels: boolean;

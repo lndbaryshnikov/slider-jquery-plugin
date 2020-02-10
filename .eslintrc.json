@@ -34,12 +34,15 @@
     "no-await-in-loop": "off",
     "class-methods-use-this": "off",
 
-    "import/extensions": ["error", "ignorePackages", {
-      "ts": "never",
-      "tsx": "never",
-      "js": "never",
-      "jsx": "never",
-      "mjs": "never"
-    }]
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
   }
 }

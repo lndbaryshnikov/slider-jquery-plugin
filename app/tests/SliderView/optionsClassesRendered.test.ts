@@ -1,7 +1,7 @@
-import getClassList from '../../src/functions/common/getClassList';
-import SliderModel, { HorizontalClasses } from '../../src/MVP modules/Slider/SliderModel';
-import SliderPresenter from '../../src/MVP modules/Slider/SliderPresenter';
-import SliderView from '../../src/MVP modules/Slider/SliderView';
+import getClassList from '../../src/common/getClassList';
+import SliderModel, { HorizontalClasses } from '../../src/components/Slider/SliderModel';
+import SliderPresenter from '../../src/components/Slider/SliderPresenter';
+import SliderView from '../../src/components/Slider/SliderView';
 
 const defaultClasses = SliderModel.getDefaultOptions('horizontal').classes as HorizontalClasses;
 

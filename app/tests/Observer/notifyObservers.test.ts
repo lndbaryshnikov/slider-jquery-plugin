@@ -1,4 +1,4 @@
-import Observer from '../../src/MVP modules/Observer';
+import Observer from '../../src/components/Observer/Observer';
 
 describe('notifyObservers', () => {
   test('notifyObserver works', () => {

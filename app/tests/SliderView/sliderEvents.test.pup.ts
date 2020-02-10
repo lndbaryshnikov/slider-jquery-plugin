@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import puppeteer, { Browser, Page } from 'puppeteer';
 
-import SliderPupPage, { Coords } from './SliderPupPage';
-import { Options } from '../../src/MVP modules/Slider/SliderModel';
-import { JQueryElementWithSlider } from '../../src/jquery-slider';
+import SliderPupPage, { Coords } from '../../src/components/SliderPupPage/SliderPupPage';
+import { Options } from '../../src/components/Slider/SliderModel';
+import { JQueryElementWithSlider } from '../../src/components/jquery-slider';
 
 describe('slider events', () => {
   let browser: Browser;

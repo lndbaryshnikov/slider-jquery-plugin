@@ -1,5 +1,5 @@
-import SliderLabelsView from './SliderLabelsView';
-import SliderTooltipView from './SliderTooltipView';
+import SliderLabelsView from '../SliderLabelsView/SliderLabelsView';
+import SliderTooltipView from '../SliderTooltipView/SliderTooltipView';
 
 export default class SliderPluginsFactory {
   createView(plugin: string): SliderLabelsView | SliderTooltipView {

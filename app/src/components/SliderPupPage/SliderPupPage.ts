@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Browser, ElementHandle, Page } from 'puppeteer';
 
-import { JQueryElementWithSlider } from '../../src/jquery-slider';
-import { Options, RestOptionsToSet, UserOptions } from '../../src/MVP modules/Slider/SliderModel';
+import { JQueryElementWithSlider } from '../jquery-slider';
+import { Options, RestOptionsToSet, UserOptions } from '../Slider/SliderModel';
 
 export interface Coords {
   left: number;

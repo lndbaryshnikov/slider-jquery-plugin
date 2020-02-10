@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import puppeteer, { Browser } from 'puppeteer';
 
-import SliderPupPage from '../SliderView/SliderPupPage';
-import SliderModel from '../../src/MVP modules/Slider/SliderModel';
+import SliderPupPage from '../../src/components/SliderPupPage/SliderPupPage';
+import SliderModel from '../../src/components/Slider/SliderModel';
 
 describe('slider API', () => {
   let browser: Browser;

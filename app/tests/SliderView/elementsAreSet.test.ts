@@ -1,5 +1,5 @@
-import SliderView from '../../src/MVP modules/Slider/SliderView';
-import SliderModel from '../../src/MVP modules/Slider/SliderModel';
+import SliderView from '../../src/components/Slider/SliderView';
+import SliderModel from '../../src/components/Slider/SliderModel';
 
 const defaults = SliderModel.getDefaultOptions('horizontal');
 
