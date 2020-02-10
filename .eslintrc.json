@@ -30,6 +30,14 @@
     "no-alert": "off",
     "no-console": "off",
     "no-return-await": "off",
-    "no-await-in-loop": "off"
+    "no-await-in-loop": "off",
+
+    "import/extensions": ["error", "ignorePackages", {
+      "ts": "never",
+      "tsx": "never",
+      "js": "never",
+      "jsx": "never",
+      "mjs": "never"
+    }]
   }
 }
