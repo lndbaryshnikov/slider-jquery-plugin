@@ -1,11 +1,11 @@
 .slider {
   @at-root {
     .jquery-slider-vertical#{&} {
-      margin: 2em 4em;
+      margin: 2rem 4rem;
     }
 
     .jquery-slider-horizontal#{&} {
-      margin: 3em 3em 4em 2em;
+      margin: 3rem 3rem 4rem 2rem;
     }
   }
 
@@ -41,7 +41,7 @@
 
       &_white {
         background-color: white;
-        border: 1px solid black;
+        border: 0.06rem solid black;
 
         @at-root {
           .jquery-slider-horizontal #{&} {
@@ -51,17 +51,17 @@
 
         .jquery-slider-tooltip {
           background-color: white;
-          border: 1px solid black;
+          border: 0.06rem solid black;
           color: black;
 
           @at-root {
             .jquery-slider-horizontal #{&} {
-              top: -38px;
-              left: -13.25px;
+              top: -2.28rem;
+              left: -0.795rem;
             }
 
             .jquery-slider-vertical #{&} {
-              top: -7px;
+              top: -0.42rem;
             }
           }
 
@@ -69,12 +69,12 @@
             @at-root {
               .jquery-slider-horizontal #{&} {
                 border-color: black transparent transparent transparent;
-                margin-left: -5px;
+                margin-left: -0.3rem;
               }
 
               .jquery-slider-vertical #{&} {
                 border-color: transparent black transparent transparent;
-                margin-top: -5px;
+                margin-top: -0.3rem;
               }
             }
           }
