@@ -4,8 +4,8 @@ import SliderModel from '../components/Slider/SliderModel';
 import SliderView from '../components/Slider/SliderView';
 
 import '../styles/jquery-slider/jquery-slider.scss';
-// eslint-disable-next-line import/extensions
-import './slider-demo.styles.js';
+import './slider-demo.styles';
+import '../assets/favicons/favicons';
 
 (() => {
   const getDiv = (className: string, text?: string): HTMLDivElement => {
