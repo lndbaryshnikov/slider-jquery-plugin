@@ -57,14 +57,6 @@ module.exports = function () {
       new MiniCssExtractPlugin({
         filename: './css/[name].css',
       }),
-      new OptimizeCSSAssetsPlugin({
-        cssProcessorOptions: {
-          map: {
-            inline: false,
-            annotation: true,
-          },
-        },
-      }),
     ],
   };
 };
