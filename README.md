@@ -131,4 +131,4 @@ $ npm run watch
  
 **UML диаграмма архитектуры приложения:**
 
-![UML Diagram](https://github.com/lndbaryshnikov/slider-jquery-plugin/raw/master/jquery-slider-plugin-uml.png)
+![UML Diagram](https://github.com/lndbaryshnikov/slider-jquery-plugin/blob/master/app/src/assets/images/uml.png)
