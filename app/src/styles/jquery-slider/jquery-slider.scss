@@ -15,8 +15,6 @@
 
   &-range {
     background-color: grey;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
     border-radius: 5px;
 
     @at-root {
@@ -56,9 +54,6 @@
     border-radius: 20%;
     line-height: 28px;
     color: whitesmoke;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 
     &::after {
@@ -78,7 +73,7 @@
         top: 100%;
         left: 50%;
         margin-left: -5.5px;
-        border-color: sandybrown transparent transparent transparent;
+        border-color: sandybrown transparent transparent;
       }
     }
 

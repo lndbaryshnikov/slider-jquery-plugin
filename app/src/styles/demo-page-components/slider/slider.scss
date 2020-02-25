@@ -28,7 +28,7 @@
           &::after {
             @at-root {
               .jquery-slider-horizontal #{&} {
-                border-color: grey transparent transparent transparent;
+                border-color: grey transparent transparent;
               }
 
               .jquery-slider-vertical #{&} {
@@ -68,7 +68,7 @@
           &::after {
             @at-root {
               .jquery-slider-horizontal #{&} {
-                border-color: black transparent transparent transparent;
+                border-color: black transparent transparent;
                 margin-left: -0.3rem;
               }
 
