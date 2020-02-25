@@ -233,7 +233,7 @@ class SliderModel {
 
   getOptions(option?: keyof Options, className?: keyof UserOptions['classes']): Options | Options[keyof Options] |
   Options['classes'][keyof Options['classes']] {
-    const errors = SliderModel.errors;
+    const { errors } = SliderModel;
     const areOptionsExist = !!this.options;
 
     if (!areOptionsExist) {
@@ -292,7 +292,7 @@ class SliderModel {
     options?: UserOptions | keyof Options,
     ...restOptions: RestOptionsToSet[]
   ): void | false {
-    const errors = SliderModel.errors;
+    const { errors } = SliderModel;
 
     const areRestOptionsProvided = restOptions.length !== 0;
     const isOptionsArgumentString = typeof options === 'string';
@@ -537,7 +537,7 @@ class SliderModel {
   private _checkOptions(options: Options): boolean {
     const defaults = SliderModel.getDefaultOptions(options.orientation);
 
-    const errors = SliderModel.errors;
+    const { errors } = SliderModel;
 
     const optionsKeys = Object.keys(options);
     const defaultOptionsKeys = Object.keys(defaults);
