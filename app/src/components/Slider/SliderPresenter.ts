@@ -5,48 +5,48 @@ import SliderView from './SliderView';
 import SliderModel, { Options, UserOptions } from './SliderModel';
 
 class SliderPresenter {
-  private _data: { setUp: boolean; rendered: boolean } = {
+  private data: { setUp: boolean; rendered: boolean } = {
     setUp: false,
     rendered: false,
   };
 
-  private _pluginsFactory = new SliderPluginsFactory();
+  private pluginsFactory = new SliderPluginsFactory();
 
-  private _plugins = {
+  private plugins = {
     tooltipView: {
-      first: this._pluginsFactory.createView('tooltip') as SliderTooltipView,
-      second: this._pluginsFactory.createView('tooltip') as SliderTooltipView,
+      first: this.pluginsFactory.createView('tooltip') as SliderTooltipView,
+      second: this.pluginsFactory.createView('tooltip') as SliderTooltipView,
     },
-    labelsView: this._pluginsFactory.createView('labels') as SliderLabelsView,
+    labelsView: this.pluginsFactory.createView('labels') as SliderLabelsView,
   };
 
-  constructor(private _view: SliderView, private _model: SliderModel) {
-    this._model.whenOptionsSet(this.setOptionsToViewCallback());
-    this._model.whenOptionsAreIncorrect(SliderPresenter.showErrorMessageCallback());
-    this._view.whenValueChanged(this.validateValueCallback());
-    this._model.whenValueUpdated(this.renderHandlePositionCallback());
+  constructor(private viewInstance: SliderView, private modelInstance: SliderModel) {
+    this.modelInstance.whenOptionsSet(this.setOptionsToViewCallback());
+    this.modelInstance.whenOptionsAreIncorrect(SliderPresenter.showErrorMessageCallback());
+    this.viewInstance.whenValueChanged(this.validateValueCallback());
+    this.modelInstance.whenValueUpdated(this.renderHandlePositionCallback());
 
-    this._plugins.labelsView.whenUserClicksOnLabel((middleCoordinate: number) => {
-      this._view.refreshValue(middleCoordinate);
+    this.plugins.labelsView.whenUserClicksOnLabel((middleCoordinate: number) => {
+      this.viewInstance.refreshValue(middleCoordinate);
     });
   }
 
   get view(): SliderView {
-    return this._view;
+    return this.viewInstance;
   }
 
   get model(): SliderModel {
-    return this._model;
+    return this.modelInstance;
   }
 
   initialize(root: HTMLElement, userOptions?: UserOptions): void {
-    if (this._data.rendered) {
+    if (this.data.rendered) {
       throw new Error('Slider is already initialized');
     }
 
-    if (!this._data.setUp) this.setOptions(userOptions);
+    if (!this.data.setUp) this.setOptions(userOptions);
 
-    if (!this._data.rendered) this.render(root);
+    if (!this.data.rendered) this.render(root);
   }
 
   setOptions(
@@ -54,9 +54,9 @@ class SliderPresenter {
     ...restOptions:
     (UserOptions[keyof UserOptions] | UserOptions['classes'][keyof UserOptions['classes']])[]
   ): void {
-    this._model.setOptions(options, ...restOptions);
+    this.modelInstance.setOptions(options, ...restOptions);
 
-    this._data.setUp = true;
+    this.data.setUp = true;
   }
 
   getOptions(
@@ -64,71 +64,71 @@ class SliderPresenter {
     className?: keyof UserOptions['classes'],
   ): Options | Options[keyof Options] |
     Options['classes'][keyof Options['classes']] {
-    if (!this._data.setUp) {
+    if (!this.data.setUp) {
       throw new Error(SliderModel.optionsErrors.notSet);
     }
 
-    return this._model.getOptions(option, className);
+    return this.modelInstance.getOptions(option, className);
   }
 
   render(root: HTMLElement): void {
-    if (!this._data.setUp) {
+    if (!this.data.setUp) {
       throw new Error("Slider isn't setUp");
     }
-    if (this._data.rendered) {
+    if (this.data.rendered) {
       throw new Error('Slider is already rendered');
     }
 
-    this._view.render(root);
+    this.viewInstance.render(root);
 
-    const firstTooltipView = this._plugins.tooltipView.first;
-    const secondTooltipView = this._plugins.tooltipView.second;
-    const { labelsView } = this._plugins;
+    const firstTooltipView = this.plugins.tooltipView.first;
+    const secondTooltipView = this.plugins.tooltipView.second;
+    const { labelsView } = this.plugins;
 
     if (labelsView.state.isSet) {
-      this._view.renderPlugin('labels', labelsView);
+      this.viewInstance.renderPlugin('labels', labelsView);
     }
 
     if (firstTooltipView.state.isSet) {
-      this._view.renderPlugin('tooltip', firstTooltipView, 'first');
+      this.viewInstance.renderPlugin('tooltip', firstTooltipView, 'first');
     }
 
     if (secondTooltipView.state.isSet) {
-      this._view.renderPlugin('tooltip', secondTooltipView, 'second');
+      this.viewInstance.renderPlugin('tooltip', secondTooltipView, 'second');
     }
 
-    this._data.rendered = true;
+    this.data.rendered = true;
   }
 
   destroy(): void {
-    if (!this._data.setUp) {
+    if (!this.data.setUp) {
       throw new Error("Slider isn't initialized yet");
     }
 
-    if (this._data.rendered !== false) this._view.cleanDom();
+    if (this.data.rendered !== false) this.viewInstance.cleanDom();
 
-    this._view.destroy();
-    this._model.destroy();
+    this.viewInstance.destroy();
+    this.modelInstance.destroy();
 
-    this._data.setUp = false;
-    this._data.rendered = false;
+    this.data.setUp = false;
+    this.data.rendered = false;
   }
 
   off(): void {
-    if (!this._data.rendered) {
+    if (!this.data.rendered) {
       throw new Error("Slider isn't rendered");
     }
 
-    this._view.cleanDom();
+    this.viewInstance.cleanDom();
 
-    this._data.rendered = false;
+    this.data.rendered = false;
   }
 
   setOptionsToViewCallback() {
     return (): void => {
-      const options = this._model.getOptions() as Options;
+      const options = this.modelInstance.getOptions() as Options;
 
-      this._view.setOptions(options);
+      this.viewInstance.setOptions(options);
 
       this._toggleTooltip(options);
       this._toggleLabels(options);
@@ -143,23 +143,23 @@ class SliderPresenter {
 
   validateValueCallback() {
     return (valueData: [number, 'first' | 'second']): void => {
-      this._model.refreshValue(valueData);
+      this.modelInstance.refreshValue(valueData);
     };
   }
 
   renderHandlePositionCallback() {
     return (): void => {
-      const options = this._model.getOptions() as Options;
+      const options = this.modelInstance.getOptions() as Options;
 
       const { value } = options;
       const { tooltip } = options;
       const { range } = options;
       const { change } = options;
 
-      const firstTooltipView = this._plugins.tooltipView.first;
-      const secondTooltipView = this._plugins.tooltipView.second;
+      const firstTooltipView = this.plugins.tooltipView.first;
+      const secondTooltipView = this.plugins.tooltipView.second;
 
-      this._view.updateHandlePosition(value);
+      this.viewInstance.updateHandlePosition(value);
 
       if (firstTooltipView.state.isRendered) {
         firstTooltipView.setText(range !== true ? value as number : (value as number[])[0],
@@ -178,8 +178,8 @@ class SliderPresenter {
   }
 
   private _toggleTooltip(options: Options): void {
-    const firstTooltipView = this._plugins.tooltipView.first;
-    const secondTooltipView = this._plugins.tooltipView.second;
+    const firstTooltipView = this.plugins.tooltipView.first;
+    const secondTooltipView = this.plugins.tooltipView.second;
 
     if (options.tooltip) {
       if (options.range !== true) {
@@ -193,24 +193,24 @@ class SliderPresenter {
           typeof options.tooltip === 'function' ? options.tooltip : null);
       }
 
-      if (this._data.rendered) {
-        this._view.renderPlugin('tooltip', firstTooltipView, 'first');
+      if (this.data.rendered) {
+        this.viewInstance.renderPlugin('tooltip', firstTooltipView, 'first');
 
         if (options.range === true) {
-          this._view.renderPlugin('tooltip', secondTooltipView, 'second');
+          this.viewInstance.renderPlugin('tooltip', secondTooltipView, 'second');
         }
       }
     } else if (firstTooltipView.state.isRendered) {
-      this._view.destroyPlugin('tooltip', firstTooltipView);
+      this.viewInstance.destroyPlugin('tooltip', firstTooltipView);
 
       if (options.range === true && secondTooltipView.state.isRendered) {
-        this._view.destroyPlugin('tooltip', secondTooltipView);
+        this.viewInstance.destroyPlugin('tooltip', secondTooltipView);
       }
     }
   }
 
   private _toggleLabels(options: Options): void {
-    const { labelsView } = this._plugins;
+    const { labelsView } = this.plugins;
 
     if (options.labels || options.pips) {
       const labels = typeof options.labels === 'function' ? true : options.labels;
@@ -231,9 +231,9 @@ class SliderPresenter {
       labelsView.setOptions(labelsOptions);
 
 
-      if (this._data.rendered) this._view.renderPlugin('labels', labelsView);
+      if (this.data.rendered) this.viewInstance.renderPlugin('labels', labelsView);
     } else if (labelsView.state.isRendered) {
-      this._view.destroyPlugin('labels', labelsView);
+      this.viewInstance.destroyPlugin('labels', labelsView);
     }
   }
 }

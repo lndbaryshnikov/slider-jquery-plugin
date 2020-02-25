@@ -1,30 +1,30 @@
 import { ValueFunction } from '../Slider/SliderModel';
 // TODO: add possibility to add custom classes
 export default class SliderTooltipView {
-  private _text: string | number | null = null;
+  private tooltipText: string | number | null = null;
 
-  private _html: HTMLDivElement;
+  private tooltipHtml: HTMLDivElement;
 
-  private _orientation: 'horizontal' | 'vertical' | null = null;
+  private orientation: 'horizontal' | 'vertical' | null = null;
 
-  private _root: HTMLElement | null = null;
+  private root: HTMLElement | null = null;
 
   constructor() {
     this._create();
   }
 
   get html(): HTMLDivElement {
-    return this._html;
+    return this.tooltipHtml;
   }
 
   get text(): string | number | null {
-    return this._text;
+    return this.tooltipText;
   }
 
   get state(): { isRendered: boolean; isSet: boolean } {
     return {
-      isRendered: !!this._root,
-      isSet: !!(this._orientation && this._text),
+      isRendered: !!this.root,
+      isSet: !!(this.orientation && this.tooltipText),
     };
   }
 
@@ -38,44 +38,44 @@ export default class SliderTooltipView {
   }
 
   render(root: HTMLElement): void {
-    this._root = root;
+    this.root = root;
 
-    this._root.append(this._html);
+    this.root.append(this.tooltipHtml);
   }
 
   setText(text: number, func?: ValueFunction): void {
     if (func) {
-      this._text = func(text);
-    } else this._text = text;
+      this.tooltipText = func(text);
+    } else this.tooltipText = text;
 
-    this._html.innerHTML = String(this._text);
+    this.tooltipHtml.innerHTML = String(this.tooltipText);
   }
 
   setOrientation(orientation: 'horizontal' | 'vertical'): void {
-    this._orientation = orientation;
+    this.orientation = orientation;
 
     this._setOrientationClass();
   }
 
   cleanTextField(): void {
-    this._text = null;
+    this.tooltipText = null;
 
-    this._html.innerHTML = '';
+    this.tooltipHtml.innerHTML = '';
   }
 
   remove(): void {
-    this._root.removeChild(this._html);
+    this.root.removeChild(this.tooltipHtml);
 
-    this._root = null;
+    this.root = null;
   }
 
   destroy(): void {
     if (this.state.isRendered) this.remove();
     this.cleanTextField();
-    this._orientation = null;
-    this._root = null;
+    this.orientation = null;
+    this.root = null;
 
-    this._html.className = 'jquery-slider-tooltip';
+    this.tooltipHtml.className = 'jquery-slider-tooltip';
   }
 
   private _create(): void {
@@ -83,16 +83,16 @@ export default class SliderTooltipView {
     tooltip.setAttribute('class', 'jquery-slider-tooltip');
     tooltip.style.position = 'absolute';
 
-    this._html = tooltip;
+    this.tooltipHtml = tooltip;
   }
 
   private _setOrientationClass(): void {
-    this._html.setAttribute('class', 'jquery-slider-tooltip');
+    this.tooltipHtml.setAttribute('class', 'jquery-slider-tooltip');
 
-    if (this._orientation === 'horizontal') {
-      this._html.classList.add('jquery-slider-tooltip-horizontal');
-    } else if (this._orientation === 'vertical') {
-      this._html.classList.add('jquery-slider-tooltip-vertical');
+    if (this.orientation === 'horizontal') {
+      this.tooltipHtml.classList.add('jquery-slider-tooltip-horizontal');
+    } else if (this.orientation === 'vertical') {
+      this.tooltipHtml.classList.add('jquery-slider-tooltip-vertical');
     }
   }
 }

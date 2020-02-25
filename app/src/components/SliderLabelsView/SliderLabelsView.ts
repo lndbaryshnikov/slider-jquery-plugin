@@ -12,25 +12,25 @@ interface LabelOptions {
 }
 
 export default class SliderLabelsView {
-  private _labels: HTMLDivElement[];
+  private sliderLabels: HTMLDivElement[];
 
-  private _options: LabelOptions;
+  private options: LabelOptions;
 
-  private _root: HTMLElement | null = null;
+  private root: HTMLElement | null = null;
 
-  private _html: HTMLDivElement | null = null;
+  private labelHtml: HTMLDivElement | null = null;
 
-  private _labelClickedSubject = new Observer();
+  private labelClickedSubject = new Observer();
 
   get state(): { isRendered: boolean; isSet: boolean } {
     return {
-      isRendered: !!(this._root && this._html),
-      isSet: !!(this._options && this._labels),
+      isRendered: !!(this.root && this.labelHtml),
+      isSet: !!(this.options && this.sliderLabels),
     };
   }
 
   get labels(): HTMLDivElement[] {
-    return this._labels;
+    return this.sliderLabels;
   }
 
   setOptions(options: LabelOptions): void {
@@ -39,15 +39,15 @@ export default class SliderLabelsView {
     let rootSnapshot: HTMLElement;
 
     if (this.state.isRendered) {
-      rootSnapshot = this._root;
+      rootSnapshot = this.root;
       this.destroy();
     }
 
-    this._options = options;
+    this.options = options;
 
     this._createLabels();
     this._setClasses();
-    if (this._options.labels) this._setText();
+    if (this.options.labels) this._setText();
     this._setClickHandler();
 
     if (rootSnapshot) {
@@ -56,9 +56,9 @@ export default class SliderLabelsView {
   }
 
   render(root: HTMLElement): void {
-    this._root = root;
+    this.root = root;
 
-    const { orientation } = this._options;
+    const { orientation } = this.options;
     const scaleProperty = orientation === 'horizontal' ? 'width' : 'height';
     const labelProperty = orientation === 'horizontal' ? 'left' : 'bottom';
 
@@ -74,16 +74,16 @@ export default class SliderLabelsView {
 
     let currentSize = 0;
 
-    this._root.append(scale);
+    this.root.append(scale);
 
-    this._labels.forEach((label) => {
+    this.sliderLabels.forEach((label) => {
       scale.append(label);
 
       const labelPropertyValue = getCoords(label)[scaleProperty];
       // eslint-disable-next-line no-param-reassign
       label.style[labelProperty] = `${currentSize - labelPropertyValue / 2}px`;
 
-      if (this._options.pips) {
+      if (this.options.pips) {
         const pip = label.children[0] as HTMLElement;
         const pipPropertyValue = getCoords(pip)[scaleProperty];
 
@@ -93,24 +93,24 @@ export default class SliderLabelsView {
       currentSize += interval;
     });
 
-    this._html = scale;
+    this.labelHtml = scale;
   }
 
   remove(): void {
-    this._root.removeChild(this._html);
+    this.root.removeChild(this.labelHtml);
 
-    this._root = null;
-    this._html = null;
+    this.root = null;
+    this.labelHtml = null;
   }
 
   destroy(): void {
     if (this.state.isRendered) this.remove();
-    this._labels = null;
-    this._options = null;
+    this.sliderLabels = null;
+    this.options = null;
   }
 
   whenUserClicksOnLabel(callback: (middleCoordinate: number) => void): void {
-    this._labelClickedSubject.addObserver((_middleCoordinate: number) => {
+    this.labelClickedSubject.addObserver((_middleCoordinate: number) => {
       callback(_middleCoordinate);
     });
   }
@@ -118,11 +118,11 @@ export default class SliderLabelsView {
   private _createLabels(): void {
     const labels: HTMLDivElement[] = [];
 
-    for (let value = this._options.min; value <= this._options.max; value += this._options.step) {
+    for (let value = this.options.min; value <= this.options.max; value += this.options.step) {
       labels.push(this._getLabel());
     }
 
-    this._labels = labels;
+    this.sliderLabels = labels;
   }
 
   private _getLabel(): HTMLDivElement {
@@ -135,21 +135,21 @@ export default class SliderLabelsView {
     label.style.position = 'absolute';
     pip.style.position = 'absolute';
 
-    if (this._options.pips) label.append(pip);
+    if (this.options.pips) label.append(pip);
 
     return label;
   }
 
   private _setClasses(): void {
-    const { orientation } = this._options;
+    const { orientation } = this.options;
 
-    if (!(this._options.labels) && !(this._options.pips)) return;
+    if (!(this.options.labels) && !(this.options.pips)) return;
 
-    this._labels.forEach((label) => {
+    this.sliderLabels.forEach((label) => {
       label.setAttribute('class', 'jquery-slider-label');
       label.classList.add(`jquery-slider-label-${orientation}`);
 
-      if (this._options.pips) {
+      if (this.options.pips) {
         const pip = label.children[0];
 
         pip.setAttribute('class', 'jquery-slider-pip');
@@ -159,16 +159,16 @@ export default class SliderLabelsView {
   }
 
   private _setText(): void {
-    if (!this._options.labels) return;
+    if (!this.options.labels) return;
 
-    const func = this._options.valueFunc;
+    const func = this.options.valueFunc;
 
     for (
-      let i = 0, value = this._options.min;
-      i < this._labels.length;
-      i += 1, value += this._options.step
+      let i = 0, value = this.options.min;
+      i < this.sliderLabels.length;
+      i += 1, value += this.options.step
     ) {
-      const label = this._labels[i];
+      const label = this.sliderLabels[i];
 
       if (func) {
         label.innerHTML += String(func(value));
@@ -177,22 +177,22 @@ export default class SliderLabelsView {
   }
 
   private _getInterval(scaleSize: number): number {
-    const range = this._options.max - this._options.min;
-    const amount = range / this._options.step;
+    const range = this.options.max - this.options.min;
+    const amount = range / this.options.step;
 
     return scaleSize / amount;
   }
 
   private _setClickHandler(): void {
-    this._labels.forEach((label) => {
+    this.sliderLabels.forEach((label) => {
       label.addEventListener('click', () => {
         const labelCoords = getCoords(label);
 
-        const middle = this._options.orientation === 'horizontal'
+        const middle = this.options.orientation === 'horizontal'
           ? labelCoords.left + labelCoords.width / 2
           : labelCoords.top + labelCoords.height / 2;
 
-        this._labelClickedSubject.notifyObservers(middle);
+        this.labelClickedSubject.notifyObservers(middle);
       });
     });
   }

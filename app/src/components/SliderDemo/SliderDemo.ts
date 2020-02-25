@@ -29,21 +29,21 @@ interface ConfigPanel {
 }
 
 export default class SliderDemo {
-  private _configPanel: ConfigPanel;
+  private configPanel: ConfigPanel;
 
-  private _wrapper: HTMLDivElement;
+  private wrapper: HTMLDivElement;
 
-  constructor(private _slider: SliderPresenter, options: UserOptions, private _root: HTMLElement) {
-    this._wrapper = document.createElement('div');
-    this._wrapper.setAttribute('class', 'slider-demo');
+  constructor(private slider: SliderPresenter, options: UserOptions, private root: HTMLElement) {
+    this.wrapper = document.createElement('div');
+    this.wrapper.setAttribute('class', 'slider-demo');
 
-    this._slider.setOptions(options);
+    this.slider.setOptions(options);
 
     this._createPanel();
 
-    this._slider.setOptions('change', (value: number | number[]) => {
-      const { firstInput } = this._configPanel.value;
-      const { secondInput } = this._configPanel.value;
+    this.slider.setOptions('change', (value: number | number[]) => {
+      const { firstInput } = this.configPanel.value;
+      const { secondInput } = this.configPanel.value;
 
       if (Array.isArray(value)) {
         firstInput.value = String(value[0]);
@@ -57,15 +57,15 @@ export default class SliderDemo {
   }
 
   render(): void {
-    this._root.append(this._wrapper);
+    this.root.append(this.wrapper);
 
     const sliderWrapper = document.createElement('div');
     sliderWrapper.setAttribute('class', 'slider-demo__slider');
 
-    this._wrapper.append(sliderWrapper);
-    this._slider.render(sliderWrapper);
+    this.wrapper.append(sliderWrapper);
+    this.slider.render(sliderWrapper);
 
-    this._wrapper.append(this._configPanel.wrapper);
+    this.wrapper.append(this.configPanel.wrapper);
   }
 
   private _createPanel(): void {
@@ -90,7 +90,7 @@ export default class SliderDemo {
       return element;
     };
 
-    const sliderSettings = this._slider.getOptions() as Options;
+    const sliderSettings = this.slider.getOptions() as Options;
 
     const getItem = <T extends 'input' | 'select' | 'value'>(
       type: T,
@@ -162,7 +162,7 @@ export default class SliderDemo {
       }
     };
 
-    this._configPanel = {
+    this.configPanel = {
       wrapper: getPanelBlockDiv(),
       min: getItem('input', 'Min:', 'min'),
       max: getItem('input', 'Max:', 'max'),
@@ -194,11 +194,11 @@ export default class SliderDemo {
       ),
     };
 
-    const items = Object.values(this._configPanel)
+    const items = Object.values(this.configPanel)
       .slice(1)
       .map((item: SelectItem | ValueItem | InputItem) => item.wrapper);
 
-    this._configPanel.wrapper.append(...items);
+    this.configPanel.wrapper.append(...items);
   }
 
   private _refreshSlider(
@@ -206,15 +206,15 @@ export default class SliderDemo {
     value?: string | number | boolean | number[],
   ): void {
     if (typeof option === 'object') {
-      this._slider.setOptions(option);
+      this.slider.setOptions(option);
       return;
     }
 
-    this._slider.setOptions(option, value);
+    this.slider.setOptions(option, value);
   }
 
   private _addHandlers(): void {
-    const elements = this._configPanel;
+    const elements = this.configPanel;
 
     Object.keys(elements).forEach((option: keyof ConfigPanel) => {
       if (Object.prototype.hasOwnProperty.call(elements, option)
@@ -229,7 +229,7 @@ export default class SliderDemo {
               this._checkAndTrimPanel();
 
               const inputValue = Number(input.value);
-              const lastSliderSettings = this._slider.getOptions() as Options;
+              const lastSliderSettings = this.slider.getOptions() as Options;
               const lastSliderValue = lastSliderSettings[optionCopy];
 
               try {
@@ -251,7 +251,7 @@ export default class SliderDemo {
               const secondInputValue = typeof Number(valueObject.secondInput.value) === 'number'
                 ? Number(valueObject.secondInput.value) : null;
 
-              const lastOptions = this._slider.getOptions() as Options;
+              const lastOptions = this.slider.getOptions() as Options;
 
               const value = !secondInputValue ? [firstInputValue]
                 : [firstInputValue, secondInputValue];
@@ -261,13 +261,13 @@ export default class SliderDemo {
                 value.push(lastOptions.max);
                 range = true;
 
-                this._configPanel.value.secondInput.value = String(lastOptions.max);
+                this.configPanel.value.secondInput.value = String(lastOptions.max);
               }
 
               if (value.length === 2 && lastOptions.range !== true) {
                 range = true;
 
-                this._configPanel.range.select.value = 'true';
+                this.configPanel.range.select.value = 'true';
               }
 
               try {
@@ -285,7 +285,7 @@ export default class SliderDemo {
                   valueObject.secondInput.value = '';
                 }
 
-                this._configPanel.range.select.value = String(lastOptions.range);
+                this.configPanel.range.select.value = String(lastOptions.range);
               }
             };
 
@@ -301,7 +301,7 @@ export default class SliderDemo {
             const selectValue = select.value === 'true'
               ? true : ifFalse;
 
-            const lastOptions = this._slider.getOptions() as Options;
+            const lastOptions = this.slider.getOptions() as Options;
 
             let { value } = lastOptions;
 
@@ -309,13 +309,13 @@ export default class SliderDemo {
               if (selectValue === true && !Array.isArray(lastOptions.value)) {
                 value = [lastOptions.value, lastOptions.max];
 
-                this._configPanel.value.secondInput.value = String(lastOptions.max);
+                this.configPanel.value.secondInput.value = String(lastOptions.max);
               }
 
               if (selectValue !== true && Array.isArray(lastOptions.value)) {
                 [value] = lastOptions.value;
 
-                this._configPanel.value.secondInput.value = '';
+                this.configPanel.value.secondInput.value = '';
               }
             }
 
@@ -327,7 +327,7 @@ export default class SliderDemo {
             } catch (e) {
               alert(e);
 
-              this._configPanel.value.secondInput.value = String(
+              this.configPanel.value.secondInput.value = String(
                 (lastOptions.value as number[])[1]
                   ? (lastOptions.value as number[])[1] : '',
               );
@@ -345,7 +345,7 @@ export default class SliderDemo {
 
     inputObjectsNames.forEach((objectName) => {
       if (objectName === 'value') {
-        const valueObject = this._configPanel[objectName];
+        const valueObject = this.configPanel[objectName];
 
         const firstValueTrimmed = valueObject.firstInput.value.trim();
         const secondValueTrimmed = valueObject.secondInput.value.trim();
@@ -361,7 +361,7 @@ export default class SliderDemo {
         valueObject.firstInput.value = firstValueTrimmed;
         valueObject.secondInput.value = secondValueTrimmed;
       } else {
-        const valueTrimmed = (this._configPanel[objectName] as InputItem).input.value.trim();
+        const valueTrimmed = (this.configPanel[objectName] as InputItem).input.value.trim();
 
         if (typeof Number(valueTrimmed) !== 'number') {
           throw new Error(`${objectName} should be number`);
