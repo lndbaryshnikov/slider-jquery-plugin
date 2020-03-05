@@ -14,9 +14,7 @@
     "server": "webpack-dev-server --mode development --open --env development",
     "deploy": "gh-pages -d dist",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx app",
-    "pug-lint": "pug-lint --config .pug-lintrc app",
-    "stylelint": "stylelint --config .stylelintrc \"app/src/**/*.scss\"",
-    "stylelint-fix": "stylelint --config .stylelintrc \"app/src/**/*.scss\" --fix"
+    "pug-lint": "pug-lint --config .pug-lintrc app"
   },
   "repository": {
     "type": "git",
@@ -48,8 +46,6 @@
     "pug-lint": "^2.6.0",
     "puppeteer": "^1.20.0",
     "sinon": "^7.4.2",
-    "stylelint": "^13.2.0",
-    "stylelint-config-sass-guidelines": "^7.0.0",
     "ts-jest": "^24.0.2",
     "webpack-dev-server": "^3.2.1"
   },
