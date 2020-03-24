@@ -21,8 +21,8 @@ const PATHS = {
 const common = merge([
   {
     entry: {
-      'jquery-slider': `${PATHS.src}/components/jquery-slider.ts`,
-      'jquery-slider-demo': `${PATHS.src}/slider-demo/slider-demo.ts`,
+      'jquery-slider': `${PATHS.src}/plugin/jquery-slider.ts`,
+      'jquery-slider-demo': `${PATHS.src}/pages/slider-demo/slider-demo.ts`,
     },
 
     output: {

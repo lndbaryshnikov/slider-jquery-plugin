@@ -1,4 +1,4 @@
-import SliderModel, { Options } from '../../src/components/Slider/SliderModel';
+import SliderModel, { Options } from '../../src/plugin/Slider/SliderModel';
 
 test("Model's setOptions deletes whitespaces from classes", () => {
   const model = new SliderModel();

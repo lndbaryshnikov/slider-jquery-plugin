@@ -1,5 +1,5 @@
-import SliderView from '../../src/components/Slider/SliderView';
-import SliderModel from '../../src/components/Slider/SliderModel';
+import SliderView from '../../src/plugin/Slider/SliderView';
+import SliderModel from '../../src/plugin/Slider/SliderModel';
 
 describe("handles rendered depending on 'range'", () => {
   let view: SliderView;

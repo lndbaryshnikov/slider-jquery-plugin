@@ -1,4 +1,4 @@
-import Observer from '../../src/components/Observer/Observer';
+import Observer from '../../src/plugin/Observer/Observer';
 
 describe('addObserver method', () => {
   test('addObserver method works', () => {

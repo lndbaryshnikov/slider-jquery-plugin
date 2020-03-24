@@ -1,11 +1,11 @@
-import SliderDemo from '../components/SliderDemo/SliderDemo';
-import SliderPresenter from '../components/Slider/SliderPresenter';
-import SliderModel from '../components/Slider/SliderModel';
-import SliderView from '../components/Slider/SliderView';
+import SliderDemo from '../../plugin/SliderDemo/SliderDemo';
+import SliderPresenter from '../../plugin/Slider/SliderPresenter';
+import SliderModel from '../../plugin/Slider/SliderModel';
+import SliderView from '../../plugin/Slider/SliderView';
 
-import '../styles/jquery-slider/jquery-slider.scss';
+import '../../styles/jquery-slider/jquery-slider.scss';
 import './slider-demo.styles';
-import '../assets/favicons/favicons';
+import '../../assets/favicons/favicons';
 
 (() => {
   const getDiv = (className: string, text?: string): HTMLDivElement => {

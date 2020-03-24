@@ -1,4 +1,4 @@
-import SliderLabelsView, { LabelOptions } from '../../src/components/SliderLabelsView/SliderLabelsView';
+import SliderLabelsView, { LabelOptions } from '../../src/plugin/SliderLabelsView/SliderLabelsView';
 
 const extractValue = (value: string) => value.replace(/\d+px/, '')
 // eslint-disable-next-line no-useless-escape

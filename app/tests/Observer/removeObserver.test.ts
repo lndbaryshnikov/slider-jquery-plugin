@@ -1,4 +1,4 @@
-import Observer from '../../src/components/Observer/Observer';
+import Observer from '../../src/plugin/Observer/Observer';
 
 describe('removeObserver method', () => {
   it('removeObserver method works', () => {

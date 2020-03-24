@@ -1,6 +1,6 @@
-import SliderPresenter from '../../src/components/Slider/SliderPresenter';
-import SliderView from '../../src/components/Slider/SliderView';
-import SliderModel from '../../src/components/Slider/SliderModel';
+import SliderPresenter from '../../src/plugin/Slider/SliderPresenter';
+import SliderView from '../../src/plugin/Slider/SliderView';
+import SliderModel from '../../src/plugin/Slider/SliderModel';
 
 describe('initialize exceptions', () => {
   let slider: SliderPresenter;
