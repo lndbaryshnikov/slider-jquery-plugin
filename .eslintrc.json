@@ -6,24 +6,32 @@
     "jest/globals": true,
     "jquery": true
   },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint", 
+    "jest",
+    "import",
+    "fsd"
+  ],
   "extends": [
+    "eslint:recommended",
     "airbnb",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:fsd/all"
   ],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "ecmaVersion": 10,
+    "project": [
+      "./tsconfig.json"
+    ],
+    "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "jest"],
   "rules": {
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/indent": ["error", 2],
-    "@typescript-eslint/no-var-requires": "off",
-
     "linebreak-style": "off",
     "no-underscore-dangle": "off",
     "consistent-return": "off",
@@ -33,7 +41,17 @@
     "no-await-in-loop": "off",
     "class-methods-use-this": "off",
     "no-new": "off",
+    "func-names": "off",
+    "max-len": ["error", { "code": 100 }],
+    "arrow-body-style": "off",
 
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/indent": ["error", 2],
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-empty-function": "off",
+
+    "import/no-cycle": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -44,5 +62,12 @@
         "tsx": "never"
       }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }
