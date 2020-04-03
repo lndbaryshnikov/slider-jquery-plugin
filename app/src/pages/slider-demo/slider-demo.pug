@@ -1,3 +1,5 @@
+include ../../components/slider-panel/slider-panel
+
 doctype html
 html
   head
@@ -18,5 +20,68 @@ html
     title Slider Test Page
 
 body
+  .header slider-jquery-plugin demo page
+  .samples-wrapper
+    +slider-panel({
+      sliderOptions: {
+        range: 'min',
+        labels: true,
+        tooltip: true,
+        max: 10,
+        value: 3,
+        classes: {
+          'jquery-slider': 'slider',
+        },
+      }
+    })
+
+    +slider-panel({
+      sliderOptions: {
+        range: true,
+        orientation: 'vertical',
+        value: [3, 8],
+        max: 10,
+        labels: true,
+        tooltip: true,
+        classes: {
+          'jquery-slider': 'slider',
+          'jquery-slider-range': 'slider__range_color_orange',
+          'jquery-slider-handle': 'slider__handle_color_gray',
+        }
+      }
+    })
+
+    +slider-panel({
+      sliderOptions: {
+        range: 'max',
+        tooltip: true,
+        max: 8,
+        value: 5,
+        labels: false,
+        classes: {
+          'jquery-slider': 'slider',
+          'jquery-slider-handle': 'slider__handle_color_white',
+        },
+      }
+    })
+
+    +slider-panel({
+      sliderOptions: {
+        range: 'min',
+        tooltip: true,
+        max: 20,
+        value: 10,
+        labels: false,
+        pips: true,
+        classes: {
+          'jquery-slider': 'slider',
+          'jquery-slider-range': 'slider__range_color_orange',
+          'jquery-slider-handle': 'slider__handle_color_white',
+        },
+      }
+    })
+
+  .sign Leonid Baryshnikov (GitHub: https://github.com/lndbaryshnikov)
+
   script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js")
   script(type="text/javascript", src="./js/jquery-slider.js")

@@ -1,0 +1,10 @@
+include ../slider/slider
+include ../config-panel/config-panel
+
+mixin slider-panel({ configPanelOptions, sliderOptions })
+  .slider-panel.js-slider-panel
+    .slider-panel__slider
+      +slider(sliderOptions)
+    .slider-panel__config-panel
+      +config-panel(configPanelOptions)
+    

@@ -2,7 +2,7 @@ import SliderModel, { Options, RestOptionsToSet, UserOptions } from './Slider/Sl
 import SliderView from './Slider/SliderView';
 import SliderPresenter from './Slider/SliderPresenter';
 
-import '../styles/jquery-slider/jquery-slider.scss';
+import './jquery-slider.scss';
 
 export interface JQueryElementWithSlider extends JQuery<HTMLElement> {
   slider: (method?: UserOptions | keyof SliderMethods,

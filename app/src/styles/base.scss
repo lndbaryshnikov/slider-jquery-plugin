@@ -6,3 +6,22 @@ html {
   color: black;
   background-color: #fff;
 }
+
+.header {
+  margin: 1.2rem;
+  font-size: 3rem;
+  text-align: center;
+  user-select: none;
+}
+
+.samples-wrapper {
+  margin: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.sign {
+  text-align: center;
+  user-select: none;
+}
