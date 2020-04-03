@@ -48,16 +48,11 @@ const common = merge([
   favicons('./app/src/images/favicon.png'),
 ]);
 
-
 module.exports = function (env) {
   if (env === 'production') {
     return common;
   }
   if (env === 'development') {
-    return merge([
-      {},
-      common,
-      devserver(),
-    ]);
+    return merge([{}, common, devserver()]);
   }
 };

@@ -14,14 +14,14 @@ describe('addObserver method', () => {
     const test = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      (new Observer()).addObserver('Hello!');
+      new Observer().addObserver('Hello!');
     };
 
     expect(test).toThrow('Observer must be a function');
   });
 
   test('throws an error when observer already in the list', () => {
-    const createFuncForTestErrors = (
+    const makeFuncForTestErrors = (
       firstFunc: Function,
       secondFunc: Function = firstFunc,
       // eslint-disable-next-line func-names
@@ -32,13 +32,23 @@ describe('addObserver method', () => {
       observer.addObserver(secondFunc);
     };
 
-    expect(createFuncForTestErrors(() => { console.log('hello'); },
-      () => {})).not.toThrow('Observer already in the list');
+    expect(
+      makeFuncForTestErrors(
+        () => {
+          console.log('hello');
+        },
+        () => {},
+      ),
+    ).not.toThrow('Observer already in the list');
 
-    expect(createFuncForTestErrors(() => { console.log('hello'); }))
-      .toThrow('Observer already in the list');
+    expect(
+      makeFuncForTestErrors(() => {
+        console.log('hello');
+      }),
+    ).toThrow('Observer already in the list');
 
-    expect(createFuncForTestErrors(() => {}))
-      .toThrow('Observer already in the list');
+    expect(makeFuncForTestErrors(() => {})).toThrow(
+      'Observer already in the list',
+    );
   });
 });

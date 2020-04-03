@@ -3,7 +3,10 @@ import Observer from '../../plugin/Observer/Observer';
 
 type ConfigItemType = 'input' | 'select' | 'range';
 type ConfigItemValue<T extends ConfigItemType> = T extends 'input'
-  ? number : T extends 'select' ? string | boolean : number[] | number;
+  ? number
+  : T extends 'select'
+    ? string | boolean
+    : number[] | number;
 
 type Item = {
   wrapper: HTMLDivElement;
@@ -16,7 +19,7 @@ type SelectItem = Item & { select: HTMLSelectElement };
 type RangeItem = Item & {
   firstInput: HTMLInputElement;
   secondInput: HTMLInputElement;
-}
+};
 
 type ValueObject = {
   option: keyof PanelOptions;
@@ -58,9 +61,7 @@ class ConfigItem {
     }
   }
 
-  setValue<T extends ConfigItemType>(
-    value: ConfigItemValue<T>,
-  ): void {
+  setValue<T extends ConfigItemType>(value: ConfigItemValue<T>): void {
     const { type, item } = this;
 
     if (type === 'input') {
@@ -78,7 +79,9 @@ class ConfigItem {
     if (type === 'range') {
       const { firstInput, secondInput } = item as RangeItem;
       const isValueSingle = typeof value === 'number';
-      const [firstValue, secondValue] = isValueSingle ? [value, ''] : value as number[];
+      const [firstValue, secondValue] = isValueSingle
+        ? [value, '']
+        : (value as number[]);
 
       firstInput.value = String(firstValue);
       secondInput.value = String(secondValue);
@@ -91,30 +94,40 @@ class ConfigItem {
     });
   }
 
-  private _getItem <T extends ConfigItemType>(
+  private _getItem<T extends ConfigItemType>(
     type: T,
     wrapper: HTMLDivElement,
-  ): T extends 'input' ? InputItem : T extends 'select' ? SelectItem : RangeItem {
+  ): T extends 'input'
+      ? InputItem
+      : T extends 'select'
+        ? SelectItem
+        : RangeItem {
     const { children } = wrapper;
 
     if (type === 'input') {
-      const [sign, input] = (children as unknown) as [HTMLDivElement, HTMLInputElement];
+      const [sign, input] = (children as unknown) as [
+        HTMLDivElement,
+        HTMLInputElement,
+      ];
 
       return { wrapper, sign, input } as any;
     }
 
     if (type === 'select') {
-      const [sign, select] = (children as unknown) as [HTMLDivElement, HTMLSelectElement];
+      const [sign, select] = (children as unknown) as [
+        HTMLDivElement,
+        HTMLSelectElement,
+      ];
 
       return { wrapper, sign, select } as any;
     }
 
     if (type === 'range') {
-      const [
-        sign,
-        firstInput,
-        secondInput,
-      ] = (children as unknown) as [HTMLDivElement, HTMLInputElement, HTMLInputElement];
+      const [sign, firstInput, secondInput] = (children as unknown) as [
+        HTMLDivElement,
+        HTMLInputElement,
+        HTMLInputElement,
+      ];
 
       return {
         wrapper,
@@ -142,8 +155,10 @@ class ConfigItem {
         ? (this.item as InputItem).input
         : (this.item as SelectItem).select;
 
-      element.addEventListener('change', (event) => {
-        const value = (event.target as HTMLInputElement | HTMLSelectElement).value.trim();
+      const valueChangeListener = (event: Event) => {
+        const value = (event.target as
+          | HTMLInputElement
+          | HTMLSelectElement).value.trim();
 
         const maybeFalse = value === 'false' ? false : value;
         const maybeBoolean = value.trim() === 'true' ? true : maybeFalse;
@@ -160,7 +175,9 @@ class ConfigItem {
 
         console.log(typeof value);
         notify(preparedValue);
-      });
+      };
+
+      element.addEventListener('change', valueChangeListener);
     } else {
       const rangeValueChangeHandler = () => {
         const { firstInput, secondInput } = this.item as RangeItem;
@@ -168,16 +185,16 @@ class ConfigItem {
         const secondValue = secondInput.value.trim();
 
         const firstIsNumber = typeof Number(firstValue) === 'number';
-        const isSecondNumberOrEmpty = secondValue === ''
-          || typeof Number(secondValue) === 'number';
+        const isSecondNumberOrEmpty = secondValue === '' || typeof Number(secondValue) === 'number';
 
         if (!firstIsNumber || !isSecondNumberOrEmpty) {
           throw new Error('value should be number');
         }
 
         const isSecondValueEmpty = secondValue === '';
-        const value = isSecondValueEmpty ? Number(firstValue)
-          : [Number(firstValue), Number(secondValue)] as [number, number];
+        const value = isSecondValueEmpty
+          ? Number(firstValue)
+          : ([Number(firstValue), Number(secondValue)] as [number, number]);
 
         notify(value);
       };

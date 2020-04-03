@@ -2,7 +2,11 @@ import { JQueryElementWithSlider } from '../../plugin/jquery-slider';
 import SliderPresenter from '../../plugin/Slider/SliderPresenter';
 import { Options, UserOptions } from '../../plugin/Slider/SliderModel';
 import ConfigPanel, { PanelOptions } from '../config-panel/ConfigPanel';
-import { ValueObject, ConfigItemValue, ConfigItemType } from '../config-item/ConfigItem';
+import {
+  ValueObject,
+  ConfigItemValue,
+  ConfigItemType,
+} from '../config-item/ConfigItem';
 
 export default class SliderPanel {
   private configPanel: ConfigPanel;
@@ -12,9 +16,11 @@ export default class SliderPanel {
   constructor(private wrapper: HTMLDivElement) {
     this._defineElements();
 
-    this.slider.setOptions('change', (value: number | [number, number]) => {
+    const sliderValueChangeHandler = (value: number | [number, number]) => {
       this.configPanel.setValue({ option: 'value', value });
-    });
+    };
+
+    this.slider.setOptions('change', sliderValueChangeHandler);
 
     this.configPanel.whenOptionValueChange(this._makeRefreshSliderCallback());
   }
@@ -22,7 +28,9 @@ export default class SliderPanel {
   private _defineElements() {
     const panelWrapper = this.wrapper.querySelector('.js-config-panel');
 
-    const $sliderWrapper = $(this.wrapper.querySelector('.js-slider')) as JQueryElementWithSlider;
+    const $sliderWrapper = $(
+      this.wrapper.querySelector('.js-slider'),
+    ) as JQueryElementWithSlider;
     const options = $sliderWrapper.data('options');
 
     $sliderWrapper.slider(options);
@@ -32,7 +40,10 @@ export default class SliderPanel {
     const sliderOptions = slider.getOptions() as Options;
     const panelOptions = this._getPanelOptions(sliderOptions);
 
-    const panel = new ConfigPanel({ root: panelWrapper as HTMLDivElement, options: panelOptions });
+    const panel = new ConfigPanel({
+      root: panelWrapper as HTMLDivElement,
+      options: panelOptions,
+    });
 
     this.configPanel = panel;
     this.slider = slider;
@@ -43,7 +54,7 @@ export default class SliderPanel {
       const lastOptions = this.slider.getOptions() as Options;
 
       if (option === 'value') {
-        const valueArray = typeof value === 'number' ? [value] : value as number[];
+        const valueArray = typeof value === 'number' ? [value] : (value as number[]);
 
         let { range: newRange } = lastOptions;
 
@@ -125,13 +136,7 @@ export default class SliderPanel {
         }
       } else {
         try {
-
-          console.log(
-            'i\'m here',
-            option,
-            value,
-            typeof value,
-          );
+          console.log("i'm here", option, value, typeof value);
           this.slider.setOptions(option, value);
         } catch (error) {
           alert(error);

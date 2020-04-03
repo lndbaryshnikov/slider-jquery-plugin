@@ -4,7 +4,7 @@ import Observer from '../../plugin/Observer/Observer';
 import ConfigItem, {
   ConfigItemType,
   ConfigItemValue,
-  ValueObject
+  ValueObject,
 } from '../config-item/ConfigItem';
 
 type PanelOptions = Omit<Options, 'change' | 'classes'>;
@@ -20,27 +20,34 @@ class ConfigPanel {
 
   private optionValueChangedSubject = new Observer();
 
-  constructor(
-    { root, options }: { root: HTMLDivElement; options: PanelOptions },
-  ) {
+  constructor({
+    root,
+    options,
+  }: {
+    root: HTMLDivElement;
+    options: PanelOptions;
+  }) {
     this.wrapper = root;
 
     this._definePanel(options);
   }
 
   whenOptionValueChange(callback: (valueObjet: ValueObject) => void): void {
-    this.optionValueChangedSubject.addObserver((valueObject: ValueObject): void => {
-      callback(valueObject);
-    });
+    this.optionValueChangedSubject.addObserver(
+      (valueObject: ValueObject): void => {
+        callback(valueObject);
+      },
+    );
   }
 
-  setValue<T extends ConfigItemType>(
-    { option, value }: {
-      option: keyof PanelOptions;
-      value: ConfigItemValue<T>;
-    },
-  ) {
-    this.panel[option].setValue<T>(value);
+  setValue<T extends ConfigItemType>({
+    option,
+    value,
+  }: {
+    option: keyof PanelOptions;
+    value: ConfigItemValue<T>;
+  }) {
+    this.panel[option].setValue(value);
   }
 
   private _definePanel(options: PanelOptions): void {
@@ -51,7 +58,9 @@ class ConfigPanel {
       optionName: keyof Panel,
       selectOptions?: string[],
     ): ConfigItem => {
-      const itemWrapper = wrapper.querySelector(`[data-option='${optionName}']`);
+      const itemWrapper = wrapper.querySelector(
+        `[data-option='${optionName}']`,
+      );
       const item = new ConfigItem(type, itemWrapper as HTMLDivElement);
 
       const optionValue = options[optionName] as ConfigItemValue<T>;
@@ -62,7 +71,9 @@ class ConfigPanel {
 
       item.setValue<T>(optionValue);
 
-      const makeNotifyAboutChangedValueCallback = () => (valueObject: ValueObject) => {
+      const makeNotifyAboutChangedValueCallback = () => (
+        valueObject: ValueObject,
+      ) => {
         this.optionValueChangedSubject.notifyObservers(valueObject);
       };
 
@@ -76,36 +87,12 @@ class ConfigPanel {
       max: getItem('input', 'max'),
       step: getItem('input', 'step'),
       value: getItem('range', 'value'),
-      orientation: getItem(
-        'select',
-        'orientation',
-        ['horizontal', 'vertical'],
-      ),
-      range: getItem(
-        'select',
-        'range',
-        ['min', 'max', 'false', 'true'],
-      ),
-      tooltip: getItem(
-        'select',
-        'tooltip',
-        ['true', 'false'],
-      ),
-      animate: getItem(
-        'select',
-        'animate',
-        ['fast', 'slow', 'false'],
-      ),
-      labels: getItem(
-        'select',
-        'labels',
-        ['true', 'false'],
-      ),
-      pips: getItem(
-        'select',
-        'pips',
-        ['false', 'true'],
-      ),
+      orientation: getItem('select', 'orientation', ['horizontal', 'vertical']),
+      range: getItem('select', 'range', ['min', 'max', 'false', 'true']),
+      tooltip: getItem('select', 'tooltip', ['true', 'false']),
+      animate: getItem('select', 'animate', ['fast', 'slow', 'false']),
+      labels: getItem('select', 'labels', ['true', 'false']),
+      pips: getItem('select', 'pips', ['false', 'true']),
     };
   }
 }

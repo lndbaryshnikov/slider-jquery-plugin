@@ -6,7 +6,8 @@ test("Model's setOptions deletes whitespaces from classes", () => {
   model.setOptions({
     classes: {
       'jquery-slider': '  my-class       another-class',
-      'jquery-slider-handle': '  my-firstHandle-class       another-firstHandle-class',
+      'jquery-slider-handle':
+        '  my-firstHandle-class       another-firstHandle-class',
     },
   });
 

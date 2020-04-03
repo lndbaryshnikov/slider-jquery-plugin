@@ -29,7 +29,7 @@ export default class SliderPupPage {
   private tooltip: ElementHandle = null;
 
   // eslint-disable-next-line no-useless-constructor
-  constructor(private browser: Browser) { }
+  constructor(private browser: Browser) {}
 
   async createPage() {
     this.pupPage = await this.browser.newPage();
@@ -39,7 +39,9 @@ export default class SliderPupPage {
 
     await this.setViewport(width, height);
 
-    await this.pupPage.addScriptTag({ path: 'node_modules/jquery/dist/jquery.min.js' });
+    await this.pupPage.addScriptTag({
+      path: 'node_modules/jquery/dist/jquery.min.js',
+    });
     await this.pupPage.addStyleTag({ path: 'dist/css/jquery-slider.css' });
     await this.pupPage.addScriptTag({ path: 'dist/js/jquery-slider.js' });
   }
@@ -59,26 +61,47 @@ export default class SliderPupPage {
   }
 
   async setOptions(...options: (UserOptions | RestOptionsToSet)[]) {
-    await this.pupPage.evaluate((
-      root: HTMLElement,
-      ...optionsToEval: (UserOptions | keyof Options | keyof Options)[]
-    ) => {
-      ($(root) as JQueryElementWithSlider).slider('options', ...optionsToEval);
+    await this.pupPage.evaluate(
+      (
+        root: HTMLElement,
+        ...optionsToEval: (UserOptions | keyof Options | keyof Options)[]
+      ) => {
+        ($(root) as JQueryElementWithSlider).slider(
+          'options',
+          ...optionsToEval,
+        );
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+      },
+      this.root,
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-    }, this.root, ...options);
+      ...options,
+    );
 
-    const optionsSet = await this.getOptions() as Options;
+    const optionsSet = (await this.getOptions()) as Options;
 
     await this._defineElements(optionsSet);
   }
 
   async getOptions(...options: (UserOptions | RestOptionsToSet)[]) {
-    return await this.pupPage.evaluate((root: HTMLElement, ...optionsToEval: (UserOptions | keyof Options | keyof Options)[]) => ($(root) as JQueryElementWithSlider).slider('options', ...optionsToEval),
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-      this.root, ...options) as unknown as Options | (Options[keyof Options] |
-    Options['classes'][keyof Options['classes']]);
+    return ((await this.pupPage.evaluate(
+      (
+        root: HTMLElement,
+        ...optionsToEval: (UserOptions | keyof Options | keyof Options)[]
+      ) => ($(root) as JQueryElementWithSlider).slider(
+        'options',
+        ...optionsToEval,
+      ),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      this.root,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      ...options,
+    )) as unknown) as
+      | Options
+      | (Options[keyof Options] | Options['classes'][keyof Options['classes']]);
   }
 
   get elements() {
@@ -93,42 +116,59 @@ export default class SliderPupPage {
   }
 
   async getLabelData(data: 'classes' | 'coords', numberOfLabel: number) {
-    return await this.pupPage.evaluate((dataToEval: string, LabelNumber: number) => {
-      const labels = document.querySelectorAll('.jquery-slider-label');
+    return await this.pupPage.evaluate(
+      (dataToEval: string, LabelNumber: number) => {
+        const labels = document.querySelectorAll('.jquery-slider-label');
 
-      const labelNeeded = labels[LabelNumber - 1];
+        const labelNeeded = labels[LabelNumber - 1];
 
-      if (dataToEval === 'classes') {
-        const labelClass = labelNeeded.className;
-        const pipClass = labelNeeded.children[0] ? labelNeeded.children[0].className : null;
+        if (dataToEval === 'classes') {
+          const labelClass = labelNeeded.className;
+          const pipClass = labelNeeded.children[0]
+            ? labelNeeded.children[0].className
+            : null;
 
-        return {
-          label: labelClass,
-          pip: pipClass,
-        } as { label: string; pip: string };
-      }
+          return {
+            label: labelClass,
+            pip: pipClass,
+          } as { label: string; pip: string };
+        }
 
-      const getCoords = (elem: HTMLElement): Coords => {
-        const {
-          left, top, right, bottom, width, height,
-        } = elem.getBoundingClientRect();
+        const getCoords = (elem: HTMLElement): Coords => {
+          const {
+            left,
+            top,
+            right,
+            bottom,
+            width,
+            height,
+          } = elem.getBoundingClientRect();
 
-        return {
-          left, top, right, bottom, width, height,
+          return {
+            left,
+            top,
+            right,
+            bottom,
+            width,
+            height,
+          };
         };
-      };
 
-      if (dataToEval === 'coords') {
-        const labelCoords = getCoords(labelNeeded as HTMLElement);
-        const pipCoords = labelNeeded.children[0]
-          ? getCoords(labelNeeded.children[0] as HTMLElement) : null;
+        if (dataToEval === 'coords') {
+          const labelCoords = getCoords(labelNeeded as HTMLElement);
+          const pipCoords = labelNeeded.children[0]
+            ? getCoords(labelNeeded.children[0] as HTMLElement)
+            : null;
 
-        return {
-          label: labelCoords,
-          pip: pipCoords,
-        } as { label: Coords; pip: Coords };
-      }
-    }, data, numberOfLabel);
+          return {
+            label: labelCoords,
+            pip: pipCoords,
+          } as { label: Coords; pip: Coords };
+        }
+      },
+      data,
+      numberOfLabel,
+    );
   }
 
   async getSliderCoords(): Promise<Coords> {
@@ -157,10 +197,10 @@ export default class SliderPupPage {
   async getTooltipValue(): Promise<number | string> {
     if (!this.tooltip) throw new Error("tooltip doesn't set");
 
-    return await this.pupPage
-      .evaluate(
-        (tooltip: ElementHandle) => (tooltip as unknown as HTMLElement).innerHTML, this.tooltip,
-      );
+    return await this.pupPage.evaluate(
+      (tooltip: ElementHandle) => ((tooltip as unknown) as HTMLElement).innerHTML,
+      this.tooltip,
+    );
   }
 
   static get timeout(): number {
@@ -172,7 +212,9 @@ export default class SliderPupPage {
   }
 
   async injectJquery(): Promise<void> {
-    await this.pupPage.addScriptTag({ path: 'node_modules/jquery/dist/jquery.min.js' });
+    await this.pupPage.addScriptTag({
+      path: 'node_modules/jquery/dist/jquery.min.js',
+    });
   }
 
   async injectStyles(path: string): Promise<void> {
@@ -190,25 +232,41 @@ export default class SliderPupPage {
   async getCoords(dom: ElementHandle): Promise<Coords> {
     return await this.pupPage.evaluate((domToEval) => {
       const {
-        left, top, right, bottom, width, height,
+        left,
+        top,
+        right,
+        bottom,
+        width,
+        height,
       } = domToEval.getBoundingClientRect();
 
       return {
-        left, top, right, bottom, width, height,
+        left,
+        top,
+        right,
+        bottom,
+        width,
+        height,
       };
     }, dom);
   }
 
   async getSliderMiddle(): Promise<{ left: number; top: number }> {
     return {
-      left: (await this.getCoords(this.slider)).left
+      left:
+        (await this.getCoords(this.slider)).left
         + (await this.getCoords(this.slider)).width / 2,
-      top: (await this.getCoords(this.slider)).top
+      top:
+        (await this.getCoords(this.slider)).top
         + (await this.getCoords(this.slider)).height / 2,
     };
   }
 
-  async moveHandleToCoords(X: number, Y: number, isSecond?: true): Promise<void> {
+  async moveHandleToCoords(
+    X: number,
+    Y: number,
+    isSecond?: true,
+  ): Promise<void> {
     if (isSecond && !this.secondHandle) throw new Error("second handle doesn't exist");
 
     // console.log(isSecond);
@@ -219,8 +277,10 @@ export default class SliderPupPage {
       handleCoords = await this.getCoords(this.secondHandle);
     } else handleCoords = await this.getCoords(this.firstHandle);
 
-    await this.pupPage.mouse.move(handleCoords.left + handleCoords.width / 2,
-      handleCoords.top + handleCoords.height / 2);
+    await this.pupPage.mouse.move(
+      handleCoords.left + handleCoords.width / 2,
+      handleCoords.top + handleCoords.height / 2,
+    );
     await this.pupPage.mouse.down();
     await this.pupPage.mouse.move(X, Y);
     await this.pupPage.mouse.up();

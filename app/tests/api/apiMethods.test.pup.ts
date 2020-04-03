@@ -29,38 +29,49 @@ describe('slider API', () => {
     await sliderPage.remove();
   });
 
-  test('options method works', async () => {
-    const options = await sliderPage.getOptions();
-    const classes = await sliderPage.getOptions('classes');
-    const max = await sliderPage.getOptions('max');
+  test(
+    'options method works',
+    async () => {
+      const options = await sliderPage.getOptions();
+      const classes = await sliderPage.getOptions('classes');
+      const max = await sliderPage.getOptions('max');
 
-    const defaults = SliderModel.getDefaultOptions('horizontal');
+      const defaults = SliderModel.getDefaultOptions('horizontal');
 
-    expect(options).toEqual(defaults);
-    expect(classes).toEqual(defaults.classes);
-    expect(max).toEqual(defaults.max);
+      expect(options).toEqual(defaults);
+      expect(classes).toEqual(defaults.classes);
+      expect(max).toEqual(defaults.max);
 
-    await sliderPage.setOptions({
-      classes: {
-        'jquery-slider': 'my-slider',
-      },
-    });
+      await sliderPage.setOptions({
+        classes: {
+          'jquery-slider': 'my-slider',
+        },
+      });
 
-    const sliderClass = await sliderPage.getOptions('classes', 'jquery-slider');
+      const sliderClass = await sliderPage.getOptions(
+        'classes',
+        'jquery-slider',
+      );
 
-    expect(sliderClass).toEqual('my-slider');
+      expect(sliderClass).toEqual('my-slider');
 
-    await sliderPage.setOptions('range', 'min');
-    await sliderPage.setOptions('classes', 'jquery-slider-handle', 'my-firstHandle');
+      await sliderPage.setOptions('range', 'min');
+      await sliderPage.setOptions(
+        'classes',
+        'jquery-slider-handle',
+        'my-firstHandle',
+      );
 
-    const range = await sliderPage.getOptions('range');
-    const newClasses = await sliderPage.getOptions('classes');
+      const range = await sliderPage.getOptions('range');
+      const newClasses = await sliderPage.getOptions('classes');
 
-    expect(range).toBe('min');
-    expect(newClasses).toEqual({
-      'jquery-slider jquery-slider-horizontal': 'my-slider',
-      'jquery-slider-range': '',
-      'jquery-slider-handle': 'my-firstHandle',
-    });
-  }, timeout);
+      expect(range).toBe('min');
+      expect(newClasses).toEqual({
+        'jquery-slider jquery-slider-horizontal': 'my-slider',
+        'jquery-slider-range': '',
+        'jquery-slider-handle': 'my-firstHandle',
+      });
+    },
+    timeout,
+  );
 });

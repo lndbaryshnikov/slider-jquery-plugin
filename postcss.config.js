@@ -2,7 +2,8 @@ const autoprefixer = require('autoprefixer');
 const cssMqpacker = require('css-mqpacker');
 const cssnano = require('cssnano')({
   preset: [
-    'default', {
+    'default',
+    {
       discardComments: {
         removeAll: true,
       },
@@ -11,9 +12,5 @@ const cssnano = require('cssnano')({
 });
 
 module.exports = {
-  plugins: [
-    autoprefixer,
-    cssMqpacker,
-    cssnano,
-  ],
+  plugins: [autoprefixer, cssMqpacker, cssnano],
 };

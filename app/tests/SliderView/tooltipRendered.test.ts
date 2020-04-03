@@ -1,6 +1,7 @@
 import SliderView from '../../src/plugin/Slider/SliderView';
 import SliderModel from '../../src/plugin/Slider/SliderModel';
-import SliderTooltipView from '../../src/plugin/SliderTooltipView/SliderTooltipView';
+import SliderTooltipView from
+  '../../src/plugin/SliderTooltipView/SliderTooltipView';
 
 describe("tooltip exists on dom and contains 'value'", () => {
   let view: SliderView;
@@ -27,16 +28,19 @@ describe("tooltip exists on dom and contains 'value'", () => {
     const handle = document.querySelector('.jquery-slider-handle');
     const tooltip = document.querySelector('.jquery-slider-tooltip');
 
-
     expect(!!tooltip).toBeTruthy();
     expect(handle.contains(tooltip)).toBeTruthy();
     expect(tooltip.innerHTML).toBe('0');
 
-    const defaultsWIthAnotherValue = SliderModel.getDefaultOptions('horizontal');
+    const defaultsWIthAnotherValue = SliderModel.getDefaultOptions(
+      'horizontal',
+    );
     defaultsWIthAnotherValue.value = 50;
 
-    tooltipView.setOptions(defaultsWIthAnotherValue.value,
-      defaultsWithTooltip.orientation);
+    tooltipView.setOptions(
+      defaultsWIthAnotherValue.value,
+      defaultsWithTooltip.orientation,
+    );
 
     view.setOptions(defaultsWIthAnotherValue);
 
@@ -44,7 +48,9 @@ describe("tooltip exists on dom and contains 'value'", () => {
   });
 
   test('tooltip rendered correctly with function for value', () => {
-    const defaultsWithTooltipFunction = SliderModel.getDefaultOptions('horizontal');
+    const defaultsWithTooltipFunction = SliderModel.getDefaultOptions(
+      'horizontal',
+    );
     defaultsWithTooltipFunction.tooltip = (value: number) => `${value}$`;
 
     tooltipView.setOptions(
@@ -62,12 +68,16 @@ describe("tooltip exists on dom and contains 'value'", () => {
 
     expect(tooltip.innerHTML).toBe('0$');
 
-    const defaultsWithAnotherValue = SliderModel.getDefaultOptions('horizontal');
+    const defaultsWithAnotherValue = SliderModel.getDefaultOptions(
+      'horizontal',
+    );
     defaultsWithAnotherValue.value = 70;
 
-    tooltipView.setOptions(defaultsWithAnotherValue.value,
+    tooltipView.setOptions(
+      defaultsWithAnotherValue.value,
       defaultsWithTooltipFunction.orientation,
-      defaultsWithTooltipFunction.tooltip);
+      defaultsWithTooltipFunction.tooltip,
+    );
 
     view.setOptions(defaultsWithAnotherValue);
 

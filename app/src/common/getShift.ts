@@ -14,7 +14,4 @@ const getShift = (event: MouseEvent, elem: HTMLElement): Shift => {
   };
 };
 
-export {
-  Shift,
-  getShift,
-};
+export { Shift, getShift };

@@ -50,8 +50,7 @@ export default class SliderView {
 
           if (isFirstHandleTarget) {
             if (orientation === 'horizontal') {
-              freeSpaceCoords.right = secondHandleCoords.left
-                                - firstHandleCoords.width / 2;
+              freeSpaceCoords.right = secondHandleCoords.left - firstHandleCoords.width / 2;
 
               freeSpaceCoords.width = freeSpaceCoords.right - freeSpaceCoords.left;
             }
@@ -65,8 +64,7 @@ export default class SliderView {
 
           if (isSecondHandleTarget) {
             if (orientation === 'horizontal') {
-              freeSpaceCoords.left = firstHandleCoords.right
-                                + secondHandleCoords.width / 2;
+              freeSpaceCoords.left = firstHandleCoords.right + secondHandleCoords.width / 2;
 
               freeSpaceCoords.width = freeSpaceCoords.right - freeSpaceCoords.left;
             }
@@ -83,7 +81,10 @@ export default class SliderView {
         if (isFirstHandleTarget) handleNumber = 'first';
         if (isSecondHandleTarget) handleNumber = 'second';
 
-        const handleShift = this._countHandleShift(mouseDownEvent, handleNumber);
+        const handleShift = this._countHandleShift(
+          mouseDownEvent,
+          handleNumber,
+        );
 
         const mouseMoveHandler = (mouseMoveEvent: MouseEvent) => {
           if (this.options.orientation === 'horizontal') {
@@ -102,7 +103,8 @@ export default class SliderView {
             }
 
             const currentHandleXInPixels = freeSpaceCoords.left
-                            + newLeft + this._getCoords().firstHandle.width / 2;
+              + newLeft
+              + this._getCoords().firstHandle.width / 2;
 
             this.refreshValue(currentHandleXInPixels, handleNumber);
           }
@@ -122,8 +124,9 @@ export default class SliderView {
               newTop = rightEdge + this._getCoords().firstHandle.height / 2;
             }
 
-            const currentHandleYInPixels = newTop + this._getCoords().firstHandle.height / 2
-                            + freeSpaceCoords.top;
+            const currentHandleYInPixels = newTop
+              + this._getCoords().firstHandle.height / 2
+              + freeSpaceCoords.top;
 
             this.refreshValue(currentHandleYInPixels, handleNumber);
           }
@@ -144,7 +147,7 @@ export default class SliderView {
     },
     sliderClick: (clickEvent: MouseEvent): void => {
       const areHandlesTargets = clickEvent.target === this.sliderHtml.firstHandle
-                || clickEvent.target === this.sliderHtml.secondHandle;
+        || clickEvent.target === this.sliderHtml.secondHandle;
 
       if (areHandlesTargets) {
         return;
@@ -171,10 +174,14 @@ export default class SliderView {
 
   private valueChangedSubject = new Observer();
 
-  whenValueChanged(callback: (valueData: [number, 'first' | 'second']) => void): void {
-    this.valueChangedSubject.addObserver((valueData: [number, 'first' | 'second']) => {
-      callback(valueData);
-    });
+  whenValueChanged(
+    callback: (valueData: [number, 'first' | 'second']) => void,
+  ): void {
+    this.valueChangedSubject.addObserver(
+      (valueData: [number, 'first' | 'second']) => {
+        callback(valueData);
+      },
+    );
   }
 
   get html(): Html {
@@ -261,8 +268,9 @@ export default class SliderView {
     if (plugin === 'tooltip') {
       const correctNumber = !number ? 'first' : number;
 
-      const doesFirstHandleContainsTooltip = this.sliderHtml.firstHandle
-        .contains((pluginView as SliderTooltipView).html);
+      const doesFirstHandleContainsTooltip = this.sliderHtml.firstHandle.contains(
+        (pluginView as SliderTooltipView).html,
+      );
 
       if (correctNumber === 'first') {
         if (!doesFirstHandleContainsTooltip) {
@@ -279,19 +287,27 @@ export default class SliderView {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  destroyPlugin(plugin: 'labels' | 'tooltip', pluginView: SliderLabelsView | SliderTooltipView): void {
+  destroyPlugin(
+    plugin: 'labels' | 'tooltip',
+    pluginView: SliderLabelsView | SliderTooltipView,
+  ): void {
     if (plugin === 'labels' || plugin === 'tooltip') {
       pluginView.destroy();
     }
   }
 
-  refreshValue(currentHandleCoordinate: number, handleNumber?: 'first' | 'second'): void {
+  refreshValue(
+    currentHandleCoordinate: number,
+    handleNumber?: 'first' | 'second',
+  ): void {
     let correctHandleNumber: string;
 
     if (!handleNumber) {
       if (this.options.range !== true) correctHandleNumber = 'first';
       else {
-        correctHandleNumber = this._getClosestHandleNumber(currentHandleCoordinate);
+        correctHandleNumber = this._getClosestHandleNumber(
+          currentHandleCoordinate,
+        );
       }
     } else correctHandleNumber = handleNumber;
 
@@ -302,22 +318,24 @@ export default class SliderView {
     const isHorizontal = orientation === 'horizontal';
 
     const wrapperStart = isHorizontal ? wrapperCoords.left : wrapperCoords.top;
-    const wrapperEnd = isHorizontal ? wrapperCoords.right : wrapperCoords.bottom;
+    const wrapperEnd = isHorizontal
+      ? wrapperCoords.right
+      : wrapperCoords.bottom;
 
     if (currentHandleCoordinate > wrapperEnd) {
-      this.valueChangedSubject
-        .notifyObservers([isHorizontal
-          ? this.options.max
-          : this.options.min, correctHandleNumber]);
+      this.valueChangedSubject.notifyObservers([
+        isHorizontal ? this.options.max : this.options.min,
+        correctHandleNumber,
+      ]);
 
       return;
     }
 
     if (currentHandleCoordinate < wrapperStart) {
-      this.valueChangedSubject
-        .notifyObservers([isHorizontal
-          ? this.options.min
-          : this.options.max, correctHandleNumber]);
+      this.valueChangedSubject.notifyObservers([
+        isHorizontal ? this.options.min : this.options.max,
+        correctHandleNumber,
+      ]);
 
       return;
     }
@@ -329,8 +347,11 @@ export default class SliderView {
     const getValuesArray = (): number[] => {
       const valuesArray: number[] = [];
 
-      for (let currentValue = this.options.min;
-        currentValue <= this.options.max; currentValue += this.options.step) {
+      for (
+        let currentValue = this.options.min;
+        currentValue <= this.options.max;
+        currentValue += this.options.step
+      ) {
         valuesArray.push(currentValue);
       }
 
@@ -348,12 +369,16 @@ export default class SliderView {
     let value: number;
 
     for (let i = 0; i < valuesArray.length; i += 1) {
-      if (approximateValue >= valuesArray[i] && approximateValue <= valuesArray[i + 1]) {
+      if (
+        approximateValue >= valuesArray[i]
+        && approximateValue <= valuesArray[i + 1]
+      ) {
         const rangeFromFirst = approximateValue - valuesArray[i];
         const rangeFromSecond = valuesArray[i + 1] - approximateValue;
 
         value = rangeFromFirst < rangeFromSecond
-          ? valuesArray[i] : valuesArray[i + 1];
+          ? valuesArray[i]
+          : valuesArray[i + 1];
 
         break;
       }
@@ -372,7 +397,10 @@ export default class SliderView {
 
   private _setHandleMovingHandler(): void {
     const addHandleMovingHandler = (handle: HTMLElement): void => {
-      handle.addEventListener('mousedown', this.eventListeners.handleMoving.handleMouseDown);
+      handle.addEventListener(
+        'mousedown',
+        this.eventListeners.handleMoving.handleMouseDown,
+      );
 
       // eslint-disable-next-line no-param-reassign
       handle.ondragstart = this.eventListeners.handleMoving.handleOnDragStart;
@@ -386,22 +414,34 @@ export default class SliderView {
   }
 
   private _setSliderClickHandler(): void {
-    this.sliderHtml.wrapper.addEventListener('click', this.eventListeners.sliderClick);
+    this.sliderHtml.wrapper.addEventListener(
+      'click',
+      this.eventListeners.sliderClick,
+    );
   }
 
   private _renderHandlePositions(): void {
     const renderHandlePosition = (handleNumber: 'first' | 'second') => {
-      const handle = handleNumber === 'first' ? this.sliderHtml.firstHandle : this.sliderHtml.secondHandle;
-      const handleCoords = handleNumber === 'first' ? this._getCoords().firstHandle
+      const handle = handleNumber === 'first'
+        ? this.sliderHtml.firstHandle
+        : this.sliderHtml.secondHandle;
+      const handleCoords = handleNumber === 'first'
+        ? this._getCoords().firstHandle
         : this._getCoords().secondHandle;
 
-      const handlePositionInPixels = this.handlesPositionInPixels[handleNumber === 'first' ? 0 : 1];
+      const handlePositionInPixels = this.handlesPositionInPixels[
+        handleNumber === 'first' ? 0 : 1
+      ];
 
       if (this.options.orientation === 'horizontal') {
-        handle.style.left = `${handlePositionInPixels - handleCoords.width / 2}px`;
+        handle.style.left = `${
+          handlePositionInPixels - handleCoords.width / 2
+        }px`;
       }
       if (this.options.orientation === 'vertical') {
-        handle.style.bottom = `${handlePositionInPixels - handleCoords.height / 2}px`;
+        handle.style.bottom = `${
+          handlePositionInPixels - handleCoords.height / 2
+        }px`;
       }
     };
 
@@ -422,8 +462,9 @@ export default class SliderView {
 
       if (this.options.range === 'max') {
         this.sliderHtml.range.style.right = `${0}px`;
-        this.sliderHtml.range.style.width = `${wrapperCoords.width
-                    - positions[0]}px`;
+        this.sliderHtml.range.style.width = `${
+          wrapperCoords.width - positions[0]
+        }px`;
       }
 
       if (this.options.range === true) {
@@ -440,12 +481,15 @@ export default class SliderView {
 
       if (this.options.range === 'max') {
         this.sliderHtml.range.style.top = `${0}px`;
-        this.sliderHtml.range.style.height = `${wrapperCoords.height
-                    - positions[0]}px`;
+        this.sliderHtml.range.style.height = `${
+          wrapperCoords.height - positions[0]
+        }px`;
       }
 
       if (this.options.range === true) {
-        this.sliderHtml.range.style.top = `${wrapperCoords.height - positions[1]}px`;
+        this.sliderHtml.range.style.top = `${
+          wrapperCoords.height - positions[1]
+        }px`;
         this.sliderHtml.range.style.bottom = `${positions[0]}px`;
         this.sliderHtml.range.style.height = `${positions[0] - positions[1]}px`;
       }
@@ -453,8 +497,10 @@ export default class SliderView {
   }
 
   private _setSliderClasses(): void {
-    const defaultClasses = Object.keys(this.options.classes) as
-            (keyof (VerticalClasses | HorizontalClasses))[];
+    const defaultClasses = Object.keys(this.options.classes) as (keyof (
+      | VerticalClasses
+      | HorizontalClasses
+    ))[];
     const wrapper = defaultClasses[0];
     const range = defaultClasses[1];
     const handle = defaultClasses[2];
@@ -484,25 +530,28 @@ export default class SliderView {
     const handleProp = this.options.orientation === 'horizontal' ? 'left' : 'bottom';
 
     const maybeNull = typeof animate === 'number' ? animate : 0;
-    const mayneSevenHundredOrNull = animate === 'slow' ? 700 : maybeNull;
+    const maybeSevenHundredOrNull = animate === 'slow' ? 700 : maybeNull;
 
-    const transitionMs: number = animate === 'fast' ? 300 : mayneSevenHundredOrNull;
+    const transitionMs: number = animate === 'fast' ? 300 : maybeSevenHundredOrNull;
 
     this.sliderHtml.firstHandle.style.transition = `${handleProp} ${transitionMs}ms`;
     this.sliderHtml.range.style.transition = `${transitionMs}ms`;
 
     const addTransitionToHandle = (handle: HTMLElement) => {
-      handle.addEventListener('mousedown', () => {
+      const mousedownHandler = () => {
         // eslint-disable-next-line no-param-reassign
         handle.style.transition = '0ms';
         this.sliderHtml.range.style.transition = '0ms';
-      });
+      };
 
-      document.addEventListener('mouseup', () => {
+      const mouseupHandler = () => {
         // eslint-disable-next-line no-param-reassign
         handle.style.transition = `${handleProp} ${transitionMs}ms`;
         this.sliderHtml.range.style.transition = `${transitionMs}ms`;
-      });
+      };
+
+      handle.addEventListener('mousedown', mousedownHandler);
+      document.addEventListener('mouseup', mouseupHandler);
     };
 
     addTransitionToHandle(this.sliderHtml.firstHandle);
@@ -522,19 +571,24 @@ export default class SliderView {
 
     const firstValueInPercents = ((this.options.range === true
       ? (this.options.value as number[])[0]
-      : this.options.value as number) - this.options.min) / range;
+      : (this.options.value as number))
+        - this.options.min)
+      / range;
 
     const addHandlePosition = (handleValueInPercents: number): void => {
-      this.handlesPositionInPixels.push(this.options.orientation === 'horizontal'
-        ? this._getCoords().wrapper.width * handleValueInPercents
-        : this._getCoords().wrapper.height * handleValueInPercents);
+      this.handlesPositionInPixels.push(
+        this.options.orientation === 'horizontal'
+          ? this._getCoords().wrapper.width * handleValueInPercents
+          : this._getCoords().wrapper.height * handleValueInPercents,
+      );
     };
 
     addHandlePosition(firstValueInPercents);
 
     if (this.options.range === true) {
-      const secondValueInPercents = ((this.options.value as number[])[1]
-        - this.options.min) / range;
+      const secondValueInPercents = (
+        ((this.options.value as number[])[1] - this.options.min) / range
+      );
 
       addHandlePosition(secondValueInPercents);
     }
@@ -556,8 +610,13 @@ export default class SliderView {
     if (this.options.range === true) this.sliderHtml.wrapper.append(this.sliderHtml.secondHandle);
   }
 
-  private _countHandleShift(mouseDownEvent: MouseEvent, handleNumber: 'first' | 'second'): Shift {
-    const handle = handleNumber === 'first' ? this.sliderHtml.firstHandle : this.sliderHtml.secondHandle;
+  private _countHandleShift(
+    mouseDownEvent: MouseEvent,
+    handleNumber: 'first' | 'second',
+  ): Shift {
+    const handle = handleNumber === 'first'
+      ? this.sliderHtml.firstHandle
+      : this.sliderHtml.secondHandle;
 
     return getShift(mouseDownEvent, handle);
   }
@@ -568,13 +627,17 @@ export default class SliderView {
     const { classes } = this.options;
     const hash = this.classesHash;
 
-    Object.keys(this.options.classes).forEach((mainClass: keyof Options['classes']) => {
-      if (Object.prototype.hasOwnProperty.call(this.options.classes, mainClass)) {
-        if (!(mainClass in hash && classes[mainClass] === hash[mainClass])) {
-          return true;
+    Object.keys(this.options.classes).forEach(
+      (mainClass: keyof Options['classes']) => {
+        if (
+          Object.prototype.hasOwnProperty.call(this.options.classes, mainClass)
+        ) {
+          if (!(mainClass in hash && classes[mainClass] === hash[mainClass])) {
+            return true;
+          }
         }
-      }
-    });
+      },
+    );
 
     return false;
   }
@@ -584,7 +647,10 @@ export default class SliderView {
       wrapper: getCoords(this.sliderHtml.wrapper),
       range: getCoords(this.sliderHtml.range),
       firstHandle: getCoords(this.sliderHtml.firstHandle),
-      secondHandle: this.options.range === true ? getCoords(this.sliderHtml.secondHandle) : null,
+      secondHandle:
+        this.options.range === true
+          ? getCoords(this.sliderHtml.secondHandle)
+          : null,
     };
   }
 

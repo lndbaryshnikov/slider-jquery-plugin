@@ -3,8 +3,8 @@ import SliderModel from '../../src/plugin/Slider/SliderModel';
 import getClassList from '../../src/common/getClassList';
 
 describe('destroy and cleanDom methods', () => {
-  let sliderView: SliderView; let
-    root: HTMLElement;
+  let sliderView: SliderView;
+  let root: HTMLElement;
 
   const defaultOptions = SliderModel.getDefaultOptions('horizontal');
 

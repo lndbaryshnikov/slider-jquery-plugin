@@ -9,7 +9,10 @@ const addClassProperty = (
   classList[mainClass.join(' ')] = classesArray.length !== 0 ? classesArray.join(' ') : '';
 };
 
-type MainClasses = 'jquery-slider' | 'jquery-slider-range' | 'jquery-slider-handle';
+type MainClasses =
+  | 'jquery-slider'
+  | 'jquery-slider-range'
+  | 'jquery-slider-handle';
 
 const getClassList = (elements: JQuery): Record<MainClasses, string> => {
   const classList: any = {};

@@ -1,6 +1,9 @@
-import SliderLabelsView, { LabelOptions } from '../../src/plugin/SliderLabelsView/SliderLabelsView';
+import SliderLabelsView, {
+  LabelOptions,
+} from '../../src/plugin/SliderLabelsView/SliderLabelsView';
 
-const extractValue = (value: string) => value.replace(/\d+px/, '')
+const extractValue = (value: string) => value
+  .replace(/\d+px/, '')
 // eslint-disable-next-line no-useless-escape
   .replace(/[<>="\\ a-z\/\-:;]/gi, '');
 
@@ -62,8 +65,11 @@ describe('tooltip works correctly', () => {
   });
 
   test("labels' values is correct", () => {
-    for (let i = 0, value = labelsOptionsFull.min;
-      i < labelsOnDom.length; i += 1, value += labelsOptionsFull.step) {
+    for (
+      let i = 0, value = labelsOptionsFull.min;
+      i < labelsOnDom.length;
+      i += 1, value += labelsOptionsFull.step
+    ) {
       const label = labelsOnDom[i];
       const formattedValue = labelsOptionsFull.valueFunc(value);
       const inner = extractValue(label.innerHTML);
@@ -89,16 +95,24 @@ describe('tooltip works correctly', () => {
   });
 
   test('setClasses', () => {
-    expect(labelsOnDom[0].className).toBe('jquery-slider-label jquery-slider-label-horizontal');
+    expect(labelsOnDom[0].className).toBe(
+      'jquery-slider-label jquery-slider-label-horizontal',
+    );
 
-    expect(labelsOnDom[0].children[0].className).toBe('jquery-slider-pip jquery-slider-pip-horizontal');
+    expect(labelsOnDom[0].children[0].className).toBe(
+      'jquery-slider-pip jquery-slider-pip-horizontal',
+    );
 
     labels.setOptions(labelsOptionsVertical);
 
     labelsOnDom = document.querySelectorAll('.jquery-slider-label');
 
-    expect(labelsOnDom[0].className).toBe('jquery-slider-label jquery-slider-label-vertical');
-    expect(labelsOnDom[0].children[0].className).toBe('jquery-slider-pip jquery-slider-pip-vertical');
+    expect(labelsOnDom[0].className).toBe(
+      'jquery-slider-label jquery-slider-label-vertical',
+    );
+    expect(labelsOnDom[0].children[0].className).toBe(
+      'jquery-slider-pip jquery-slider-pip-vertical',
+    );
   });
 
   test('when pips are false', () => {

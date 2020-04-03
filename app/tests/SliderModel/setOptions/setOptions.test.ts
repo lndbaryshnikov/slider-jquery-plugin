@@ -1,4 +1,7 @@
-import SliderModel, { Options, UserOptions } from '../../../src/plugin/Slider/SliderModel';
+import SliderModel, {
+  Options,
+  UserOptions,
+} from '../../../src/plugin/Slider/SliderModel';
 
 describe('When options object is passed', () => {
   let model: SliderModel;
@@ -14,7 +17,11 @@ describe('When options object is passed', () => {
       },
     });
 
-    const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions('horizontal'));
+    const testOptions = $.extend(
+      true,
+      {},
+      SliderModel.getDefaultOptions('horizontal'),
+    );
     testOptions.classes['jquery-slider-range'] = 'my-slider-range';
 
     expect(model.getOptions()).toEqual(testOptions);
@@ -23,7 +30,11 @@ describe('When options object is passed', () => {
   test('extends object with max = 60 and min = 20', () => {
     model.setOptions({ min: 20, max: 60, value: 30 });
 
-    const testOptions = $.extend(true, {}, SliderModel.getDefaultOptions('horizontal'));
+    const testOptions = $.extend(
+      true,
+      {},
+      SliderModel.getDefaultOptions('horizontal'),
+    );
 
     testOptions.min = 20;
     testOptions.max = 60;
@@ -33,13 +44,22 @@ describe('When options object is passed', () => {
   });
 
   test('options.classes and options.orientation depending on orientation', () => {
-    const check = (modelToCheck: SliderModel, orientation: 'horizontal' | 'vertical' = 'horizontal') => {
+    const check = (
+      modelToCheck: SliderModel,
+      orientation: 'horizontal' | 'vertical' = 'horizontal',
+    ) => {
       modelToCheck.setOptions({ orientation });
 
-      expect((modelToCheck.getOptions() as Options).orientation).toBe(orientation);
-      expect(`jquery-slider jquery-slider-${orientation}`
-                in (modelToCheck.getOptions() as Options).classes).toBeTruthy();
-      expect(modelToCheck.getOptions()).toEqual(SliderModel.getDefaultOptions(orientation));
+      expect((modelToCheck.getOptions() as Options).orientation).toBe(
+        orientation,
+      );
+      expect(
+        `jquery-slider jquery-slider-${orientation}`
+          in (modelToCheck.getOptions() as Options).classes,
+      ).toBeTruthy();
+      expect(modelToCheck.getOptions()).toEqual(
+        SliderModel.getDefaultOptions(orientation),
+      );
     };
 
     check(model);
@@ -83,7 +103,9 @@ describe('When options object is passed', () => {
     expect((model.getOptions() as Options).min).toBe(30);
     expect((model.getOptions() as Options).value).toBe(50);
     expect((model.getOptions() as Options).range).toBe('min');
-    expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions('horizontal').classes);
+    expect((model.getOptions() as Options).classes).toEqual(
+      SliderModel.getDefaultOptions('horizontal').classes,
+    );
 
     model.setOptions({
       max: 154,
@@ -96,7 +118,9 @@ describe('When options object is passed', () => {
     expect((model.getOptions() as Options).max).toBe(154);
     expect((model.getOptions() as Options).range).toBe('max');
     expect((model.getOptions() as Options).orientation).toBe('vertical');
-    expect((model.getOptions() as Options).classes).toEqual(SliderModel.getDefaultOptions('vertical').classes);
+    expect((model.getOptions() as Options).classes).toEqual(
+      SliderModel.getDefaultOptions('vertical').classes,
+    );
   });
 
   test('extension when one option passed', () => {
@@ -130,7 +154,9 @@ describe('When options object is passed', () => {
       'jquery-slider-handle': '',
     });
 
-    expect(model.getOptions('classes', 'jquery-slider' as keyof Options['classes'])).toBe('my-slider');
+    expect(
+      model.getOptions('classes', 'jquery-slider' as keyof Options['classes']),
+    ).toBe('my-slider');
 
     model.setOptions('orientation', 'vertical');
 
@@ -182,10 +208,4 @@ describe('When options object is passed', () => {
       'jquery-slider-handle': 'my-firstHandle',
     });
   });
-
-  // test("value sets correctly when options are not default (equals 'min')", () => {
-  //     model.setOptions( { min: 34, max: 156 } );
-  //
-  //     expect(model.getOptions("value")).toBe(34);
-  // });
 });

@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = function (pathToIcon) {
+module.exports = function () {
   return {
     module: {
       rules: [

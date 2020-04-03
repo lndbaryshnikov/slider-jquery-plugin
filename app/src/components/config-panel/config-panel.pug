@@ -1,7 +1,7 @@
 include ../config-item/config-item
 
 mixin config-panel(options)
-  - 
+  -
     options = options || [
       ["min", "input"],
       ["max", "input"],
@@ -20,7 +20,3 @@ mixin config-panel(options)
       - var [optionName, type] = item; 
 
       +config-item({ optionName, type })
-
-
-
-  

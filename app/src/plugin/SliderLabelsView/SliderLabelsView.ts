@@ -65,8 +65,10 @@ export default class SliderLabelsView {
     const sliderPropertyValue = getCoords(root)[scaleProperty];
 
     const scale = document.createElement('div');
-    scale.setAttribute('class',
-      `jquery-slider-labels-scale jquery-slider-labels-scale-${orientation}`);
+    scale.setAttribute(
+      'class',
+      `jquery-slider-labels-scale jquery-slider-labels-scale-${orientation}`,
+    );
     scale.style.position = 'absolute';
     scale.style[scaleProperty] = `${sliderPropertyValue}px`;
 
@@ -87,7 +89,9 @@ export default class SliderLabelsView {
         const pip = label.children[0] as HTMLElement;
         const pipPropertyValue = getCoords(pip)[scaleProperty];
 
-        pip.style[labelProperty] = `${labelPropertyValue / 2 - pipPropertyValue / 2}px`;
+        pip.style[labelProperty] = `${
+          labelPropertyValue / 2 - pipPropertyValue / 2
+        }px`;
       }
 
       currentSize += interval;
@@ -118,7 +122,11 @@ export default class SliderLabelsView {
   private _createLabels(): void {
     const labels: HTMLDivElement[] = [];
 
-    for (let value = this.options.min; value <= this.options.max; value += this.options.step) {
+    for (
+      let value = this.options.min;
+      value <= this.options.max;
+      value += this.options.step
+    ) {
       labels.push(this._getLabel());
     }
 
@@ -143,7 +151,7 @@ export default class SliderLabelsView {
   private _setClasses(): void {
     const { orientation } = this.options;
 
-    if (!(this.options.labels) && !(this.options.pips)) return;
+    if (!this.options.labels && !this.options.pips) return;
 
     this.sliderLabels.forEach((label) => {
       label.setAttribute('class', 'jquery-slider-label');
@@ -185,7 +193,7 @@ export default class SliderLabelsView {
 
   private _setClickHandler(): void {
     this.sliderLabels.forEach((label) => {
-      label.addEventListener('click', () => {
+      const clickHandler = () => {
         const labelCoords = getCoords(label);
 
         const middle = this.options.orientation === 'horizontal'
@@ -193,11 +201,11 @@ export default class SliderLabelsView {
           : labelCoords.top + labelCoords.height / 2;
 
         this.labelClickedSubject.notifyObservers(middle);
-      });
+      };
+
+      label.addEventListener('click', clickHandler);
     });
   }
 }
 
-export {
-  LabelOptions,
-};
+export { LabelOptions };

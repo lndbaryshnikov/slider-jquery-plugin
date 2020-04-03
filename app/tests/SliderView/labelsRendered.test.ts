@@ -1,8 +1,11 @@
 import SliderView from '../../src/plugin/Slider/SliderView';
 import SliderModel from '../../src/plugin/Slider/SliderModel';
-import SliderLabelsView, { LabelOptions } from '../../src/plugin/SliderLabelsView/SliderLabelsView';
+import SliderLabelsView, {
+  LabelOptions,
+} from '../../src/plugin/SliderLabelsView/SliderLabelsView';
 
-const extractValue = (value: string) => value.replace(/\d+px/, '')
+const extractValue = (value: string) => value
+  .replace(/\d+px/, '')
 // eslint-disable-next-line no-useless-escape
   .replace(/[<>="\\ a-z\/\-:;]/gi, '');
 
@@ -42,25 +45,32 @@ describe("tooltip exists on dom and contains 'value'", () => {
     const labels = document.querySelectorAll('.jquery-slider-label');
     const pips = document.querySelectorAll('.jquery-slider-pip');
 
-    expect(labelsScale.className)
-      .toBe('jquery-slider-labels-scale jquery-slider-labels-scale-horizontal');
+    expect(labelsScale.className).toBe(
+      'jquery-slider-labels-scale jquery-slider-labels-scale-horizontal',
+    );
 
     expect(labels.length).toBe(11);
-    expect(labels[0].className).toBe('jquery-slider-label jquery-slider-label-horizontal');
+    expect(labels[0].className).toBe(
+      'jquery-slider-label jquery-slider-label-horizontal',
+    );
 
     expect(pips.length).toBe(11);
-    expect(pips[0].className).toBe('jquery-slider-pip jquery-slider-pip-horizontal');
+    expect(pips[0].className).toBe(
+      'jquery-slider-pip jquery-slider-pip-horizontal',
+    );
 
     expect(slider.contains(labelsScale)).toBeTruthy();
 
     for (
       let i = 0, value = labelsOptionsFull.min;
-      i < labels.length; i += 1,
-      value += labelsOptionsFull.step
+      i < labels.length;
+      i += 1, value += labelsOptionsFull.step
     ) {
       expect(labelsScale.contains(labels[i])).toBeTruthy();
       expect(labels[i].contains(pips[i])).toBeTruthy();
-      expect(extractValue(labels[i].innerHTML)).toBe(String(labelsOptionsFull.valueFunc(value)));
+      expect(extractValue(labels[i].innerHTML)).toBe(
+        String(labelsOptionsFull.valueFunc(value)),
+      );
     }
   });
 });

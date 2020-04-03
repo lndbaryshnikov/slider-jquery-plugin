@@ -1,4 +1,8 @@
-import SliderModel, { Options, ValueFunction, UserOptions } from '../../../src/plugin/Slider/SliderModel';
+import SliderModel, {
+  Options,
+  ValueFunction,
+  UserOptions,
+} from '../../../src/plugin/Slider/SliderModel';
 
 describe('setOptionsMethod exceptions', () => {
   let model: SliderModel;
@@ -27,7 +31,9 @@ describe('setOptionsMethod exceptions', () => {
 
   test('throws error when main passes wrong class _options', () => {
     expect(() => {
-      model.setOptions({ classes: { 'jquery-sl': 'my-slider' } } as UserOptions);
+      model.setOptions({
+        classes: { 'jquery-sl': 'my-slider' },
+      } as UserOptions);
     }).toThrow(errors.classes.incorrectType);
   });
 
@@ -62,7 +68,7 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions({
         classes: {
-          'jquery-slider-handle': 34 as unknown as string,
+          'jquery-slider-handle': (34 as unknown) as string,
         },
       });
     }).toThrow(errors.options.incorrectType('classes', 'string'));
@@ -128,7 +134,7 @@ describe('setOptionsMethod exceptions', () => {
     const error = errors.value.incorrectType;
 
     expect(() => {
-      model.setOptions({ value: '20' } as unknown as UserOptions);
+      model.setOptions(({ value: '20' } as unknown) as UserOptions);
     }).toThrow(error);
 
     expect(() => {
@@ -157,7 +163,10 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({
-        min: 30, max: 120, value: [40, 60], range: true,
+        min: 30,
+        max: 120,
+        value: [40, 60],
+        range: true,
       });
       model.setOptions('value', [20, 60]);
     }).toThrow(errors.value.beyond);
@@ -208,7 +217,10 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({
-        range: true, value: [50, 60], min: 10, max: 45,
+        range: true,
+        value: [50, 60],
+        min: 10,
+        max: 45,
       });
     }).toThrow(error);
 
@@ -218,7 +230,10 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({
-        range: true, value: [40, 50], max: 100, min: 60,
+        range: true,
+        value: [40, 50],
+        max: 100,
+        min: 60,
       });
     }).toThrow(error);
   });
@@ -253,7 +268,7 @@ describe('setOptionsMethod exceptions', () => {
 
   test('throws exceptions when option tooltip is not true, false or function', () => {
     expect(() => {
-      model.setOptions({ tooltip: 'true' } as unknown as UserOptions);
+      model.setOptions(({ tooltip: 'true' } as unknown) as UserOptions);
     }).toThrow(errors.tooltip.incorrect);
 
     model.setOptions();
@@ -265,71 +280,93 @@ describe('setOptionsMethod exceptions', () => {
 
   test('throws exceptions when tooltip function is incorrect', () => {
     expect(() => {
-      model.setOptions({ tooltip: (() => { console.log(34); }) as unknown as ValueFunction });
+      model.setOptions({
+        tooltip: ((() => {
+          console.log(34);
+        }) as unknown) as ValueFunction,
+      });
     }).toThrow(errors.tooltip.incorrectFunction);
 
     expect(() => {
-      model.setOptions({ tooltip: (() => () => 34) as unknown as ValueFunction });
+      model.setOptions({
+        tooltip: ((() => () => 34) as unknown) as ValueFunction,
+      });
     }).toThrow(errors.tooltip.incorrectFunction);
 
     model.setOptions();
 
     expect(() => {
-      model.setOptions('tooltip', (() => { console.log(34); }) as ValueFunction);
+      model.setOptions('tooltip', (() => {
+        console.log(34);
+      }) as ValueFunction);
     }).toThrow(errors.tooltip.incorrectFunction);
 
     expect(() => {
-      model.setOptions('tooltip', (() => () => 34) as unknown as ValueFunction);
+      model.setOptions(
+        'tooltip',
+        ((() => () => 34) as unknown) as ValueFunction,
+      );
     }).toThrow(errors.tooltip.incorrectFunction);
   });
 
   test("throws exceptions when 'animate' property is incorrect", () => {
     expect(() => {
-      model.setOptions({ animate: 'slowly' as unknown as Options['animate'] });
+      model.setOptions({
+        animate: ('slowly' as unknown) as Options['animate'],
+      });
     }).toThrow(errors.animate.incorrect);
 
     expect(() => {
-      model.setOptions({ animate: true as unknown as Options['animate'] });
+      model.setOptions({ animate: (true as unknown) as Options['animate'] });
     }).toThrow(errors.animate.incorrect);
 
     model.setOptions();
 
     expect(() => {
-      model.setOptions('animate', 'slowly' as unknown as Options['animate']);
+      model.setOptions('animate', ('slowly' as unknown) as Options['animate']);
     }).toThrow(errors.animate.incorrect);
 
     expect(() => {
-      model.setOptions('animate', true as unknown as Options['animate']);
+      model.setOptions('animate', (true as unknown) as Options['animate']);
     }).toThrow(errors.animate.incorrect);
   });
 
   test("throws exceptions when 'labels' or 'pips' are incorrect", () => {
     expect(() => {
-      model.setOptions({ pips: 34 as unknown as true });
+      model.setOptions({ pips: (34 as unknown) as true });
     }).toThrow(errors.pips.incorrect);
 
     expect(() => {
-      model.setOptions({ pips: true, labels: 'false' as unknown as Options['labels'] });
+      model.setOptions({
+        pips: true,
+        labels: ('false' as unknown) as Options['labels'],
+      });
     }).toThrow(errors.labels.incorrect);
 
     expect(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      model.setOptions({ pips: true, labels: ((value: number) => {}) as unknown as Options['labels'] });
+      model.setOptions({
+        pips: true,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        labels: (((value: number) => {}) as unknown) as Options['labels'],
+      });
     }).toThrow(errors.labels.incorrectFunction);
 
     model.setOptions();
 
     expect(() => {
-      model.setOptions('pips', 'each' as unknown as Options['pips']);
+      model.setOptions('pips', ('each' as unknown) as Options['pips']);
     }).toThrow(errors.pips.incorrect);
 
     expect(() => {
-      model.setOptions('labels', 'small' as unknown as Options['labels']);
+      model.setOptions('labels', ('small' as unknown) as Options['labels']);
     }).toThrow(errors.labels.incorrect);
 
     expect(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      model.setOptions('labels', ((value: number) => true) as unknown as Options['labels']);
+      model.setOptions(
+        'labels',
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (((value: number) => true) as unknown) as Options['labels'],
+      );
     }).toThrow(errors.labels.incorrectFunction);
   });
 
@@ -342,8 +379,10 @@ describe('setOptionsMethod exceptions', () => {
 
     model.setOptions();
 
+    const handler = (value: number) => value;
+
     expect(() => {
-      model.setOptions('change', (value: number) => value);
+      model.setOptions('change', handler);
     }).toThrow(errors.change.incorrectFunction);
   });
 });

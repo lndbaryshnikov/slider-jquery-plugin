@@ -1,9 +1,12 @@
 import getClassList from '../../src/common/getClassList';
-import SliderModel, { HorizontalClasses } from '../../src/plugin/Slider/SliderModel';
+import SliderModel, {
+  HorizontalClasses,
+} from '../../src/plugin/Slider/SliderModel';
 import SliderPresenter from '../../src/plugin/Slider/SliderPresenter';
 import SliderView from '../../src/plugin/Slider/SliderView';
 
-const defaultClasses = SliderModel.getDefaultOptions('horizontal').classes as HorizontalClasses;
+const defaultClasses = SliderModel.getDefaultOptions('horizontal')
+  .classes as HorizontalClasses;
 
 describe('setModel method for setting classes', () => {
   let slider: SliderPresenter;
@@ -35,6 +38,7 @@ describe('setModel method for setting classes', () => {
 
     testClasses['jquery-slider jquery-slider-horizontal'] = 'my-slider';
 
+    // eslint-disable-next-line fsd/jq-use-js-prefix-in-selector
     expect($('.jquery-slider').hasClass('my-slider')).toBe(true);
     expect(domClasses).toEqual(testClasses);
   });

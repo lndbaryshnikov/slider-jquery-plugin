@@ -14,5 +14,7 @@ test('slider elements are set', () => {
   expect(sliderView.html.firstHandle.tagName).toBe('DIV');
 
   expect(sliderView.html.wrapper.contains(sliderView.html.range)).toBe(true);
-  expect(sliderView.html.wrapper.contains(sliderView.html.firstHandle)).toBe(true);
+  expect(sliderView.html.wrapper.contains(sliderView.html.firstHandle)).toBe(
+    true,
+  );
 });

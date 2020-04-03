@@ -1,12 +1,18 @@
-import SliderModel, { Options, RestOptionsToSet, UserOptions } from './Slider/SliderModel';
+import SliderModel, {
+  Options,
+  RestOptionsToSet,
+  UserOptions,
+} from './Slider/SliderModel';
 import SliderView from './Slider/SliderView';
 import SliderPresenter from './Slider/SliderPresenter';
 
 import './jquery-slider.scss';
 
 export interface JQueryElementWithSlider extends JQuery<HTMLElement> {
-  slider: (method?: UserOptions | keyof SliderMethods,
-    ...options: (UserOptions | keyof Options | RestOptionsToSet)[]) => void;
+  slider: (
+    method?: UserOptions | keyof SliderMethods,
+    ...options: (UserOptions | keyof Options | RestOptionsToSet)[]
+  ) => void;
 }
 
 interface SliderMethods {
@@ -17,7 +23,10 @@ interface SliderMethods {
 (($) => {
   const getData = (element: JQueryElementWithSlider): JQuery => element.data('slider');
 
-  const setData = (root: JQueryElementWithSlider, slider: SliderPresenter): void => {
+  const setData = (
+    root: JQueryElementWithSlider,
+    slider: SliderPresenter,
+  ): void => {
     root.data('slider', {
       root,
       slider,
@@ -38,7 +47,7 @@ interface SliderMethods {
 
   const sliderMethods = {
     init(userOptions?: UserOptions): void | JQuery {
-      const $this = (this as unknown as JQueryElementWithSlider).eq(0);
+      const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
 
       if (!getData($this)) {
         const slider = new SliderPresenter(new SliderView(), new SliderModel());
@@ -53,7 +62,7 @@ interface SliderMethods {
     },
 
     destroy() {
-      const $this = (this as unknown as JQueryElementWithSlider).eq(0);
+      const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
       const data = getData($this);
 
       if (data) {
@@ -65,7 +74,7 @@ interface SliderMethods {
     },
 
     options(...userOptions: (UserOptions | string)[]) {
-      const $this = (this as unknown as JQueryElementWithSlider).eq(0);
+      const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
 
       const data = getData($this);
       if (data) {
@@ -77,34 +86,57 @@ interface SliderMethods {
           return slider.getOptions();
         }
 
-        if (userOptions.length === 1 && typeof userOptions[0] === 'object') {
+        const isOnlyObjectPasses = userOptions.length === 1 && typeof userOptions[0] === 'object';
+
+        if (isOnlyObjectPasses) {
           slider.setOptions(userOptions[0] as UserOptions);
 
           return $this;
         }
 
-        if ((userOptions.length === 2
-                    || (userOptions.length === 3 && userOptions[0] === 'classes'))
-                    && typeof userOptions[0] === 'string') {
-          if (userOptions.length === 2 && userOptions[0] === 'classes'
-                        && typeof userOptions[1] === 'string') {
-            return slider.getOptions(userOptions[0] as keyof Options,
-              userOptions[1] as keyof UserOptions['classes']);
+        const isOneArgPassed = userOptions.length === 1;
+        const isTwoArgsPassed = userOptions.length === 2;
+        const isThreeArgsPassed = userOptions.length === 3;
+
+        const isFirstArgString = typeof userOptions[0] === 'string';
+        const isSecondArgString = typeof userOptions[1] === 'string';
+        const isFirstArgClasses = userOptions[0] === 'classes';
+
+        const isSingleClassPassed = isThreeArgsPassed && isFirstArgClasses;
+        const isNotObjectPassed = isTwoArgsPassed || isSingleClassPassed;
+        const isOneOptionPassed = isNotObjectPassed && isFirstArgString;
+
+        const isTwoArgsWithFirstClassPassed = isTwoArgsPassed && isFirstArgClasses;
+        const isSingleClassRequested = isTwoArgsWithFirstClassPassed && isSecondArgString;
+
+        if (isOneOptionPassed) {
+          if (isSingleClassRequested) {
+            return slider.getOptions(
+              userOptions[0] as keyof Options,
+              userOptions[1] as keyof UserOptions['classes'],
+            );
           }
 
-          const options = userOptions.slice(1) as
-                        (UserOptions[keyof UserOptions] | UserOptions['classes'][keyof UserOptions['classes']])[];
+          const options = userOptions.slice(1) as (
+            | UserOptions[keyof UserOptions]
+            | UserOptions['classes'][keyof UserOptions['classes']]
+          )[];
 
           slider.setOptions(userOptions[0] as keyof Options, ...options);
 
           return $this;
         }
 
-        if (((userOptions.length === 2 && userOptions[0] === 'classes')
-                    || userOptions.length === 1)
-                    && typeof userOptions[0] === 'string') {
-          return slider.getOptions(userOptions[0] as keyof Options,
-            userOptions[1] as keyof UserOptions['classes']);
+        const isAnyOptionRequested = (
+          (isTwoArgsWithFirstClassPassed || isOneArgPassed)
+          && isFirstArgString
+        );
+
+        if (isAnyOptionRequested) {
+          return slider.getOptions(
+            userOptions[0] as keyof Options,
+            userOptions[1] as keyof UserOptions['classes'],
+          );
         }
 
         throw new Error('Passed options are incorrect');
@@ -121,7 +153,13 @@ interface SliderMethods {
   ) {
     if (sliderMethods[method as keyof SliderMethods]) {
       return sliderMethods[method as keyof SliderMethods].apply(this, options);
-    } if (typeof method === 'object' || (!method && options.length === 0)) {
+    }
+
+    const isObjectPassed = typeof method === 'object';
+    const isNothingPassed = !method && options.length === 0;
+    const isObjectOrNothingPassed = isObjectPassed || isNothingPassed;
+
+    if (isObjectOrNothingPassed) {
       return sliderMethods.init.call(this, method as UserOptions);
     }
     $.error(`Method '${method}' doesn't exist for jQuery.slider`);

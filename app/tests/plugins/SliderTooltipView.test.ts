@@ -61,13 +61,19 @@ describe('tooltip works correctly', () => {
   });
 
   test('setOrientation', () => {
-    expect(horizontalTooltipOnDom.className).toBe('jquery-slider-tooltip jquery-slider-tooltip-horizontal');
+    expect(horizontalTooltipOnDom.className).toBe(
+      'jquery-slider-tooltip jquery-slider-tooltip-horizontal',
+    );
 
     tooltip.setOrientation('vertical');
-    expect(horizontalTooltipOnDom.className).toBe('jquery-slider-tooltip jquery-slider-tooltip-vertical');
+    expect(horizontalTooltipOnDom.className).toBe(
+      'jquery-slider-tooltip jquery-slider-tooltip-vertical',
+    );
 
     tooltip.setOrientation('horizontal');
-    expect(horizontalTooltipOnDom.className).toBe('jquery-slider-tooltip jquery-slider-tooltip-horizontal');
+    expect(horizontalTooltipOnDom.className).toBe(
+      'jquery-slider-tooltip jquery-slider-tooltip-horizontal',
+    );
   });
 
   test('tooltip works with value function', () => {
