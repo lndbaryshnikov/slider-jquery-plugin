@@ -6,28 +6,22 @@
 
 Развертывание 
 -------------
-```js
+```bash
 $ git clone https://github.com/lndbaryshnikov/slider-jquery-plugin.git
 $ npm install
 $ npm run build
 ```
 
-Разработка
+Тестирование 
 -------------
-```js
-$ npm run dev
+```bash
+$ npm run test
 ```
 
 Сервер для разработки
 -------------
-```js
+```bash
 $ npm run server
-```
-
-Режим watch для разработки
--------------
-```js
-$ npm run watch
 ```
 
 Для сборки проекта использовался модульный сборщик Webpack.
