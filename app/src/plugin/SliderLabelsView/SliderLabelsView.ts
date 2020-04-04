@@ -114,19 +114,17 @@ export default class SliderLabelsView {
   }
 
   whenUserClicksOnLabel(callback: (middleCoordinate: number) => void): void {
-    this.labelClickedSubject.addObserver((_middleCoordinate: number) => {
-      callback(_middleCoordinate);
+    this.labelClickedSubject.addObserver((middleCoordinate: number) => {
+      callback(middleCoordinate);
     });
   }
 
   private _createLabels(): void {
     const labels: HTMLDivElement[] = [];
 
-    for (
-      let value = this.options.min;
-      value <= this.options.max;
-      value += this.options.step
-    ) {
+    const { min, max, step } = this.options;
+
+    for (let value = min; value <= max; value += step) {
       labels.push(this._getLabel());
     }
 
@@ -151,7 +149,10 @@ export default class SliderLabelsView {
   private _setClasses(): void {
     const { orientation } = this.options;
 
-    if (!this.options.labels && !this.options.pips) return;
+    const areNoLabelsOrPipsRequired = !this.options.labels
+      && !this.options.pips;
+
+    if (areNoLabelsOrPipsRequired) return;
 
     this.sliderLabels.forEach((label) => {
       label.setAttribute('class', 'jquery-slider-label');
@@ -169,17 +170,17 @@ export default class SliderLabelsView {
   private _setText(): void {
     if (!this.options.labels) return;
 
-    const func = this.options.valueFunc;
+    const { min, step, valueFunc } = this.options;
 
     for (
-      let i = 0, value = this.options.min;
+      let i = 0, value = min;
       i < this.sliderLabels.length;
-      i += 1, value += this.options.step
+      i += 1, value += step
     ) {
       const label = this.sliderLabels[i];
 
-      if (func) {
-        label.innerHTML += String(func(value));
+      if (valueFunc) {
+        label.innerHTML += String(valueFunc(value));
       } else label.innerHTML += String(value);
     }
   }

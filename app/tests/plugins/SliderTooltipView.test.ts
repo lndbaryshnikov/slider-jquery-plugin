@@ -14,7 +14,10 @@ describe('tooltip works correctly', () => {
     document.body.append(root);
 
     tooltip = new SliderTooltipView();
-    tooltip.setOptions(35, 'horizontal');
+    tooltip.setOptions({
+      text: 35,
+      orientation: 'horizontal',
+    });
     tooltip.render(root);
 
     horizontalTooltipOnDom = document.querySelector('.jquery-slider-tooltip');
@@ -31,7 +34,7 @@ describe('tooltip works correctly', () => {
   test("tooltip's value is correct", () => {
     expect(horizontalTooltipOnDom.innerHTML).toBe('35');
 
-    tooltip.setText(23);
+    tooltip.setText({ text: 23 });
 
     expect(horizontalTooltipOnDom.innerHTML).toBe('23');
   });
@@ -42,7 +45,7 @@ describe('tooltip works correctly', () => {
     expect(tooltip.text).toBe(null);
     expect(horizontalTooltipOnDom.innerHTML).toBe('');
 
-    tooltip.setText(12345);
+    tooltip.setText({ text: 12345 });
 
     expect(horizontalTooltipOnDom.innerHTML).toBe('12345');
 
@@ -79,7 +82,11 @@ describe('tooltip works correctly', () => {
   test('tooltip works with value function', () => {
     tooltip.destroy();
 
-    tooltip.setOptions(70, 'horizontal', (value: number) => `${value}$`);
+    tooltip.setOptions({
+      text: 70,
+      orientation: 'horizontal',
+      func: (value: number) => `${value}$`,
+    });
 
     expect(tooltip.text).toBe('70$');
   });

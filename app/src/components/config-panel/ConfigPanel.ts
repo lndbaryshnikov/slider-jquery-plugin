@@ -20,10 +20,7 @@ class ConfigPanel {
 
   private optionValueChangedSubject = new Observer();
 
-  constructor({
-    root,
-    options,
-  }: {
+  constructor({ root, options }: {
     root: HTMLDivElement;
     options: PanelOptions;
   }) {
@@ -61,11 +58,16 @@ class ConfigPanel {
       const itemWrapper = wrapper.querySelector(
         `[data-option='${optionName}']`,
       );
-      const item = new ConfigItem(type, itemWrapper as HTMLDivElement);
+      const item = new ConfigItem({
+        type,
+        wrapper: itemWrapper as HTMLDivElement,
+      });
 
       const optionValue = options[optionName] as ConfigItemValue<T>;
 
-      if (type === 'select' || selectOptions) {
+      const areSelectOptionsPassed = type === 'select' && selectOptions;
+
+      if (areSelectOptionsPassed) {
         item.setSelectOptions(selectOptions);
       }
 

@@ -28,12 +28,12 @@ export default class SliderTooltipView {
     };
   }
 
-  setOptions(
-    text: number,
-    orientation: 'horizontal' | 'vertical',
-    func?: ValueFunction,
-  ): void {
-    this.setText(text, func);
+  setOptions({ text, orientation, func }: {
+    text: number;
+    orientation: 'horizontal' | 'vertical';
+    func?: ValueFunction;
+  }): void {
+    this.setText({ text, func });
     this.setOrientation(orientation);
   }
 
@@ -43,7 +43,7 @@ export default class SliderTooltipView {
     this.root.append(this.tooltipHtml);
   }
 
-  setText(text: number, func?: ValueFunction): void {
+  setText({ text, func }: { text: number; func?: ValueFunction }): void {
     if (func) {
       this.tooltipText = func(text);
     } else this.tooltipText = text;

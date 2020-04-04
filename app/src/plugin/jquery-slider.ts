@@ -8,7 +8,7 @@ import SliderPresenter from './Slider/SliderPresenter';
 
 import './jquery-slider.scss';
 
-export interface JQueryElementWithSlider extends JQuery<HTMLElement> {
+interface JQueryElementWithSlider extends JQuery<HTMLElement> {
   slider: (
     method?: UserOptions | keyof SliderMethods,
     ...options: (UserOptions | keyof Options | RestOptionsToSet)[]
@@ -23,10 +23,10 @@ interface SliderMethods {
 (($) => {
   const getData = (element: JQueryElementWithSlider): JQuery => element.data('slider');
 
-  const setData = (
-    root: JQueryElementWithSlider,
-    slider: SliderPresenter,
-  ): void => {
+  const setData = ({ root, slider }: {
+    root: JQueryElementWithSlider;
+    slider: SliderPresenter;
+  }): void => {
     root.data('slider', {
       root,
       slider,
@@ -54,7 +54,10 @@ interface SliderMethods {
 
         slider.initialize($this[0], userOptions);
 
-        setData($this, slider);
+        setData({
+          root: $this,
+          slider,
+        });
 
         return $this;
       }
@@ -86,10 +89,13 @@ interface SliderMethods {
           return slider.getOptions();
         }
 
-        const isOnlyObjectPasses = userOptions.length === 1 && typeof userOptions[0] === 'object';
+        const [firstArg, secondArg] = userOptions;
+
+        const isOnlyObjectPasses = userOptions.length === 1
+          && typeof firstArg === 'object';
 
         if (isOnlyObjectPasses) {
-          slider.setOptions(userOptions[0] as UserOptions);
+          slider.setOptions(firstArg as UserOptions);
 
           return $this;
         }
@@ -98,9 +104,9 @@ interface SliderMethods {
         const isTwoArgsPassed = userOptions.length === 2;
         const isThreeArgsPassed = userOptions.length === 3;
 
-        const isFirstArgString = typeof userOptions[0] === 'string';
-        const isSecondArgString = typeof userOptions[1] === 'string';
-        const isFirstArgClasses = userOptions[0] === 'classes';
+        const isFirstArgString = typeof firstArg === 'string';
+        const isSecondArgString = typeof secondArg === 'string';
+        const isFirstArgClasses = firstArg === 'classes';
 
         const isSingleClassPassed = isThreeArgsPassed && isFirstArgClasses;
         const isNotObjectPassed = isTwoArgsPassed || isSingleClassPassed;
@@ -112,8 +118,8 @@ interface SliderMethods {
         if (isOneOptionPassed) {
           if (isSingleClassRequested) {
             return slider.getOptions(
-              userOptions[0] as keyof Options,
-              userOptions[1] as keyof UserOptions['classes'],
+              firstArg as keyof Options,
+              secondArg as keyof UserOptions['classes'],
             );
           }
 
@@ -122,7 +128,7 @@ interface SliderMethods {
             | UserOptions['classes'][keyof UserOptions['classes']]
           )[];
 
-          slider.setOptions(userOptions[0] as keyof Options, ...options);
+          slider.setOptions(firstArg as keyof Options, ...options);
 
           return $this;
         }
@@ -134,8 +140,8 @@ interface SliderMethods {
 
         if (isAnyOptionRequested) {
           return slider.getOptions(
-            userOptions[0] as keyof Options,
-            userOptions[1] as keyof UserOptions['classes'],
+            firstArg as keyof Options,
+            secondArg as keyof UserOptions['classes'],
           );
         }
 
@@ -165,3 +171,6 @@ interface SliderMethods {
     $.error(`Method '${method}' doesn't exist for jQuery.slider`);
   };
 })(jQuery);
+
+// eslint-disable-next-line import/prefer-default-export
+export { JQueryElementWithSlider };

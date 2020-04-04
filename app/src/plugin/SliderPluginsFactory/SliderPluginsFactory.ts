@@ -1,7 +1,7 @@
 import SliderLabelsView from '../SliderLabelsView/SliderLabelsView';
 import SliderTooltipView from '../SliderTooltipView/SliderTooltipView';
 
-export default class SliderPluginsFactory {
+class SliderPluginsFactory {
   createView(plugin: string): SliderLabelsView | SliderTooltipView {
     if (plugin === 'labels') {
       return new SliderLabelsView();
@@ -11,6 +11,8 @@ export default class SliderPluginsFactory {
       return new SliderTooltipView();
     }
 
-    throw new Error("plugin doesn't exist");
+    throw new Error('plugin doesn\'t exist');
   }
 }
+
+export default SliderPluginsFactory;

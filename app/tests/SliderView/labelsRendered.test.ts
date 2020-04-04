@@ -36,7 +36,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
     labelsView.setOptions(labelsOptionsFull);
 
     view.render(document.body);
-    view.renderPlugin('labels', labelsView);
+    view.renderPlugin({ plugin: 'labels', pluginView: labelsView });
   });
 
   test('labels rendered correctly', () => {

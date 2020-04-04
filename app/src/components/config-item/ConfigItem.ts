@@ -35,7 +35,7 @@ class ConfigItem {
 
   private valueChangedSubject = new Observer();
 
-  constructor(type: ConfigItemType, wrapper: HTMLDivElement) {
+  constructor({ type, wrapper }: { type: ConfigItemType; wrapper: HTMLDivElement }) {
     this.type = type;
     this.optionName = wrapper.getAttribute('data-option') as keyof PanelOptions;
 
@@ -165,15 +165,13 @@ class ConfigItem {
 
         const preparedValue = type === 'input' ? Number(value) : maybeBoolean;
 
-        console.log(preparedValue, typeof preparedValue);
+        const isValueNotCorrectForInput = type === 'input'
+          && typeof preparedValue !== 'number';
 
-        const valueNotCorrectForInput = type === 'input' && typeof preparedValue !== 'number';
-
-        if (valueNotCorrectForInput) {
+        if (isValueNotCorrectForInput) {
           throw new Error(`${this.optionName} should be number`);
         }
 
-        console.log(typeof value);
         notify(preparedValue);
       };
 
@@ -184,10 +182,11 @@ class ConfigItem {
         const firstValue = firstInput.value.trim();
         const secondValue = secondInput.value.trim();
 
-        const firstIsNumber = typeof Number(firstValue) === 'number';
-        const isSecondNumberOrEmpty = secondValue === '' || typeof Number(secondValue) === 'number';
+        const iSFirstNumber = typeof Number(firstValue) === 'number';
+        const isSecondNumberOrEmpty = secondValue === ''
+          || typeof Number(secondValue) === 'number';
 
-        if (!firstIsNumber || !isSecondNumberOrEmpty) {
+        if (!iSFirstNumber || !isSecondNumberOrEmpty) {
           throw new Error('value should be number');
         }
 

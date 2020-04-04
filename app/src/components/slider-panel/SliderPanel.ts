@@ -58,7 +58,10 @@ export default class SliderPanel {
 
         let { range: newRange } = lastOptions;
 
-        if (valueArray.length === 1 && lastOptions.range === true) {
+        const isOneValuePassedWhenRangeIsTrue = valueArray.length === 1
+          && lastOptions.range === true;
+
+        if (isOneValuePassedWhenRangeIsTrue) {
           valueArray.push(lastOptions.max);
           newRange = true;
 
@@ -68,7 +71,10 @@ export default class SliderPanel {
           });
         }
 
-        if (valueArray.length === 2 && lastOptions.range !== true) {
+        const isTwoValuePassedWhenRangeIsNotTrue = valueArray.length === 2
+          && lastOptions.range !== true;
+
+        if (isTwoValuePassedWhenRangeIsNotTrue) {
           newRange = true;
 
           this.configPanel.setValue({
@@ -98,8 +104,11 @@ export default class SliderPanel {
       } else if (option === 'range') {
         let { value: newValue } = lastOptions;
 
-        if (value === true && !Array.isArray(lastOptions.value)) {
-          newValue = [lastOptions.value, lastOptions.max];
+        const isRangeTruePassedWhenValueIsNotArray = value === true
+          && !Array.isArray(lastOptions.value);
+
+        if (isRangeTruePassedWhenValueIsNotArray) {
+          newValue = [lastOptions.value as number, lastOptions.max];
 
           this.configPanel.setValue({
             option: 'value',
@@ -107,8 +116,11 @@ export default class SliderPanel {
           });
         }
 
-        if (value !== true && Array.isArray(lastOptions.value)) {
-          [newValue] = lastOptions.value;
+        const isRangeNotTruePassedWhenValueIsArray = value !== true
+          && Array.isArray(lastOptions.value);
+
+        if (isRangeNotTruePassedWhenValueIsArray) {
+          [newValue] = lastOptions.value as number[];
 
           this.configPanel.setValue({
             option: 'value',
@@ -136,7 +148,6 @@ export default class SliderPanel {
         }
       } else {
         try {
-          console.log("i'm here", option, value, typeof value);
           this.slider.setOptions(option, value);
         } catch (error) {
           alert(error);

@@ -37,7 +37,7 @@ export default class SliderPupPage {
     const width = 1920;
     const height = 1080;
 
-    await this.setViewport(width, height);
+    await this.setViewport({ width, height });
 
     await this.pupPage.addScriptTag({
       path: 'node_modules/jquery/dist/jquery.min.js',
@@ -115,17 +115,21 @@ export default class SliderPupPage {
     };
   }
 
-  async getLabelData(data: 'classes' | 'coords', numberOfLabel: number) {
+  async getLabelData(
+    data: 'classes' | 'coords',
+    labelNumber: number,
+  ) {
     return await this.pupPage.evaluate(
       (dataToEval: string, LabelNumber: number) => {
         const labels = document.querySelectorAll('.jquery-slider-label');
 
         const labelNeeded = labels[LabelNumber - 1];
+        const labelFirstChild = labelNeeded.children[0];
 
         if (dataToEval === 'classes') {
           const labelClass = labelNeeded.className;
-          const pipClass = labelNeeded.children[0]
-            ? labelNeeded.children[0].className
+          const pipClass = labelFirstChild
+            ? labelFirstChild.className
             : null;
 
           return {
@@ -156,8 +160,8 @@ export default class SliderPupPage {
 
         if (dataToEval === 'coords') {
           const labelCoords = getCoords(labelNeeded as HTMLElement);
-          const pipCoords = labelNeeded.children[0]
-            ? getCoords(labelNeeded.children[0] as HTMLElement)
+          const pipCoords = labelFirstChild
+            ? getCoords(labelFirstChild as HTMLElement)
             : null;
 
           return {
@@ -167,7 +171,7 @@ export default class SliderPupPage {
         }
       },
       data,
-      numberOfLabel,
+      labelNumber,
     );
   }
 
@@ -225,7 +229,10 @@ export default class SliderPupPage {
     await this.pupPage.addScriptTag({ path });
   }
 
-  async setViewport(width: number, height: number): Promise<void> {
+  async setViewport({ width, height }: {
+    width: number;
+    height: number;
+  }): Promise<void> {
     await this.pupPage.setViewport({ width, height });
   }
 
@@ -305,12 +312,16 @@ export default class SliderPupPage {
     this.range = await this.pupPage.$('.jquery-slider-range');
     this.firstHandle = await this.pupPage.$('.jquery-slider-handle');
 
-    if (options && options.range === true) {
+    const isRangeTrue = options && options.range === true;
+
+    if (isRangeTrue) {
       // eslint-disable-next-line prefer-destructuring
       this.secondHandle = (await this.pupPage.$$('.jquery-slider-handle'))[1];
     } else this.secondHandle = null;
 
-    if (options && options.tooltip) {
+    const isTooltipRequired = options && options.tooltip;
+
+    if (isTooltipRequired) {
       this.tooltip = await this.pupPage.$('.jquery-slider-tooltip');
     } else this.tooltip = null;
   }

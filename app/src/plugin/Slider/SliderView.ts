@@ -45,8 +45,10 @@ export default class SliderView {
         if (isRangeTrue) {
           freeSpaceCoords = this._getCoords().wrapper;
 
-          const firstHandleCoords = this._getCoords().firstHandle;
-          const secondHandleCoords = this._getCoords().secondHandle;
+          const {
+            firstHandle: firstHandleCoords,
+            secondHandle: secondHandleCoords,
+          } = this._getCoords();
 
           if (isFirstHandleTarget) {
             if (orientation === 'horizontal') {
@@ -81,54 +83,54 @@ export default class SliderView {
         if (isFirstHandleTarget) handleNumber = 'first';
         if (isSecondHandleTarget) handleNumber = 'second';
 
-        const handleShift = this._countHandleShift(
+        const handleShift = this._countHandleShift({
           mouseDownEvent,
           handleNumber,
-        );
+        });
 
         const mouseMoveHandler = (mouseMoveEvent: MouseEvent) => {
           if (this.options.orientation === 'horizontal') {
-            const shiftX = handleShift.x;
+            const { x: shiftX } = handleShift;
 
             let newLeft = mouseMoveEvent.pageX - shiftX - freeSpaceCoords.left;
+            const leftEdge = 0 - this._getCoords().firstHandle.width / 2;
 
-            if (newLeft < 0 - this._getCoords().firstHandle.width / 2) {
-              newLeft = 0 - this._getCoords().firstHandle.width / 2;
-            }
+            if (newLeft < leftEdge) newLeft = leftEdge;
 
-            const rightEdge = freeSpaceCoords.width - this._getCoords().firstHandle.width;
+            const rightEdge = freeSpaceCoords.width - this._getCoords().firstHandle.width / 2;
 
-            if (newLeft > rightEdge + this._getCoords().firstHandle.width / 2) {
-              newLeft = rightEdge + this._getCoords().firstHandle.width / 2;
-            }
+            if (newLeft > rightEdge) newLeft = rightEdge;
 
             const currentHandleXInPixels = freeSpaceCoords.left
               + newLeft
               + this._getCoords().firstHandle.width / 2;
 
-            this.refreshValue(currentHandleXInPixels, handleNumber);
+            this.refreshValue({
+              currentHandleCoordinate: currentHandleXInPixels,
+              handleNumber,
+            });
           }
 
           if (this.options.orientation === 'vertical') {
-            const shiftY = handleShift.y;
+            const { y: shiftY } = handleShift;
 
             let newTop = mouseMoveEvent.pageY - shiftY - freeSpaceCoords.top;
+            const topEdge = 0 - this._getCoords().firstHandle.height / 2;
 
-            if (newTop < 0 - this._getCoords().firstHandle.height / 2) {
-              newTop = 0 - this._getCoords().firstHandle.height / 2;
-            }
+            if (newTop < topEdge) newTop = topEdge;
 
-            const rightEdge = freeSpaceCoords.height - this._getCoords().firstHandle.height;
+            const bottomEdge = freeSpaceCoords.height - this._getCoords().firstHandle.height / 2;
 
-            if (newTop > rightEdge + this._getCoords().firstHandle.height / 2) {
-              newTop = rightEdge + this._getCoords().firstHandle.height / 2;
-            }
+            if (newTop > bottomEdge) newTop = bottomEdge;
 
             const currentHandleYInPixels = newTop
               + this._getCoords().firstHandle.height / 2
               + freeSpaceCoords.top;
 
-            this.refreshValue(currentHandleYInPixels, handleNumber);
+            this.refreshValue({
+              currentHandleCoordinate: currentHandleYInPixels,
+              handleNumber,
+            });
           }
         };
 
@@ -149,9 +151,7 @@ export default class SliderView {
       const areHandlesTargets = clickEvent.target === this.sliderHtml.firstHandle
         || clickEvent.target === this.sliderHtml.secondHandle;
 
-      if (areHandlesTargets) {
-        return;
-      }
+      if (areHandlesTargets) return;
 
       let coordinateToMove: number;
       let handleNumber: 'first' | 'second' = 'first';
@@ -168,7 +168,10 @@ export default class SliderView {
         handleNumber = this._getClosestHandleNumber(coordinateToMove);
       }
 
-      this.refreshValue(coordinateToMove, handleNumber);
+      this.refreshValue({
+        currentHandleCoordinate: coordinateToMove,
+        handleNumber,
+      });
     },
   };
 
@@ -256,11 +259,11 @@ export default class SliderView {
     this._renderRange();
   }
 
-  renderPlugin(
-    plugin: string,
-    pluginView: SliderLabelsView | SliderTooltipView,
-    number?: 'first' | 'second',
-  ): void {
+  renderPlugin({ plugin, pluginView, number }: {
+    plugin: string;
+    pluginView: SliderLabelsView | SliderTooltipView;
+    number?: 'first' | 'second';
+  }): void {
     if (plugin === 'labels') {
       pluginView.render(this.sliderHtml.wrapper);
     }
@@ -287,19 +290,22 @@ export default class SliderView {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  destroyPlugin(
-    plugin: 'labels' | 'tooltip',
-    pluginView: SliderLabelsView | SliderTooltipView,
-  ): void {
-    if (plugin === 'labels' || plugin === 'tooltip') {
-      pluginView.destroy();
+  destroyPlugin({ plugin, instance }: {
+    plugin: 'labels' | 'tooltip';
+    instance: SliderLabelsView | SliderTooltipView;
+  }): void {
+    const isLabelOrTooltip = plugin === 'labels'
+      || plugin === 'tooltip';
+
+    if (isLabelOrTooltip) {
+      instance.destroy();
     }
   }
 
-  refreshValue(
-    currentHandleCoordinate: number,
-    handleNumber?: 'first' | 'second',
-  ): void {
+  refreshValue({ currentHandleCoordinate, handleNumber }: {
+    currentHandleCoordinate: number;
+    handleNumber?: 'first' | 'second';
+  }): void {
     let correctHandleNumber: string;
 
     if (!handleNumber) {
@@ -347,11 +353,9 @@ export default class SliderView {
     const getValuesArray = (): number[] => {
       const valuesArray: number[] = [];
 
-      for (
-        let currentValue = this.options.min;
-        currentValue <= this.options.max;
-        currentValue += this.options.step
-      ) {
+      const { min, max, step } = this.options;
+
+      for (let currentValue = min; currentValue <= max; currentValue += step) {
         valuesArray.push(currentValue);
       }
 
@@ -369,10 +373,10 @@ export default class SliderView {
     let value: number;
 
     for (let i = 0; i < valuesArray.length; i += 1) {
-      if (
-        approximateValue >= valuesArray[i]
-        && approximateValue <= valuesArray[i + 1]
-      ) {
+      const isValueBetweenTheseTwo = approximateValue >= valuesArray[i]
+        && approximateValue <= valuesArray[i + 1];
+
+      if (isValueBetweenTheseTwo) {
         const rangeFromFirst = approximateValue - valuesArray[i];
         const rangeFromSecond = valuesArray[i + 1] - approximateValue;
 
@@ -451,47 +455,47 @@ export default class SliderView {
   }
 
   private _renderRange() {
-    const positions = this.handlesPositionInPixels;
+    const [firstHandle, secondHandle] = this.handlesPositionInPixels;
     const wrapperCoords = this._getCoords().wrapper;
 
     if (this.options.orientation === 'horizontal') {
       if (this.options.range === 'min') {
-        this.sliderHtml.range.style.left = `${0}px`;
-        this.sliderHtml.range.style.width = `${positions[0]}px`;
+        this.sliderHtml.range.style.left = '0px';
+        this.sliderHtml.range.style.width = `${firstHandle}px`;
       }
 
       if (this.options.range === 'max') {
-        this.sliderHtml.range.style.right = `${0}px`;
+        this.sliderHtml.range.style.right = '0px';
         this.sliderHtml.range.style.width = `${
-          wrapperCoords.width - positions[0]
+          wrapperCoords.width - firstHandle
         }px`;
       }
 
       if (this.options.range === true) {
-        this.sliderHtml.range.style.left = `${positions[0]}px`;
-        this.sliderHtml.range.style.right = `${positions[1]}px`;
-        this.sliderHtml.range.style.width = `${positions[1] - positions[0]}px`;
+        this.sliderHtml.range.style.left = `${firstHandle}px`;
+        this.sliderHtml.range.style.right = `${secondHandle}px`;
+        this.sliderHtml.range.style.width = `${secondHandle - firstHandle}px`;
       }
     }
     if (this.options.orientation === 'vertical') {
       if (this.options.range === 'min') {
-        this.sliderHtml.range.style.bottom = `${0}px`;
-        this.sliderHtml.range.style.height = `${positions[0]}px`;
+        this.sliderHtml.range.style.bottom = '0px';
+        this.sliderHtml.range.style.height = `${firstHandle}px`;
       }
 
       if (this.options.range === 'max') {
-        this.sliderHtml.range.style.top = `${0}px`;
+        this.sliderHtml.range.style.top = '0px';
         this.sliderHtml.range.style.height = `${
-          wrapperCoords.height - positions[0]
+          wrapperCoords.height - firstHandle
         }px`;
       }
 
       if (this.options.range === true) {
         this.sliderHtml.range.style.top = `${
-          wrapperCoords.height - positions[1]
+          wrapperCoords.height - secondHandle
         }px`;
-        this.sliderHtml.range.style.bottom = `${positions[0]}px`;
-        this.sliderHtml.range.style.height = `${positions[0] - positions[1]}px`;
+        this.sliderHtml.range.style.bottom = `${firstHandle}px`;
+        this.sliderHtml.range.style.height = `${firstHandle - secondHandle}px`;
       }
     }
   }
@@ -501,9 +505,7 @@ export default class SliderView {
       | VerticalClasses
       | HorizontalClasses
     ))[];
-    const wrapper = defaultClasses[0];
-    const range = defaultClasses[1];
-    const handle = defaultClasses[2];
+    const [wrapper, range, handle] = defaultClasses;
 
     this.sliderHtml.wrapper.setAttribute('class', wrapper);
     this.sliderHtml.range.setAttribute('class', range);
@@ -564,16 +566,17 @@ export default class SliderView {
   private _setHandlePositionInPixels(): void {
     if (!this.data.rendered) return;
 
-    this.handlesPositionInPixels = null;
     this.handlesPositionInPixels = [];
 
-    const range = this.options.max - this.options.min;
+    const { min, max, value } = this.options;
+    const range = max - min;
 
-    const firstValueInPercents = ((this.options.range === true
-      ? (this.options.value as number[])[0]
-      : (this.options.value as number))
-        - this.options.min)
-      / range;
+    const firstValueInPercents = (
+      (this.options.range === true
+        ? (value as number[])[0]
+        : (value as number)
+      ) - this.options.min
+    ) / range;
 
     const addHandlePosition = (handleValueInPercents: number): void => {
       this.handlesPositionInPixels.push(
@@ -610,10 +613,10 @@ export default class SliderView {
     if (this.options.range === true) this.sliderHtml.wrapper.append(this.sliderHtml.secondHandle);
   }
 
-  private _countHandleShift(
-    mouseDownEvent: MouseEvent,
-    handleNumber: 'first' | 'second',
-  ): Shift {
+  private _countHandleShift({ mouseDownEvent, handleNumber }: {
+    mouseDownEvent: MouseEvent;
+    handleNumber: 'first' | 'second';
+  }): Shift {
     const handle = handleNumber === 'first'
       ? this.sliderHtml.firstHandle
       : this.sliderHtml.secondHandle;
@@ -632,7 +635,10 @@ export default class SliderView {
         if (
           Object.prototype.hasOwnProperty.call(this.options.classes, mainClass)
         ) {
-          if (!(mainClass in hash && classes[mainClass] === hash[mainClass])) {
+          const isClassSameAsInHash = mainClass in hash
+            && classes[mainClass] === hash[mainClass];
+
+          if (!isClassSameAsInHash) {
             return true;
           }
         }
@@ -663,7 +669,10 @@ export default class SliderView {
       const firstRight = this._getCoords().firstHandle.right;
       const secondLeft = this._getCoords().secondHandle.left;
 
-      if (coordinate < secondLeft && coordinate > firstRight) {
+      const isCoordinateBetweenHandles = coordinate < secondLeft
+        && coordinate > firstRight;
+
+      if (isCoordinateBetweenHandles) {
         const firstDistance = coordinate - firstRight;
         const secondDistance = secondLeft - coordinate;
 
@@ -678,7 +687,10 @@ export default class SliderView {
       const firstTop = this._getCoords().firstHandle.top;
       const secondBottom = this._getCoords().secondHandle.bottom;
 
-      if (coordinate > secondBottom && coordinate < firstTop) {
+      const isCoordinateBetweenHandles = coordinate > secondBottom
+        && coordinate < firstTop;
+
+      if (isCoordinateBetweenHandles) {
         const firstDistance = firstTop - coordinate;
         const secondDistance = coordinate - secondBottom;
 

@@ -4,5 +4,13 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "cSpell.words": ["favicons", "devserver", "devtool", "stylelint", "stylelintrc", "lintrc"]
+  "cSpell.words": [
+    "favicons", 
+    "devserver", 
+    "devtool", 
+    "stylelint", 
+    "stylelintrc", 
+    "lintrc", 
+    "whitespaces"
+  ]
 }

@@ -15,15 +15,18 @@ describe("tooltip exists on dom and contains 'value'", () => {
   });
 
   test('tooltip rendered correctly', () => {
-    tooltipView.setOptions(
-      defaultsWithTooltip.value as number,
-      defaultsWithTooltip.orientation,
-    );
+    tooltipView.setOptions({
+      text: defaultsWithTooltip.value as number,
+      orientation: defaultsWithTooltip.orientation,
+    });
 
     view.setOptions(defaultsWithTooltip);
 
     view.render(document.body);
-    view.renderPlugin('tooltip', tooltipView);
+    view.renderPlugin({
+      plugin: 'tooltip',
+      pluginView: tooltipView,
+    });
 
     const handle = document.querySelector('.jquery-slider-handle');
     const tooltip = document.querySelector('.jquery-slider-tooltip');
@@ -37,10 +40,10 @@ describe("tooltip exists on dom and contains 'value'", () => {
     );
     defaultsWIthAnotherValue.value = 50;
 
-    tooltipView.setOptions(
-      defaultsWIthAnotherValue.value,
-      defaultsWithTooltip.orientation,
-    );
+    tooltipView.setOptions({
+      text: defaultsWIthAnotherValue.value,
+      orientation: defaultsWithTooltip.orientation,
+    });
 
     view.setOptions(defaultsWIthAnotherValue);
 
@@ -53,16 +56,19 @@ describe("tooltip exists on dom and contains 'value'", () => {
     );
     defaultsWithTooltipFunction.tooltip = (value: number) => `${value}$`;
 
-    tooltipView.setOptions(
-      defaultsWithTooltipFunction.value as number,
-      defaultsWithTooltipFunction.orientation,
-      defaultsWithTooltipFunction.tooltip,
-    );
+    tooltipView.setOptions({
+      text: defaultsWithTooltipFunction.value as number,
+      orientation: defaultsWithTooltipFunction.orientation,
+      func: defaultsWithTooltipFunction.tooltip,
+    });
 
     view.setOptions(defaultsWithTooltip);
 
     view.render(document.body);
-    view.renderPlugin('tooltip', tooltipView);
+    view.renderPlugin({
+      plugin: 'tooltip',
+      pluginView: tooltipView,
+    });
 
     const tooltip = document.querySelector('.jquery-slider-tooltip');
 
@@ -73,11 +79,11 @@ describe("tooltip exists on dom and contains 'value'", () => {
     );
     defaultsWithAnotherValue.value = 70;
 
-    tooltipView.setOptions(
-      defaultsWithAnotherValue.value,
-      defaultsWithTooltipFunction.orientation,
-      defaultsWithTooltipFunction.tooltip,
-    );
+    tooltipView.setOptions({
+      text: defaultsWithAnotherValue.value,
+      orientation: defaultsWithTooltipFunction.orientation,
+      func: defaultsWithTooltipFunction.tooltip,
+    });
 
     view.setOptions(defaultsWithAnotherValue);
 
