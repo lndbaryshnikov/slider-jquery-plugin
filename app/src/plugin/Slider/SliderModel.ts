@@ -138,6 +138,8 @@ class SliderModel {
     step: {
       incorrect:
         'Options are incorrect (option "step" value should be between "min" and "max")',
+      notAMultiple:
+        'Options are incorrect (option "step" should be a multiple of "min and "max" difference)',
     },
     tooltip: {
       incorrect:
@@ -755,6 +757,14 @@ class SliderModel {
       this._throw(errors.step.incorrect);
 
       return false;
+    }
+
+    const isStepNotAMultipleOfMinAndMaxDifference = (
+      (options.max - options.min) % options.step !== 0
+    );
+
+    if (isStepNotAMultipleOfMinAndMaxDifference) {
+      this._throw(errors.step.notAMultiple);
     }
 
     const isTooltipNotCorrect = typeof options.tooltip !== 'boolean'

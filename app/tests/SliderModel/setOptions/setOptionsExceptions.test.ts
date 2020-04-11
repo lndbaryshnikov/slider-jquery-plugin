@@ -277,6 +277,19 @@ describe('setOptionsMethod exceptions', () => {
     }).toThrow(error);
   });
 
+  test("throws exception when 'step' is not a multiple of 'min' and 'max' difference", () => {
+    const error = errors.step.notAMultiple;
+
+    expect(() => {
+      model.setOptions({ step: 26 });
+    }).toThrow(error);
+
+    expect(() => {
+      model.setOptions({ min: 3, max: 10, value: 5 });
+      model.setOptions('step', 3);
+    }).toThrow(error);
+  });
+
   test('throws exceptions when option tooltip is not true, false or function', () => {
     expect(() => {
       model.setOptions(({ tooltip: 'true' } as unknown) as UserOptions);
