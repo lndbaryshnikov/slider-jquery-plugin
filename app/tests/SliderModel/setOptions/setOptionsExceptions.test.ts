@@ -196,6 +196,17 @@ describe('setOptionsMethod exceptions', () => {
     }).toThrow(errors.minAndMax.lessOrMore('min', 'more'));
   });
 
+  test('throws exception when first value more than second', () => {
+    expect(() => {
+      model.setOptions({ range: true, value: [30, 20] });
+    }).toThrow(errors.value.firstMoreThanSecond);
+
+    expect(() => {
+      model.setOptions({ range: true, value: [20, 30] });
+      model.setOptions('value', [30, 20]);
+    }).toThrow(errors.value.firstMoreThanSecond);
+  });
+
   test("throws exception when 'value', 'min' or 'max' are incorrect", () => {
     const error = errors.value.beyond;
 

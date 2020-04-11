@@ -118,6 +118,8 @@ class SliderModel {
         'Options are incorrect (array is allowed for "value" when "range" is true)',
       rangeTrue:
         'Options are incorrect ("value" should be array when "range" is true)',
+      firstMoreThanSecond:
+        'Options are incorrect (first "value" should be less than "second")',
     },
     minAndMax: {
       lessOrMore: (option: string, lessOrMore: 'less' | 'more'): string => {
@@ -720,6 +722,14 @@ class SliderModel {
 
     if (Array.isArray(options.value)) {
       // eslint-disable-next-line no-restricted-syntax
+      const isFirstMoreOrEqualsSecond = options.value[1] <= options.value[0];
+
+      if (isFirstMoreOrEqualsSecond) {
+        this._throw(errors.value.firstMoreThanSecond);
+
+        return false;
+      }
+
       options.value.forEach((value) => {
         const isValueBetweenMinAndMax = options.min <= value && options.max >= value;
 
