@@ -19,4 +19,5 @@ mixin config-panel(options)
     each item in options
       - var [optionName, type] = item; 
 
-      +config-item({ optionName, type })
+      .config-panel__item
+        +config-item({ optionName, type })
