@@ -120,6 +120,8 @@ class SliderModel {
         'Options are incorrect ("value" should be array when "range" is true)',
       firstMoreThanSecond:
         'Options are incorrect (first "value" should be less than "second")',
+      notMultipleOfStep:
+        'Options are incorrect ("value" should be multiple of "step")',
     },
     minAndMax: {
       lessOrMore: (option: string, lessOrMore: 'less' | 'more'): string => {
@@ -722,6 +724,9 @@ class SliderModel {
       this._throw(errors.value.rangeTrue);
     }
 
+    const isStepNotAMultipleOfValue = (value: number) => value % options.step !== 0;
+    const isValueBetweenMinAndMax = (value: number) => options.min <= value && options.max >= value;
+
     if (Array.isArray(options.value)) {
       // eslint-disable-next-line no-restricted-syntax
       const isFirstMoreOrEqualsSecond = options.value[1] <= options.value[0];
@@ -733,21 +738,27 @@ class SliderModel {
       }
 
       options.value.forEach((value) => {
-        const isValueBetweenMinAndMax = options.min <= value && options.max >= value;
-
-        if (!isValueBetweenMinAndMax) {
+        if (!isValueBetweenMinAndMax(value)) {
           this._throw(errors.value.beyond);
+
+          return false;
+        }
+
+        if (isStepNotAMultipleOfValue(value)) {
+          this._throw(errors.value.notMultipleOfStep);
 
           return false;
         }
       });
     } else {
-      const isValueBetweenMinAndMax = options.min <= options.value && options.max >= options.value;
-
-      if (!isValueBetweenMinAndMax) {
+      if (!isValueBetweenMinAndMax(options.value)) {
         this._throw(errors.value.beyond);
 
         return false;
+      }
+
+      if (isStepNotAMultipleOfValue(options.value)) {
+        this._throw(errors.value.notMultipleOfStep);
       }
     }
 

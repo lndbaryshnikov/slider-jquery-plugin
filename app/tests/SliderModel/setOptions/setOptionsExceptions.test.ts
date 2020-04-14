@@ -249,6 +249,42 @@ describe('setOptionsMethod exceptions', () => {
     }).toThrow(error);
   });
 
+  test("throws exception when 'value' is not a multiple of 'step'", () => {
+    const error = errors.value.notMultipleOfStep;
+
+    expect(() => {
+      model.setOptions({
+        max: 10,
+        step: 2,
+        value: 1,
+      });
+    }).toThrow(error);
+
+    expect(() => {
+      model.setOptions({ max: 15, step: 5 });
+
+      model.setOptions('value', 3);
+    }).toThrow(error);
+
+    expect(() => {
+      model.setOptions({ max: 15, step: 5 });
+
+      model.setOptions({
+        range: true,
+        value: [1, 5],
+      });
+    }).toThrow(error);
+
+    expect(() => {
+      model.setOptions({ max: 15, step: 5 });
+
+      model.setOptions({
+        range: true,
+        value: [1, 3],
+      });
+    }).toThrow(error);
+  });
+
   test("throws exception when 'step' is not between 'min' and 'max'", () => {
     const error = errors.step.incorrect;
 
