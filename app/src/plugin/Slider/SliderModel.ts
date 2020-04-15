@@ -724,7 +724,7 @@ class SliderModel {
       this._throw(errors.value.rangeTrue);
     }
 
-    const isStepNotAMultipleOfValue = (value: number) => value % options.step !== 0;
+    const isStepNotAMultipleOfValue = (value: number) => (value - options.min) % options.step !== 0;
     const isValueBetweenMinAndMax = (value: number) => options.min <= value && options.max >= value;
 
     if (Array.isArray(options.value)) {
