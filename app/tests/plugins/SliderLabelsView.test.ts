@@ -119,8 +119,6 @@ describe('tooltip works correctly', () => {
     expect(!!labelsOnDom[0].querySelector('.jquery-slider-pip')).toBeTruthy();
     const value0 = extractValue(labelsOnDom[0].innerHTML);
 
-    console.log(labelsOnDom[0].innerHTML);
-
     expect(value0).toBe('0$');
 
     labels.setOptions(labelsOptionsPipsFalse);

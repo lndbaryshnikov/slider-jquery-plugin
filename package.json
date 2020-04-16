@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode production --env production",
-    "test": "npm run jestPup && npm run jest",
+    "test": "npm run build && npm run jest && npm run jestPup",
     "server": "webpack-dev-server --mode development --open --env development",
     "lint": "npm run eslint && npm run stylelint && npm run pug-lint",
     "deploy": "gh-pages -d dist",
@@ -15,8 +15,8 @@
 
     "jest": "jest -c jest.config.js",
     "watchJest": "jest -c jest.config.js --watchAll",
-    "jestPup": "npm run build && jest -c jest.config.pup.js",
-    "watchJestPup": "npm run build && jest -c jest.config.pup.js --watchAll",
+    "jestPup": "jest -c jest.config.pup.js",
+    "watchJestPup": "jest -c jest.config.pup.js --watchAll",
 
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx app",
     "eslintFix": "eslint --ext .js,.jsx,.ts,.tsx app --fix",

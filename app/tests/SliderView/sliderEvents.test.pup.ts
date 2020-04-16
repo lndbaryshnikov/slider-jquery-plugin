@@ -389,12 +389,6 @@ describe('slider events', () => {
 
       await refreshValues();
 
-      console.log(
-        newSecondHandleCoords.top,
-        newFirstHandleCoords.top,
-        newFirstHandleCoords.left,
-      );
-
       expect(valueOption).toEqual([0, 1000]);
 
       expect(firstHandleCoords.bottom).toBe(sliderCoords.bottom + firstHandleCoords.height / 2);
@@ -413,12 +407,6 @@ describe('slider events', () => {
 
       await refreshValues();
 
-      console.log(
-        newSecondHandleCoords.top,
-        newFirstHandleCoords.top,
-        newFirstHandleCoords.left,
-      );
-
       expect(newFirstHandleCoords.top)
         .toBe(sliderCoords.top + sliderCoords.height * 0.7 - firstHandleCoords.height / 2);
       expect(newSecondHandleCoords.top)
@@ -436,12 +424,6 @@ describe('slider events', () => {
         .moveHandleToCoords(handleLeft, sliderCoords.top + sliderCoords.height * 0.1);
 
       await refreshValues();
-
-      console.log(
-        newSecondHandleCoords.top,
-        newFirstHandleCoords.top,
-        newFirstHandleCoords.left,
-      );
 
       expect(newSecondHandleCoords.top)
         .toBe(

@@ -342,7 +342,7 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions({
         tooltip: ((() => {
-          console.log(34);
+          Math.round(34.5);
         }) as unknown) as ValueFunction,
       });
     }).toThrow(errors.tooltip.incorrectFunction);
@@ -357,7 +357,7 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions('tooltip', (() => {
-        console.log(34);
+        Math.round(34.5);
       }) as ValueFunction);
     }).toThrow(errors.tooltip.incorrectFunction);
 
