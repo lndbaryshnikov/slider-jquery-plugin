@@ -143,7 +143,6 @@ class ConfigItem {
     const isInputOrSelect = type === 'input' || type === 'select';
 
     const notify = <T extends ConfigItemType>(value: ConfigItemValue<T>) => {
-      console.log(value, typeof value);
       this.valueChangedSubject.notifyObservers({
         option: this.optionName,
         value,

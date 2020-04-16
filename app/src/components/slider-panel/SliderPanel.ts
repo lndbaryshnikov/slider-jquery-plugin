@@ -60,6 +60,9 @@ export default class SliderPanel {
         step: lastStep,
       } = lastOptions;
 
+      const newSliderOptions: UserOptions = {};
+      const newPanelOptions: ValueObject[] = [];
+
       const getClosestCorrectValue = ({ value, step, min }: {
         value: number;
         step: number;
@@ -76,85 +79,95 @@ export default class SliderPanel {
         return closestAdjustedValue + min;
       };
 
+      const getCorrectedValue = ({
+        value,
+        position,
+        min,
+        max,
+        step,
+      }: {
+        value: number;
+        position: 'first' | 'last' | 'single';
+        min: number;
+        max: number;
+        step: number;
+      }): number => {
+        let formattedValue: number;
+
+        if (position === 'single') {
+          const maybeMaxOrClosest = value > max
+            ? max
+            : getClosestCorrectValue({ value, step, min });
+
+          formattedValue = value < min ? min : maybeMaxOrClosest;
+        }
+
+        if (position === 'first') {
+          const maybeAlmostMaxOrClosest = value > max || value === max
+            ? max - step
+            : getClosestCorrectValue({ value, step, min });
+
+          formattedValue = value < min ? min : maybeAlmostMaxOrClosest;
+        }
+
+        if (position === 'last') {
+          const maybeMaxOrClosest = value > max
+            ? max
+            : getClosestCorrectValue({ value, step, min });
+
+          formattedValue = value < min || value === min ? min + step : maybeMaxOrClosest;
+        }
+
+        return formattedValue;
+      };
+
+
       if (option === 'value') {
+        let { range: newRange } = lastOptions;
+
         const valueArray = typeof panelValue === 'number'
           ? [panelValue]
           : (panelValue as number[]);
 
-        let { range: newRange } = lastOptions;
-        const { min, max, step } = lastOptions;
-
         const isOneValuePassed = (array: number[]): boolean => array.length === 1;
         const areTwoValuePassed = (array: number[]): boolean => array.length === 2;
 
-        const getCorrectedValue = ({ value, position }: {
-          value: number;
-          position: 'first' | 'last' | 'single';
-        }): number => {
-          let formattedValue: number;
-
-          if (position === 'single') {
-            const maybeMaxOrClosest = value > max
-              ? max
-              : getClosestCorrectValue({ value, step, min });
-
-            formattedValue = value < min ? min : maybeMaxOrClosest;
-          }
-
-          if (position === 'first') {
-            const maybeAlmostMaxOrClosest = value > max
-              ? max - step
-              : getClosestCorrectValue({ value, step, min });
-
-            formattedValue = value < min ? min : maybeAlmostMaxOrClosest;
-          }
-
-          if (position === 'last') {
-            const maybeMaxOrClosest = value > max
-              ? max
-              : getClosestCorrectValue({ value, step, min });
-
-            formattedValue = value < min ? min + step : maybeMaxOrClosest;
-          }
-
-          return formattedValue;
-        };
-
-        const wasRangeTrue = lastOptions.range === true;
+        const wasRangeTrue = lastRange === true;
 
         if (isOneValuePassed(valueArray)) {
-          let correctFirstValue: number;
+          let newFirstValue: number;
 
           if (wasRangeTrue) {
             valueArray.push(lastOptions.max);
             newRange = true;
 
-            correctFirstValue = getCorrectedValue({
+            newFirstValue = getCorrectedValue({
               value: valueArray[0],
               position: 'first',
+              min: lastMin,
+              max: lastMax,
+              step: lastStep,
             });
 
-            if (correctFirstValue === max) {
-              correctFirstValue -= step;
+            if (newFirstValue === lastMax) {
+              newFirstValue -= lastStep;
             }
           } else {
-            correctFirstValue = getCorrectedValue({
+            newFirstValue = getCorrectedValue({
               value: valueArray[0],
               position: 'single',
+              min: lastMin,
+              max: lastMax,
+              step: lastStep,
             });
           }
 
-          valueArray[0] = correctFirstValue;
+          valueArray[0] = newFirstValue;
         }
 
         if (areTwoValuePassed(valueArray)) {
           if (!wasRangeTrue) {
             newRange = true;
-
-            this.configPanel.setValue({
-              option: 'range',
-              value: 'true',
-            });
           }
 
           const isSecondChanged = !wasRangeTrue || lastValue[1] !== valueArray[1];
@@ -170,10 +183,13 @@ export default class SliderPanel {
             correctSecondValue = getCorrectedValue({
               value: correctSecondValue,
               position: 'last',
+              min: lastMin,
+              max: lastMax,
+              step: lastStep,
             });
 
             if (isSecondEqualsOrLessThanFirst(correctFirstValue, correctSecondValue)) {
-              correctFirstValue = correctSecondValue - step;
+              correctFirstValue = correctSecondValue - lastStep;
             }
           }
 
@@ -181,10 +197,13 @@ export default class SliderPanel {
             correctFirstValue = getCorrectedValue({
               value: correctFirstValue,
               position: 'first',
+              min: lastMin,
+              max: lastMax,
+              step: lastStep,
             });
 
             if (isSecondEqualsOrLessThanFirst(correctFirstValue, correctSecondValue)) {
-              correctSecondValue = correctFirstValue + step;
+              correctSecondValue = correctFirstValue + lastStep;
             }
           }
 
@@ -192,29 +211,21 @@ export default class SliderPanel {
           valueArray[1] = correctSecondValue;
         }
 
-        this.configPanel.setValue({
-          option,
-          value: isOneValuePassed(valueArray) ? valueArray[0] : valueArray,
-        });
-
-        try {
-          this.slider.setOptions({
-            value: isOneValuePassed(valueArray) ? valueArray[0] : valueArray,
-            range: newRange,
-          });
-        } catch (error) {
-          alert(error);
-
-          this.configPanel.setValue({
-            option,
-            value: lastValue,
-          });
-
-          this.configPanel.setValue({
+        newPanelOptions.push(
+          {
             option: 'range',
-            value: lastRange,
-          });
-        }
+            value: 'true',
+          },
+          {
+            option: 'value',
+            value: isOneValuePassed(valueArray) ? valueArray[0] : valueArray,
+          },
+        );
+
+        Object.assign(newSliderOptions, {
+          value: isOneValuePassed(valueArray) ? valueArray[0] : valueArray,
+          range: newRange,
+        });
       } else if (option === 'range') {
         let { value: newValue } = lastOptions;
 
@@ -223,11 +234,6 @@ export default class SliderPanel {
 
         if (isRangeTruePassedWhenValueIsNotArray) {
           newValue = [lastValue as number, lastOptions.max];
-
-          this.configPanel.setValue({
-            option: 'value',
-            value: newValue,
-          });
         }
 
         const isRangeNotTruePassedWhenValueIsArray = panelValue !== true
@@ -235,34 +241,22 @@ export default class SliderPanel {
 
         if (isRangeNotTruePassedWhenValueIsArray) {
           [newValue] = lastValue as number[];
-
-          this.configPanel.setValue({
-            option: 'value',
-            value: newValue,
-          });
         }
 
-        try {
-          this.slider.setOptions({
-            value: newValue,
-            [option]: panelValue,
-          } as UserOptions);
-        } catch (error) {
-          alert(error);
-
-          this.configPanel.setValue({
+        newPanelOptions.push(
+          {
             option: 'value',
-            value: lastValue,
-          });
+            value: newValue,
+          },
+        );
 
-          this.configPanel.setValue({
-            option,
-            value: lastOptions[option],
-          });
-        }
+        Object.assign(newSliderOptions, {
+          value: newValue,
+          range: panelValue,
+        });
       } else if (option === 'step') {
-        let correctValue: number | [number, number];
         const newStep = panelValue as number;
+        let newValue: number | [number, number];
 
         const lastDifference = lastMax - lastMin;
         const isNotAMultiple = lastDifference % newStep !== 0;
@@ -273,23 +267,11 @@ export default class SliderPanel {
 
         const newMax = lastMin + newDifference;
 
-        this.configPanel.setValue({
-          option: 'max',
-          value: newMax,
-        });
-
         if (typeof lastValue === 'number') {
-          correctValue = getClosestCorrectValue({
+          newValue = getClosestCorrectValue({
             value: lastValue,
             step: panelValue as number,
             min: lastMin,
-          });
-
-          console.log(lastValue, correctValue);
-
-          this.configPanel.setValue({
-            option: 'value',
-            value: correctValue,
           });
         } else if (Array.isArray(lastValue)) {
           let [correctFirstValue, correctSecondValue] = lastValue;
@@ -316,80 +298,134 @@ export default class SliderPanel {
             }
           }
 
-          correctValue = [correctFirstValue, correctSecondValue];
+          newValue = [correctFirstValue, correctSecondValue];
         }
 
-        console.log(lastMax, newMax);
-
-        try {
-          this.slider.setOptions({
-            max: newMax,
-            value: correctValue,
-            [option]: panelValue,
-          } as UserOptions);
-        } catch (error) {
-          alert(error);
-
-          this.configPanel.setValue({
-            option: 'value',
-            value: lastValue,
-          });
-
-          this.configPanel.setValue({
-            option,
-            value: lastOptions[option],
-          });
-
-          this.configPanel.setValue({
+        newPanelOptions.push(
+          {
             option: 'max',
-            value: lastMax,
+            value: newMax,
+          },
+          {
+            option: 'value',
+            value: newValue,
+          },
+        );
+
+        Object.assign(newSliderOptions, {
+          max: newMax,
+          value: newValue,
+          step: panelValue,
+        });
+      } else if (option === 'min' || option === 'max') {
+        let {
+          min: newMin,
+          max: newMax,
+          value: newValue,
+          step: newStep,
+        } = lastOptions;
+
+        if (option === 'min') {
+          newMin = panelValue as number;
+
+          if (newMin >= lastMax) {
+            newMax = newMin + lastStep;
+          }
+        }
+
+        if (option === 'max') {
+          newMax = panelValue as number;
+
+          if (newMax <= lastMin) {
+            newMin = newMax - lastStep;
+          }
+        }
+
+        const newDifference = newMax - newMin;
+
+        while (newDifference % newStep !== 0) {
+          newStep -= 0.5;
+
+          if (newStep === 0) {
+            newStep = lastStep;
+
+            break;
+          }
+        }
+
+        if (typeof lastValue === 'number') {
+          newValue = getCorrectedValue({
+            value: lastValue,
+            position: 'single',
+            min: newMin,
+            max: newMax,
+            step: newStep,
           });
         }
-        // } else if (option === 'min' || option === 'max') {
-        //   const { min: lastMin, max: lastMax, step: lastStep } = lastOptions;
 
-        //   let {
-        //     min: newMin, max: newMax, value: newValue, step: newStep,
-        //   } = lastOptions;
+        if (Array.isArray(lastValue)) {
+          const correctFirstValue = getCorrectedValue({
+            value: lastValue[0],
+            position: 'first',
+            min: newMin,
+            max: newMax,
+            step: newStep,
+          });
 
-        //   if (option === 'min') {
-        //     newMin = panelValue as number;
+          const correctSecondValue = getCorrectedValue({
+            value: lastValue[1],
+            position: 'last',
+            min: newMin,
+            max: newMax,
+            step: newStep,
+          });
 
-        //     if (newMin >= lastMax) {
-        //       newMax = newMin + lastStep;
-        //     }
+          newValue = [correctFirstValue, correctSecondValue];
+        }
 
-        //     const newDifference = newMax - newMin;
-        //     const isNotAMultipleOfNewDifference = newDifference % lastStep !== 0;
+        newPanelOptions.push(
+          {
+            option: 'max',
+            value: newMax,
+          },
+          {
+            option: 'min',
+            value: newMin,
+          },
+          {
+            option: 'step',
+            value: newStep,
+          },
+          {
+            option: 'value',
+            value: newValue,
+          },
+        );
 
-        //     if (isNotAMultipleOfNewDifference) {
-        //       if (newDifference < lastStep) {
-        //         if (newDifference > 1) newStep = 1;
-        //       }
-        //     }
-
-        //     if (typeof lastValue === 'number') {
-        //       const maybeEqualsNewMax = lastValue > newMax ? newMax : lastValue;
-
-        //       newValue = lastValue < newMin ? newMin : maybeEqualsNewMax;
-        //     }
-
-      //     // if (Array.isArray(lastValue)) {
-      //     //   const maybeEqualsNewMax = lastValue > newMax ? newMax : lastValue;
-      //     //   newValue = lastValue < newMin ? newMin : maybeEqualsNewMax;
-      //     // }
-      //   }
+        Object.assign(newSliderOptions, {
+          step: newStep,
+          min: newMin,
+          max: newMax,
+          value: newValue,
+        });
       } else {
-        try {
-          this.slider.setOptions(option, panelValue);
-        } catch (error) {
-          alert(error);
+        Object.assign(newSliderOptions, {
+          [option]: panelValue,
+        });
+      }
+      try {
+        this.slider.setOptions(newSliderOptions);
 
-          this.configPanel.setValue({
-            option,
-            value: lastOptions[option] as ConfigItemValue<ConfigItemType>,
-          });
-        }
+        newPanelOptions.forEach((valueObject) => {
+          this.configPanel.setValue(valueObject);
+        });
+      } catch (error) {
+        alert(error);
+
+        this.configPanel.setValue({
+          option,
+          value: lastOptions[option] as ConfigItemValue<ConfigItemType>,
+        });
       }
     };
   }
