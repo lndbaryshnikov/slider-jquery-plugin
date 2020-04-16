@@ -290,7 +290,7 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({
-        step: 0,
+        step: -1,
       });
     }).toThrow(error);
 
@@ -321,7 +321,7 @@ describe('setOptionsMethod exceptions', () => {
     }).toThrow(error);
 
     expect(() => {
-      model.setOptions({ min: 3, max: 10, value: 5 });
+      model.setOptions({ min: 3, max: 10, value: 3 });
       model.setOptions('step', 3);
     }).toThrow(error);
   });
