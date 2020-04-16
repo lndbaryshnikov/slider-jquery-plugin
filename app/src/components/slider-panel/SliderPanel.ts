@@ -427,6 +427,49 @@ export default class SliderPanel {
           value: lastOptions[option] as ConfigItemValue<ConfigItemType>,
         });
       }
+
+      console.log('hi');
+      const newOptions = this.slider.getOptions() as Options;
+      const {
+        max,
+        min,
+        step,
+        labels,
+        pips,
+      } = newOptions;
+
+      const hasPips = !!pips;
+      const hasLabels = !!labels;
+
+      const pipsQuantity = ((max - min) / step) + 1;
+
+      const newLabels = (hasLabels && (pipsQuantity > 16) ? false : labels) as boolean;
+
+      const maybeTrue = hasLabels && (pipsQuantity > 16) ? true : pips;
+      const newPips = hasPips && (pipsQuantity > 51) ? false : maybeTrue;
+
+      const haveLabelsChanged = newLabels !== labels;
+      const havePipsChanged = newPips !== pips;
+
+      console.log(newLabels, newPips);
+
+      if (haveLabelsChanged) {
+        this.slider.setOptions('labels', newLabels);
+
+        this.configPanel.setValue({
+          option: 'labels',
+          value: newLabels,
+        });
+      }
+
+      if (havePipsChanged) {
+        this.slider.setOptions('pips', newPips);
+
+        this.configPanel.setValue({
+          option: 'pips',
+          value: newPips,
+        });
+      }
     };
   }
 
