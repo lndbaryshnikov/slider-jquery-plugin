@@ -255,22 +255,32 @@ export default class SliderPanel {
           range: panelValue,
         });
       } else if (option === 'step') {
-        const newStep = panelValue as number;
+        let newStep = panelValue as number;
         let newValue: number | [number, number];
 
         const lastDifference = lastMax - lastMin;
         const isNotAMultiple = lastDifference % newStep !== 0;
 
-        const newDifference = isNotAMultiple
-          ? Math.ceil(lastDifference / newStep) * newStep
-          : lastDifference;
+        newStep = newStep > 0 ? newStep : 1;
 
-        const newMax = lastMin + newDifference;
+        if (isNotAMultiple) {
+          newStep = Math.round(newStep);
+
+          while (lastDifference % newStep !== 0) {
+            newStep -= 0.5;
+
+            if (newStep === 0) {
+              newStep = lastStep;
+
+              break;
+            }
+          }
+        }
 
         if (typeof lastValue === 'number') {
           newValue = getClosestCorrectValue({
             value: lastValue,
-            step: panelValue as number,
+            step: newStep,
             min: lastMin,
           });
         } else if (Array.isArray(lastValue)) {
@@ -291,8 +301,8 @@ export default class SliderPanel {
           if (correctFirstValue === correctSecondValue) {
             if (correctFirstValue === lastMin) {
               correctSecondValue = lastMin + newStep;
-            } else if (correctSecondValue === newMax) {
-              correctFirstValue = newMax - newStep;
+            } else if (correctSecondValue === lastMax) {
+              correctFirstValue = lastMax - newStep;
             } else {
               correctSecondValue = correctFirstValue + newStep;
             }
@@ -304,18 +314,22 @@ export default class SliderPanel {
         newPanelOptions.push(
           {
             option: 'max',
-            value: newMax,
+            value: lastMax,
           },
           {
             option: 'value',
             value: newValue,
           },
+          {
+            option: 'step',
+            value: newStep,
+          },
         );
 
         Object.assign(newSliderOptions, {
-          max: newMax,
+          max: lastMax,
           value: newValue,
-          step: panelValue,
+          step: newStep,
         });
       } else if (option === 'min' || option === 'max') {
         let {
