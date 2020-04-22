@@ -83,6 +83,12 @@ export default class SliderTooltipView {
     tooltip.setAttribute('class', 'jquery-slider-tooltip');
     tooltip.style.position = 'absolute';
 
+    const stopMousedownPropagationHandler = (clickEvent: MouseEvent): void => {
+      clickEvent.stopPropagation();
+    };
+
+    tooltip.addEventListener('mousedown', stopMousedownPropagationHandler);
+
     this.tooltipHtml = tooltip;
   }
 
