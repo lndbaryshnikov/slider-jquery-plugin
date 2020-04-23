@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import puppeteer, { Browser, Page } from 'puppeteer';
 
 import SliderPupPage, { Coords } from '../../src/plugin/SliderPupPage/SliderPupPage';
@@ -26,8 +25,6 @@ describe('slider events', () => {
   });
 
   let sliderCoords: Coords;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let rangeCoords: Coords;
   let firstHandleCoords: Coords;
 
   let sliderMiddle: { left: number; top: number };
@@ -37,7 +34,6 @@ describe('slider events', () => {
       await sliderPage.createSlider({ orientation: 'vertical', animate: false });
 
       sliderCoords = await sliderPage.getSliderCoords();
-      rangeCoords = await sliderPage.getRangeCoords();
       firstHandleCoords = await sliderPage.getFirstHandleCoords();
 
       sliderMiddle = await sliderPage.getSliderMiddle();
@@ -450,7 +446,6 @@ describe('slider events', () => {
       await sliderPage.createSlider({ animate: false });
 
       sliderCoords = await sliderPage.getSliderCoords();
-      rangeCoords = await sliderPage.getRangeCoords();
       firstHandleCoords = await sliderPage.getFirstHandleCoords();
 
       sliderMiddle = await sliderPage.getSliderMiddle();
@@ -821,7 +816,6 @@ describe('slider events', () => {
       await sliderPage.createSlider({ animate: false });
 
       sliderCoords = await sliderPage.getSliderCoords();
-      rangeCoords = await sliderPage.getRangeCoords();
       firstHandleCoords = await sliderPage.getFirstHandleCoords();
 
       sliderMiddle = await sliderPage.getSliderMiddle();

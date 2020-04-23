@@ -6,8 +6,7 @@ import SliderLabelsView, {
 
 const extractValue = (value: string) => value
   .replace(/\d+px/, '')
-// eslint-disable-next-line no-useless-escape
-  .replace(/[<>="\\ a-z\/\-:;]/gi, '');
+  .replace(/[<>="\\ a-z/\-:;]/gi, '');
 
 describe("tooltip exists on dom and contains 'value'", () => {
   let view: SliderView;

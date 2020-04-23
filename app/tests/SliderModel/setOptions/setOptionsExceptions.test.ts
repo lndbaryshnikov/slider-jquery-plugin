@@ -406,8 +406,7 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions({
         pips: true,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        labels: (((value: number) => {}) as unknown) as Options['labels'],
+        labels: (((value: number) => { Math.round(value); }) as unknown) as Options['labels'],
       });
     }).toThrow(errors.labels.incorrectFunction);
 
@@ -424,15 +423,13 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions(
         'labels',
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (((value: number) => true) as unknown) as Options['labels'],
+        ((() => true) as unknown) as Options['labels'],
       );
     }).toThrow(errors.labels.incorrectFunction);
   });
 
   test('throws exception when change is not function or false', () => {
     expect(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       model.setOptions({ change: true });
     }).toThrow(errors.change.incorrect);

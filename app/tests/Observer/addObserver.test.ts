@@ -4,15 +4,13 @@ describe('addObserver method', () => {
   test('addObserver method works', () => {
     const observer = new Observer();
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    observer.addObserver(() => {});
+    observer.addObserver((error: string) => { console.log(error); });
 
     expect(observer.observers.length).toBe(1);
   });
 
   test('throws an error when observer is not a function', () => {
     const test = () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       new Observer().addObserver('Hello!');
     };
@@ -24,7 +22,6 @@ describe('addObserver method', () => {
     const makeFuncForTestErrors = (
       firstFunc: Function,
       secondFunc: Function = firstFunc,
-      // eslint-disable-next-line func-names
     ): Function => function (): void {
       const observer = new Observer();
 

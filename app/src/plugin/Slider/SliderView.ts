@@ -289,7 +289,6 @@ export default class SliderView {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   destroyPlugin({ plugin, instance }: {
     plugin: 'labels' | 'tooltip';
     instance: SliderLabelsView | SliderTooltipView;

@@ -264,10 +264,13 @@ export default class SliderPanel {
         newStep = newStep > 0 ? newStep : 1;
 
         if (isNotAMultiple) {
+          const errorMessage = (
+            `'${newStep}' - incorrect step, because it's not multiple of 'max' and 'min' difference`
+          );
+
           this.configPanel.showError({
             option: 'step',
-            errorMessage:
-              `'${newStep}' - incorrect step, because it's not multiple of 'max' and 'min' difference`,
+            errorMessage,
           });
 
           newStep = Math.round(newStep);

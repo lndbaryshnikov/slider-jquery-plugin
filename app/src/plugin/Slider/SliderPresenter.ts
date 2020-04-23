@@ -78,13 +78,12 @@ class SliderPresenter {
   ):
     | Options
     | Options[keyof Options]
-    | Options['classes'][keyof Options['classes']] {
+    | Options['classes'][keyof Options['classes']]
+    | void {
     if (!this.data.setUp) {
       throw new Error(SliderModel.optionsErrors.notSet);
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     return this.modelInstance.getOptions(option, className);
   }
 

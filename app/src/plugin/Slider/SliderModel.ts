@@ -629,10 +629,7 @@ class SliderModel {
       return false;
     }
 
-    let mainClass: keyof typeof options.classes;
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (mainClass in options.classes) {
+    Object.keys(options.classes).forEach((mainClass) => {
       if (Object.prototype.hasOwnProperty.call(options.classes, mainClass)) {
         if (mainClass.trim() !== mainClass) {
           this._throw(errors.classes.extraWs);
@@ -640,7 +637,7 @@ class SliderModel {
           return false;
         }
       }
-    }
+    });
 
     const classesKeys = Object.keys(options.classes);
     const defaultClassesKeys = Object.keys(defaults.classes);
@@ -651,8 +648,7 @@ class SliderModel {
       return false;
     }
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (mainClass in options.classes) {
+    Object.keys(options.classes).forEach((mainClass) => {
       if (Object.prototype.hasOwnProperty.call(options.classes, mainClass)) {
         if (typeof options.classes[mainClass] !== 'string') {
           this._throw(errors.options.incorrectType('classes', 'string'));
@@ -660,7 +656,7 @@ class SliderModel {
           return false;
         }
       }
-    }
+    });
 
     const checkType = (
       type: 'string' | 'number' | 'boolean',
@@ -728,7 +724,6 @@ class SliderModel {
     const isValueBetweenMinAndMax = (value: number) => options.min <= value && options.max >= value;
 
     if (Array.isArray(options.value)) {
-      // eslint-disable-next-line no-restricted-syntax
       const isFirstMoreOrEqualsSecond = options.value[1] <= options.value[0];
 
       if (isFirstMoreOrEqualsSecond) {
@@ -869,10 +864,9 @@ class SliderModel {
     const optionsCopy: Options | UserOptions = {};
 
     Object.entries(options).forEach(([key, value]) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       optionsCopy[key] = value;
     });
+
     const isOrientationNotCorrect = orientation !== undefined
       && orientation !== 'horizontal'
       && orientation !== 'vertical';
@@ -901,11 +895,9 @@ class SliderModel {
     const isResultOptionsProcessingRequired = type === 'result';
 
     if (isResultOptionsProcessingRequired) {
-      let mainClass: keyof Options['classes'];
       const values: string[] = [];
 
-      // eslint-disable-next-line no-restricted-syntax
-      for (mainClass as string in optionsCopy.classes) {
+      Object.keys(optionsCopy.classes).forEach((mainClass) => {
         if (
           Object.prototype.hasOwnProperty.call(optionsCopy.classes, mainClass)
         ) {
@@ -913,7 +905,7 @@ class SliderModel {
 
           delete optionsCopy.classes[mainClass];
         }
-      }
+      });
 
       [
         optionsCopy.classes[this.classes.slider.complete(correctOrientation)],

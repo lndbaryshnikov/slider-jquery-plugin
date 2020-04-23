@@ -21,7 +21,9 @@ interface SliderMethods {
 }
 
 (($) => {
-  const getData = (element: JQueryElementWithSlider): JQuery => element.data('slider');
+  const getData = (element: JQuery<HTMLElement>): {
+    slider?: SliderPresenter;
+  } => element.data('slider');
 
   const setData = ({ root, slider }: {
     root: JQueryElementWithSlider;
@@ -69,9 +71,8 @@ interface SliderMethods {
       const data = getData($this);
 
       if (data) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         data.slider.destroy();
+
         $this.removeData('slider');
       } else throwErr(false);
     },
@@ -81,8 +82,6 @@ interface SliderMethods {
 
       const data = getData($this);
       if (data) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         const { slider } = data;
 
         if (userOptions.length === 0) {

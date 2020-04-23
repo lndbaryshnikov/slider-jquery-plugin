@@ -1,5 +1,6 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Browser, ElementHandle, Page } from 'puppeteer';
+import {
+  Browser, ElementHandle, Page, JSHandle,
+} from 'puppeteer';
 
 import { JQueryElementWithSlider } from '../jquery-slider';
 import { Options, RestOptionsToSet, UserOptions } from '../Slider/SliderModel';
@@ -28,8 +29,11 @@ export default class SliderPupPage {
 
   private tooltip: ElementHandle = null;
 
-  // eslint-disable-next-line no-useless-constructor
-  constructor(private browser: Browser) {}
+  private browser: Browser
+
+  constructor(browser: Browser) {
+    this.browser = browser;
+  }
 
   async createPage() {
     this.pupPage = await this.browser.newPage();
@@ -53,9 +57,7 @@ export default class SliderPupPage {
       $('body').append(root);
 
       root.slider(optionsToEval);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-    }, options);
+    }, options as JSHandle<UserOptions>);
 
     await this._defineElements(options);
   }
@@ -70,13 +72,9 @@ export default class SliderPupPage {
           'options',
           ...optionsToEval,
         );
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
       },
       this.root,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      ...options,
+      ...options as JSHandle<UserOptions | RestOptionsToSet>[],
     );
 
     const optionsSet = (await this.getOptions()) as Options;
@@ -93,12 +91,8 @@ export default class SliderPupPage {
         'options',
         ...optionsToEval,
       ),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       this.root,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      ...options,
+      ...options as JSHandle<UserOptions | RestOptionsToSet>[],
     )) as unknown) as
       | Options
       | (Options[keyof Options] | Options['classes'][keyof Options['classes']]);
@@ -276,8 +270,6 @@ export default class SliderPupPage {
   ): Promise<void> {
     if (isSecond && !this.secondHandle) throw new Error("second handle doesn't exist");
 
-    // console.log(isSecond);
-
     let handleCoords: Coords;
 
     if (isSecond) {
@@ -316,7 +308,7 @@ export default class SliderPupPage {
 
     if (isRangeTrue) {
       // eslint-disable-next-line prefer-destructuring
-      this.secondHandle = (await this.pupPage.$$('.jquery-slider-handle'))[1];
+      [, this.secondHandle] = await this.pupPage.$$('.jquery-slider-handle');
     } else this.secondHandle = null;
 
     const isTooltipRequired = options && options.tooltip;
