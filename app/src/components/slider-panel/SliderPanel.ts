@@ -272,21 +272,7 @@ export default class SliderPanel {
             option: 'step',
             errorMessage,
           });
-
-          newStep = Math.round(newStep);
-
-          while (lastDifference % newStep !== 0) {
-            newStep -= 0.5;
-
-            if (newStep === 0) {
-              newStep = lastStep;
-
-              break;
-            }
-          }
-        }
-
-        if (typeof lastValue === 'number') {
+        } else if (typeof lastValue === 'number') {
           newValue = getClosestCorrectValue({
             value: lastValue,
             step: newStep,
@@ -443,7 +429,7 @@ export default class SliderPanel {
           this.configPanel.setValue(valueObject);
         });
       } catch (error) {
-        alert(error);
+        console.log(error);
 
         this.configPanel.setValue({
           option,
