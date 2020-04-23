@@ -47,6 +47,17 @@ class ConfigPanel {
     this.panel[option].setValue(value);
   }
 
+  showError({ option, errorMessage }: {
+    option: keyof PanelOptions;
+    errorMessage: string;
+  }) {
+    const item = this.panel[option];
+
+    console.log('I\'m here', item);
+
+    item.showError(errorMessage);
+  }
+
   private _definePanel(options: PanelOptions): void {
     const { wrapper } = this;
 

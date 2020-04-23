@@ -1,6 +1,7 @@
 .config-item {
   display: flex;
   justify-content: space-between;
+  position: relative;
 
   &__sign {
     float: left;
@@ -36,6 +37,12 @@
     padding: 0.2rem;
     color: whitesmoke;
     text-align: center;
+
+    &_color {
+      &_red {
+        background-color: red;
+      }
+    }
   }
 
   &__select {
@@ -45,5 +52,41 @@
     padding: 0.2rem;
     color: whitesmoke;
     text-align: center;
+  }
+
+  &__error-tooltip {
+    position: absolute;
+    background-color: red;
+    text-align: center;
+    border-radius: 10%;
+    color: whitesmoke;
+    user-select: none;
+    vertical-align: middle;
+    width: 9rem;
+    transform: translateY(calc(-50% + 0.7rem));
+    left: 110%;
+    padding: 0.3rem;
+    opacity: 0;
+    transition: opacity 1s;
+
+    @media screen and (max-width: 500px) {
+      width: 5.5rem;
+      border-radius: 5%;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      border-width: 0.5rem;
+      border-style: solid;
+      top: 50%;
+      right: 100%;
+      margin-top: -0.5rem;
+      border-color: transparent red transparent transparent;
+    }
+
+    &_visible {
+      opacity: 1;
+    }
   }
 }

@@ -264,6 +264,12 @@ export default class SliderPanel {
         newStep = newStep > 0 ? newStep : 1;
 
         if (isNotAMultiple) {
+          this.configPanel.showError({
+            option: 'step',
+            errorMessage:
+              `'${newStep}' - incorrect step, because it's not multiple of 'max' and 'min' difference`,
+          });
+
           newStep = Math.round(newStep);
 
           while (lastDifference % newStep !== 0) {
@@ -442,7 +448,6 @@ export default class SliderPanel {
         });
       }
 
-      console.log('hi');
       const newOptions = this.slider.getOptions() as Options;
       const {
         max,
@@ -464,8 +469,6 @@ export default class SliderPanel {
 
       const haveLabelsChanged = newLabels !== labels;
       const havePipsChanged = newPips !== pips;
-
-      console.log(newLabels, newPips);
 
       if (haveLabelsChanged) {
         this.slider.setOptions('labels', newLabels);
