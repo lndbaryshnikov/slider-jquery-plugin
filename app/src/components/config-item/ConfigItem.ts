@@ -106,8 +106,6 @@ class ConfigItem {
       elementName.push('input');
     }
 
-    console.log(dataFields, elementName, errorTooltip);
-
     errorTooltip.classList.add('config-item__error-tooltip_visible');
     errorTooltip.innerHTML = errorMessage;
 

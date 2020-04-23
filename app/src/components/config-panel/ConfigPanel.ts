@@ -53,8 +53,6 @@ class ConfigPanel {
   }) {
     const item = this.panel[option];
 
-    console.log('I\'m here', item);
-
     item.showError(errorMessage);
   }
 
