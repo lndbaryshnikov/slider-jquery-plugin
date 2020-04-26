@@ -125,7 +125,11 @@ class ConfigItem {
       document.removeEventListener('click', hideTooltipHandler);
     };
 
-    document.addEventListener('click', hideTooltipHandler);
+    const addHideTooltipHandlerCallback = () => {
+      document.addEventListener('click', hideTooltipHandler);
+    };
+
+    window.setTimeout(addHideTooltipHandlerCallback, 500);
   }
 
   whenValueChange(callback: (valueObject: ValueObject) => void): void {

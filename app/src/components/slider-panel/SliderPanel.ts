@@ -451,13 +451,19 @@ export default class SliderPanel {
 
       const pipsQuantity = ((max - min) / step) + 1;
 
-      const newLabels = (hasLabels && (pipsQuantity > 16) ? false : labels) as boolean;
+      const labelsNumberExceeded = pipsQuantity > 16;
+      const pipsNumberExceeded = pipsQuantity > 51;
 
-      const maybeTrue = hasLabels && (pipsQuantity > 16) ? true : pips;
-      const newPips = hasPips && (pipsQuantity > 51) ? false : maybeTrue;
+      const newLabels = (hasLabels && labelsNumberExceeded ? false : labels) as boolean;
+
+      const maybeTrue = hasLabels && labelsNumberExceeded ? true : pips;
+      const newPips = hasPips && pipsNumberExceeded ? false : maybeTrue;
 
       const haveLabelsChanged = newLabels !== labels;
       const havePipsChanged = newPips !== pips;
+
+      const wasLabelsOptionPassed = option === 'labels';
+      const wasPipsOptionPassed = option === 'pips';
 
       if (haveLabelsChanged) {
         this.slider.setOptions('labels', newLabels);
@@ -474,6 +480,20 @@ export default class SliderPanel {
         this.configPanel.setValue({
           option: 'pips',
           value: newPips,
+        });
+      }
+
+      if (wasLabelsOptionPassed && labelsNumberExceeded) {
+        this.configPanel.showError({
+          option: 'labels',
+          errorMessage: 'Labels cannot be shown - number of labels exceeded',
+        });
+      }
+
+      if (wasPipsOptionPassed && pipsNumberExceeded) {
+        this.configPanel.showError({
+          option: 'pips',
+          errorMessage: 'Pips cannot be shown - number of pips exceeded',
         });
       }
     };
