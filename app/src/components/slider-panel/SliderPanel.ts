@@ -352,16 +352,44 @@ export default class SliderPanel {
           }
         }
 
+        const lastDifference = lastMax - lastMin;
         const newDifference = newMax - newMin;
 
-        while (newDifference % newStep !== 0) {
-          newStep -= 0.5;
+        const isMultiple = ({ difference, step }: {
+          difference: number;
+          step: number;
+        }): boolean => (
+          difference % step === 0
+        );
 
-          if (newStep === 0) {
-            newStep = lastStep;
+        if (!isMultiple({ difference: newDifference, step: lastStep })) {
+          while (
+            !isMultiple({ difference: newDifference, step: newStep })
+            || !isMultiple({ difference: lastDifference, step: newStep })
+          ) {
+            newStep -= 0.5;
 
-            break;
+            if (newStep === 0) {
+              newStep = lastStep;
+
+              break;
+            }
           }
+
+          const isAdviseNeeded = newStep !== lastStep;
+          const advise = isAdviseNeeded ? `You can use step equals ${newStep}.` : '';
+
+          const errorMessage = (
+            `Step should be multiple to 'max - min'.${advise}`
+          );
+
+          this.configPanel.showError({
+            option,
+            errorMessage,
+          });
+
+          newMin = lastMin;
+          newMax = lastMax;
         }
 
         if (typeof lastValue === 'number') {
@@ -370,7 +398,7 @@ export default class SliderPanel {
             position: 'single',
             min: newMin,
             max: newMax,
-            step: newStep,
+            step: lastStep,
           });
         }
 
@@ -380,7 +408,7 @@ export default class SliderPanel {
             position: 'first',
             min: newMin,
             max: newMax,
-            step: newStep,
+            step: lastStep,
           });
 
           const correctSecondValue = getCorrectedValue({
@@ -388,7 +416,7 @@ export default class SliderPanel {
             position: 'last',
             min: newMin,
             max: newMax,
-            step: newStep,
+            step: lastStep,
           });
 
           newValue = [correctFirstValue, correctSecondValue];
@@ -404,17 +432,12 @@ export default class SliderPanel {
             value: newMin,
           },
           {
-            option: 'step',
-            value: newStep,
-          },
-          {
             option: 'value',
             value: newValue,
           },
         );
 
         Object.assign(newSliderOptions, {
-          step: newStep,
           min: newMin,
           max: newMax,
           value: newValue,
@@ -424,29 +447,21 @@ export default class SliderPanel {
           [option]: panelValue,
         });
       }
-      try {
-        this.slider.setOptions(newSliderOptions);
 
-        newPanelOptions.forEach((valueObject) => {
-          this.configPanel.setValue(valueObject);
-        });
-      } catch (error) {
-        this.configPanel.setValue({
-          option,
-          value: lastOptions[option] as ConfigItemValue<ConfigItemType>,
-        });
-      }
+      const getNewOption = (
+        optionName: keyof PanelOptions,
+      ): PanelOptions[keyof PanelOptions] => (
+        newSliderOptions[optionName]
+          ? newSliderOptions[optionName]
+          : lastOptions[optionName]
+      );
 
-      const newOptions = this.slider.getOptions() as Options;
-      const {
-        max,
-        min,
-        step,
-        labels,
-        pips,
-      } = newOptions;
+      const min = getNewOption('min') as number;
+      const max = getNewOption('max') as number;
+      const step = getNewOption('step') as number;
+      const labels = getNewOption('labels');
+      const pips = getNewOption('pips') as boolean;
 
-      const hasPips = !!pips;
       const hasLabels = !!labels;
 
       const pipsQuantity = ((max - min) / step) + 1;
@@ -454,34 +469,29 @@ export default class SliderPanel {
       const labelsNumberExceeded = pipsQuantity > 16;
       const pipsNumberExceeded = pipsQuantity > 51;
 
-      const newLabels = (hasLabels && labelsNumberExceeded ? false : labels) as boolean;
+      const newLabels = labelsNumberExceeded ? false : (labels as boolean);
 
       const maybeTrue = hasLabels && labelsNumberExceeded ? true : pips;
-      const newPips = hasPips && pipsNumberExceeded ? false : maybeTrue;
-
-      const haveLabelsChanged = newLabels !== labels;
-      const havePipsChanged = newPips !== pips;
+      const newPips = pipsNumberExceeded ? false : maybeTrue;
 
       const wasLabelsOptionPassed = option === 'labels';
       const wasPipsOptionPassed = option === 'pips';
 
-      if (haveLabelsChanged) {
-        this.slider.setOptions('labels', newLabels);
+      Object.assign(newSliderOptions, {
+        labels: newLabels,
+        pips: newPips,
+      });
 
-        this.configPanel.setValue({
+      newPanelOptions.push(
+        {
           option: 'labels',
           value: newLabels,
-        });
-      }
-
-      if (havePipsChanged) {
-        this.slider.setOptions('pips', newPips);
-
-        this.configPanel.setValue({
+        },
+        {
           option: 'pips',
           value: newPips,
-        });
-      }
+        },
+      );
 
       if (wasLabelsOptionPassed && labelsNumberExceeded) {
         this.configPanel.showError({
@@ -494,6 +504,19 @@ export default class SliderPanel {
         this.configPanel.showError({
           option: 'pips',
           errorMessage: 'Pips cannot be shown - number of pips exceeded',
+        });
+      }
+
+      try {
+        this.slider.setOptions(newSliderOptions);
+
+        newPanelOptions.forEach((valueObject) => {
+          this.configPanel.setValue(valueObject);
+        });
+      } catch (error) {
+        this.configPanel.setValue({
+          option,
+          value: lastOptions[option] as ConfigItemValue<ConfigItemType>,
         });
       }
     };
