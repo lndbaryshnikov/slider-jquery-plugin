@@ -47,7 +47,7 @@ describe('When options object is passed', () => {
     const check = (
       modelToCheck: SliderModel,
       orientation: 'horizontal' | 'vertical' = 'horizontal',
-    ) => {
+    ): void => {
       modelToCheck.setOptions({ orientation });
 
       expect((modelToCheck.getOptions() as Options).orientation).toBe(

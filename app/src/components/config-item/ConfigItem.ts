@@ -1,5 +1,5 @@
-import { PanelOptions } from '../config-panel/ConfigPanel';
 import Observer from '../../plugin/Observer/Observer';
+import { Options } from '../../plugin/Slider/SliderModel';
 
 type ConfigItemType = 'input' | 'select' | 'range';
 type ConfigItemValue<T extends ConfigItemType> = T extends 'input'
@@ -7,6 +7,8 @@ type ConfigItemValue<T extends ConfigItemType> = T extends 'input'
   : T extends 'select'
     ? string | boolean
     : number[] | number;
+
+type PanelOptions = Omit<Options, 'change' | 'classes'>;
 
 type Item = {
   wrapper: HTMLDivElement;
@@ -125,7 +127,7 @@ class ConfigItem {
       document.removeEventListener('click', hideTooltipHandler);
     };
 
-    const addHideTooltipHandlerCallback = () => {
+    const addHideTooltipHandlerCallback = (): void => {
       document.addEventListener('click', hideTooltipHandler);
     };
 
@@ -188,13 +190,15 @@ class ConfigItem {
         errorTooltip,
       } as any;
     }
+
+    return undefined;
   }
 
-  private _addListener() {
+  private _addListener(): void {
     const { type } = this;
     const isInputOrSelect = type === 'input' || type === 'select';
 
-    const notify = <T extends ConfigItemType>(value: ConfigItemValue<T>) => {
+    const notify = <T extends ConfigItemType>(value: ConfigItemValue<T>): void => {
       this.valueChangedSubject.notifyObservers({
         option: this.optionName,
         value,
@@ -206,7 +210,7 @@ class ConfigItem {
         ? (this.item as InputItem).input
         : (this.item as SelectItem).select;
 
-      const valueChangeListener = (event: Event) => {
+      const valueChangeListener = (event: Event): void => {
         const value = (event.target as
           | HTMLInputElement
           | HTMLSelectElement).value.trim();
@@ -228,7 +232,7 @@ class ConfigItem {
 
       element.addEventListener('change', valueChangeListener);
     } else {
-      const rangeValueChangeHandler = () => {
+      const rangeValueChangeHandler = (): void => {
         const { firstInput, secondInput } = this.item as RangeItem;
         const firstValue = firstInput.value.trim();
         const secondValue = secondInput.value.trim();

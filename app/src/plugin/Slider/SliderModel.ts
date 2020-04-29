@@ -69,13 +69,13 @@ class SliderModel {
   private classes = {
     slider: {
       main: 'jquery-slider' as keyof UserOptions['classes'],
-      orientation: (orientation: 'horizontal' | 'vertical'): keyof Options['classes'] => {
-        return `jquery-slider-${orientation}` as keyof Options['classes'];
-      },
+      orientation: (orientation: 'horizontal' | 'vertical'): keyof Options['classes'] => (
+        `jquery-slider-${orientation}` as keyof Options['classes']
+      ),
 
-      complete: (orientation: 'horizontal' | 'vertical'): keyof Options['classes'] => {
-        return `jquery-slider jquery-slider-${orientation}` as keyof Options['classes'];
-      },
+      complete: (orientation: 'horizontal' | 'vertical'): keyof Options['classes'] => (
+        `jquery-slider jquery-slider-${orientation}` as keyof Options['classes']
+      ),
 
       horizontal: 'jquery-slider-horizontal' as keyof Options['classes'],
       vertical: 'jquery-slider-vertical' as keyof Options['classes'],
@@ -93,9 +93,9 @@ class SliderModel {
       'Options are incorrect (should correspond the required format)',
     options: {
       notExisting: (option: string): string => `Option "${option}" doesn't exist`,
-      incorrectType: (option: string, type: string): string => {
-        return `Options are incorrect (option '${option}' should be of type '${type}')`;
-      },
+      incorrectType: (option: string, type: string): string => (
+        `Options are incorrect (option '${option}' should be of type '${type}')`
+      ),
     },
     classes: {
       notExisting: (className: string): string => `Class "${className}" does not exist`,
@@ -124,9 +124,9 @@ class SliderModel {
         'Options are incorrect ("value" should be multiple of "step")',
     },
     minAndMax: {
-      lessOrMore: (option: string, lessOrMore: 'less' | 'more'): string => {
-        return `Options are incorrect (option '${option}' cannot be ${lessOrMore} than 'value')`;
-      },
+      lessOrMore: (option: string, lessOrMore: 'less' | 'more'): string => (
+        `Options are incorrect (option '${option}' cannot be ${lessOrMore} than 'value')`
+      ),
     },
     orientation: {
       incorrect:
@@ -191,7 +191,7 @@ class SliderModel {
     });
   }
 
-  static get optionsErrors() {
+  static get optionsErrors(): typeof SliderModel.errors {
     return SliderModel.errors;
   }
 
@@ -290,7 +290,7 @@ class SliderModel {
     if (!areOptionsExist) {
       this._throw(SliderModel.errors.notSet);
 
-      return;
+      return undefined;
     }
 
     const areArgumentsNotProvided = !option && !className;
@@ -302,7 +302,7 @@ class SliderModel {
       if (!isOptionsCorrect) {
         this._throw(errors.options.notExisting(option));
 
-        return;
+        return undefined;
       }
 
       const userClasses: (keyof UserOptions['classes'])[] = [
@@ -316,7 +316,7 @@ class SliderModel {
       if (isClassIncorrect) {
         this._throw(errors.classes.notExisting(className));
 
-        return;
+        return undefined;
       }
 
       const areTwoArgumentsProvided = option && !!className;
@@ -325,7 +325,7 @@ class SliderModel {
       if (areTwoArgumentsProvided && !isClassOptionRequested) {
         this._throw(errors.classes.contains);
 
-        return;
+        return undefined;
       }
 
       if (option && !className) {
@@ -338,6 +338,8 @@ class SliderModel {
 
       return this.options.classes[resultClassName as keyof Options['classes']];
     }
+
+    return undefined;
   }
 
   setOptions(
@@ -357,7 +359,7 @@ class SliderModel {
       if (!areOptionsSet) {
         this._throw(SliderModel.errors.notSet);
 
-        return;
+        return undefined;
       }
 
       if (restOptions.length === 1 || restOptions.length === 2) {
@@ -366,7 +368,9 @@ class SliderModel {
           ...(restOptions as Options[keyof Options][]),
         );
 
-        if (!optionsObject.result) return false;
+        if (!optionsObject.result) {
+          return false;
+        }
 
         this.options = optionsObject.options;
 
@@ -377,7 +381,7 @@ class SliderModel {
     } else if (isOnlyOptionsObjectProvided) {
       const optionsObject = this._extendByOptionsObject(options as UserOptions);
 
-      if (!optionsObject.result) return;
+      if (!optionsObject.result) return undefined;
 
       this.options = optionsObject.options;
 
@@ -388,15 +392,19 @@ class SliderModel {
       if (areOptionsSet) {
         this._throw(errors.alreadySet);
 
-        return;
+        return undefined;
       }
 
       this.options = SliderModel.getDefaultOptions('horizontal');
     } else {
-      return this._throw(errors.incorrectOptions);
+      this._throw(errors.incorrectOptions);
+
+      return undefined;
     }
 
     this.optionsSetSubject.notifyObservers();
+
+    return undefined;
   }
 
   private _extendByOptionsObject(
@@ -550,10 +558,7 @@ class SliderModel {
 
         [optionsCopy[option]] = restOptions;
       } else {
-        const optionObj: any = {};
-        [optionObj[option]] = restOptions;
-
-        $.extend(optionsCopy, optionObj as Options);
+        $.extend(optionsCopy, { [option]: restOptions[0] } as Options);
       }
 
       if (!this._checkOptions(optionsCopy)) return { result: false };
@@ -629,15 +634,17 @@ class SliderModel {
       return false;
     }
 
-    Object.keys(options.classes).forEach((mainClass) => {
-      if (Object.prototype.hasOwnProperty.call(options.classes, mainClass)) {
-        if (mainClass.trim() !== mainClass) {
-          this._throw(errors.classes.extraWs);
+    const incorrectClassesError = Object.keys(options.classes).find((mainClass) => {
+      if (mainClass.trim() !== mainClass) {
+        this._throw(errors.classes.extraWs);
 
-          return false;
-        }
+        return true;
       }
+
+      return false;
     });
+
+    if (incorrectClassesError) return false;
 
     const classesKeys = Object.keys(options.classes);
     const defaultClassesKeys = Object.keys(defaults.classes);
@@ -648,30 +655,34 @@ class SliderModel {
       return false;
     }
 
-    Object.keys(options.classes).forEach((mainClass) => {
-      if (Object.prototype.hasOwnProperty.call(options.classes, mainClass)) {
-        if (typeof options.classes[mainClass] !== 'string') {
-          this._throw(errors.options.incorrectType('classes', 'string'));
+    const notAStringError = Object.keys(options.classes).find((mainClass) => {
+      if (typeof options.classes[mainClass] !== 'string') {
+        this._throw(errors.options.incorrectType('classes', 'string'));
 
-          return false;
-        }
+        return true;
       }
+
+      return false;
     });
+
+    if (notAStringError) return false;
 
     const checkType = (
       type: 'string' | 'number' | 'boolean',
       optionsObj: Options,
       ...params: (keyof Options)[]
     ): boolean => {
-      params.forEach((param) => {
+      const errorParam = params.find((param) => {
         if (typeof optionsObj[param] !== type) {
           this._throw(errors.options.incorrectType(param, type));
 
-          return false;
+          return true;
         }
+
+        return false;
       });
 
-      return true;
+      return !errorParam;
     };
 
     if (!checkType('number', options, 'min', 'max', 'step')) {
@@ -720,8 +731,12 @@ class SliderModel {
       this._throw(errors.value.rangeTrue);
     }
 
-    const isStepNotAMultipleOfValue = (value: number) => (value - options.min) % options.step !== 0;
-    const isValueBetweenMinAndMax = (value: number) => options.min <= value && options.max >= value;
+    const isStepNotAMultipleOfValue = (value: number): boolean => (
+      (value - options.min) % options.step !== 0
+    );
+    const isValueBetweenMinAndMax = (value: number): boolean => (
+      options.min <= value && options.max >= value
+    );
 
     if (Array.isArray(options.value)) {
       const isFirstMoreOrEqualsSecond = options.value[1] <= options.value[0];
@@ -732,19 +747,23 @@ class SliderModel {
         return false;
       }
 
-      options.value.forEach((value) => {
+      const valueError = options.value.find((value) => {
         if (!isValueBetweenMinAndMax(value)) {
           this._throw(errors.value.beyond);
 
-          return false;
+          return true;
         }
 
         if (isStepNotAMultipleOfValue(value)) {
           this._throw(errors.value.notMultipleOfStep);
 
-          return false;
+          return true;
         }
+
+        return false;
       });
+
+      if (valueError) return false;
     } else {
       if (!isValueBetweenMinAndMax(options.value)) {
         this._throw(errors.value.beyond);
@@ -849,7 +868,7 @@ class SliderModel {
       if (typeof func(options.value) !== 'undefined') {
         this._throw(errors.change.incorrectFunction);
 
-        return;
+        return false;
       }
     }
 

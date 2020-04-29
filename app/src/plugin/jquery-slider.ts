@@ -20,7 +20,7 @@ interface SliderMethods {
   options: (...options: (UserOptions | string)[]) => this;
 }
 
-(($) => {
+(($): void => {
   const getData = (element: JQuery<HTMLElement>): {
     slider?: SliderPresenter;
   } => element.data('slider');
@@ -63,10 +63,13 @@ interface SliderMethods {
 
         return $this;
       }
+
       throwErr(true);
+
+      return undefined;
     },
 
-    destroy() {
+    destroy(): void {
       const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
       const data = getData($this);
 
@@ -77,7 +80,13 @@ interface SliderMethods {
       } else throwErr(false);
     },
 
-    options(...userOptions: (UserOptions | string)[]) {
+    options(...userOptions: (UserOptions | string)[]): (
+    | void
+    | Options[keyof Options]
+    | Options
+    | JQueryElementWithSlider
+    | Options['classes'][keyof Options['classes']]
+    ) {
       const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
 
       const data = getData($this);
@@ -85,7 +94,7 @@ interface SliderMethods {
         const { slider } = data;
 
         if (userOptions.length === 0) {
-          return slider.getOptions();
+          return slider.getOptions() as Options;
         }
 
         const [firstArg, secondArg] = userOptions;
@@ -148,6 +157,8 @@ interface SliderMethods {
       } else {
         throwErr(false);
       }
+
+      return undefined;
     },
   };
 
@@ -155,7 +166,7 @@ interface SliderMethods {
   ($.fn as JQueryElementWithSlider).slider = function (
     method?: UserOptions | keyof SliderMethods,
     ...options: (UserOptions | keyof Options | RestOptionsToSet)[]
-  ) {
+  ): void {
     if (sliderMethods[method as keyof SliderMethods]) {
       return sliderMethods[method as keyof SliderMethods].apply(this, options);
     }
@@ -168,6 +179,8 @@ interface SliderMethods {
       return sliderMethods.init.call(this, method as UserOptions);
     }
     $.error(`Method '${method}' doesn't exist for jQuery.slider`);
+
+    return undefined;
   };
 })(jQuery);
 

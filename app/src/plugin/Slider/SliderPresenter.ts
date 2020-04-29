@@ -35,7 +35,7 @@ class SliderPresenter {
       this.makeRenderHandlePositionCallback(),
     );
 
-    const labelClickHandler = (middleCoordinate: number) => {
+    const labelClickHandler = (middleCoordinate: number): void => {
       this.viewInstance.refreshValue({ currentHandleCoordinate: middleCoordinate });
     };
 

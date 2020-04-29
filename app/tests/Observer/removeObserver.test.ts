@@ -5,16 +5,12 @@ describe('removeObserver method', () => {
     const observer = new Observer();
 
     observer.addObserver((str: string) => `Hello, ${str}`);
-    observer.addObserver((str: string) => {
-      console.log(str);
-    });
+    observer.addObserver((str: string) => str);
     observer.addObserver((str: string) => `I'm ${str}`);
 
     expect(observer.observers.length).toBe(3);
 
-    observer.removeObserver((str: string) => {
-      console.log(str);
-    });
+    observer.removeObserver((str: string) => str);
 
     expect(observer.observers.length).toBe(2);
 
@@ -22,8 +18,8 @@ describe('removeObserver method', () => {
       observer.observers[0].toString(),
       observer.observers[1].toString(),
     ]).toEqual([
-      ((str: string) => `Hello, ${str}`).toString(),
-      ((str: string) => `I'm ${str}`).toString(),
+      ((str: string): string => `Hello, ${str}`).toString(),
+      ((str: string): string => `I'm ${str}`).toString(),
     ]);
   });
 
@@ -31,9 +27,7 @@ describe('removeObserver method', () => {
     const observer = new Observer();
 
     observer.addObserver((y: number) => y + 1);
-    observer.addObserver((y: number) => {
-      console.log(y);
-    });
+    observer.addObserver((y: number) => y);
 
     const createFuncForTestError = (): void => {
       observer.removeObserver((y: number) => y - 1);

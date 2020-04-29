@@ -16,7 +16,7 @@ export default class SliderPanel {
   constructor(private wrapper: HTMLDivElement) {
     this._defineElements();
 
-    const sliderValueChangeHandler = (value: number | [number, number]) => {
+    const sliderValueChangeHandler = (value: number | [number, number]): void => {
       this.configPanel.setValue({ option: 'value', value });
     };
 
@@ -25,7 +25,7 @@ export default class SliderPanel {
     this.configPanel.whenOptionValueChange(this._makeRefreshSliderCallback());
   }
 
-  private _defineElements() {
+  private _defineElements(): void {
     const panelWrapper = this.wrapper.querySelector('.js-config-panel');
 
     const $sliderWrapper = $(
@@ -175,9 +175,11 @@ export default class SliderPanel {
 
           let [correctFirstValue, correctSecondValue] = valueArray;
 
-          const isSecondEqualsOrLessThanFirst = (first: number, second: number) => {
-            return second < first || second === first;
-          };
+          const isSecondEqualsOrLessThanFirst = (
+            first: number, second: number,
+          ): boolean => (
+            second < first || second === first
+          );
 
           if (isSecondChanged) {
             correctSecondValue = getCorrectedValue({
@@ -429,8 +431,6 @@ export default class SliderPanel {
           this.configPanel.setValue(valueObject);
         });
       } catch (error) {
-        console.log(error);
-
         this.configPanel.setValue({
           option,
           value: lastOptions[option] as ConfigItemValue<ConfigItemType>,

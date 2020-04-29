@@ -2,7 +2,7 @@ import SliderLabelsView, {
   LabelOptions,
 } from '../../src/plugin/SliderLabelsView/SliderLabelsView';
 
-const extractValue = (value: string) => value
+const extractValue = (value: string): string => value
   .replace(/\d+px/, '')
   .replace(/[<>="\\ a-z/\-:;]/gi, '');
 

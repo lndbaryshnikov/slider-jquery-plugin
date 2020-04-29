@@ -1,4 +1,4 @@
-const hasAnArrayElements = (array: any[], sourceArray: any[]) => {
+const hasAnArrayElements = (array: any[], sourceArray: any[]): boolean => {
   let has: boolean;
 
   for (let i = 0; i < array.length; i += 1) {

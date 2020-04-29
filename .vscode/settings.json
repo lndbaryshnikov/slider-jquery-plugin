@@ -12,6 +12,7 @@
     "stylelintrc", 
     "lintrc", 
     "whitespaces",
-    "jquery"
+    "jquery",
+    "linebreak"
   ]
 }

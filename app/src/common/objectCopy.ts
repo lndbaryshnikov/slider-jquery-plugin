@@ -1,4 +1,4 @@
-const clone = (obj) => {
+const clone = <CustomObject>(obj: CustomObject): CustomObject => {
   class Create {
     constructor() {
       Object.keys(obj).forEach((item) => {
@@ -9,7 +9,7 @@ const clone = (obj) => {
     }
   }
 
-  return new Create();
+  return new Create() as CustomObject;
 };
 
 export default clone;

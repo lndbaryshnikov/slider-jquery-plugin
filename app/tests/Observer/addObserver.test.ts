@@ -4,15 +4,14 @@ describe('addObserver method', () => {
   test('addObserver method works', () => {
     const observer = new Observer();
 
-    observer.addObserver((error: string) => { console.log(error); });
+    observer.addObserver((error: string): string => error);
 
     expect(observer.observers.length).toBe(1);
   });
 
   test('throws an error when observer is not a function', () => {
-    const test = () => {
-      // @ts-ignore
-      new Observer().addObserver('Hello!');
+    const test = (): void => {
+      new Observer().addObserver('Hello!' as unknown as Function);
     };
 
     expect(test).toThrow('Observer must be a function');
@@ -22,7 +21,7 @@ describe('addObserver method', () => {
     const makeFuncForTestErrors = (
       firstFunc: Function,
       secondFunc: Function = firstFunc,
-    ): Function => function (): void {
+    ): Function => (): void => {
       const observer = new Observer();
 
       observer.addObserver(firstFunc);
@@ -31,21 +30,13 @@ describe('addObserver method', () => {
 
     expect(
       makeFuncForTestErrors(
-        () => {
-          console.log('hello');
-        },
-        () => {},
+        () => 'hello',
+        (x: string) => x,
       ),
     ).not.toThrow('Observer already in the list');
 
     expect(
-      makeFuncForTestErrors(() => {
-        console.log('hello');
-      }),
+      makeFuncForTestErrors(() => 'hello'),
     ).toThrow('Observer already in the list');
-
-    expect(makeFuncForTestErrors(() => {})).toThrow(
-      'Observer already in the list',
-    );
   });
 });

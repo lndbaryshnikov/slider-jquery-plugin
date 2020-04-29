@@ -43,14 +43,14 @@ class ConfigPanel {
   }: {
     option: keyof PanelOptions;
     value: ConfigItemValue<T>;
-  }) {
+  }): void {
     this.panel[option].setValue(value);
   }
 
   showError({ option, errorMessage }: {
     option: keyof PanelOptions;
     errorMessage: string;
-  }) {
+  }): void {
     const item = this.panel[option];
 
     item.showError(errorMessage);
@@ -84,7 +84,7 @@ class ConfigPanel {
 
       const makeNotifyAboutChangedValueCallback = () => (
         valueObject: ValueObject,
-      ) => {
+      ): void => {
         this.optionValueChangedSubject.notifyObservers(valueObject);
       };
 

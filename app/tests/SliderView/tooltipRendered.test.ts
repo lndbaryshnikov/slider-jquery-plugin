@@ -54,7 +54,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
     const defaultsWithTooltipFunction = SliderModel.getDefaultOptions(
       'horizontal',
     );
-    defaultsWithTooltipFunction.tooltip = (value: number) => `${value}$`;
+    defaultsWithTooltipFunction.tooltip = (value: number): string => `${value}$`;
 
     tooltipView.setOptions({
       text: defaultsWithTooltipFunction.value as number,

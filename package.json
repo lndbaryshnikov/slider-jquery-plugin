@@ -9,15 +9,12 @@
     "server": "webpack-dev-server --mode development --open --env development",
     "lint": "npm run eslint && npm run stylelint && npm run pug-lint",
     "deploy": "gh-pages -d dist",
-
     "dev": "webpack --mode development --env development",
     "watch": "webpack --mode development --watch --env development",
-
     "jest": "jest -c jest.config.js",
     "watchJest": "jest -c jest.config.js --watchAll",
     "jestPup": "jest -c jest.config.pup.js",
     "watchJestPup": "jest -c jest.config.pup.js --watchAll",
-
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx app",
     "eslintFix": "eslint --ext .js,.jsx,.ts,.tsx app --fix",
     "pug-lint": "pug-lint --config .pug-lintrc app",
@@ -38,6 +35,7 @@
     "@types/jest": "^24.9.1",
     "@types/puppeteer": "^1.20.4",
     "@types/sinon": "^7.5.2",
+    "@types/webpack-env": "^1.15.2",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
     "babel-jest": "^24.9.0",

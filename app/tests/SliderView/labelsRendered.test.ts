@@ -4,7 +4,7 @@ import SliderLabelsView, {
   LabelOptions,
 } from '../../src/plugin/SliderLabelsView/SliderLabelsView';
 
-const extractValue = (value: string) => value
+const extractValue = (value: string): string => value
   .replace(/\d+px/, '')
   .replace(/[<>="\\ a-z/\-:;]/gi, '');
 
@@ -13,7 +13,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
   let labelsView: SliderLabelsView;
 
   const defaultsWithLabelsAndPips = SliderModel.getDefaultOptions('horizontal');
-  defaultsWithLabelsAndPips.labels = (value: number) => `${value}$`;
+  defaultsWithLabelsAndPips.labels = (value: number): string => `${value}$`;
   defaultsWithLabelsAndPips.pips = true;
   defaultsWithLabelsAndPips.max = 10;
 

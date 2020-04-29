@@ -35,7 +35,7 @@ export default class SliderPupPage {
     this.browser = browser;
   }
 
-  async createPage() {
+  async createPage(): Promise<void> {
     this.pupPage = await this.browser.newPage();
 
     const width = 1920;
@@ -50,7 +50,7 @@ export default class SliderPupPage {
     await this.pupPage.addScriptTag({ path: 'dist/js/jquery-slider.js' });
   }
 
-  async createSlider(options?: UserOptions) {
+  async createSlider(options?: UserOptions): Promise<void> {
     await this.pupPage.evaluate((optionsToEval: UserOptions) => {
       const root = $("<div class='slider'></div>") as JQueryElementWithSlider;
 
@@ -62,7 +62,7 @@ export default class SliderPupPage {
     await this._defineElements(options);
   }
 
-  async setOptions(...options: (UserOptions | RestOptionsToSet)[]) {
+  async setOptions(...options: (UserOptions | RestOptionsToSet)[]): Promise<void> {
     await this.pupPage.evaluate(
       (
         root: HTMLElement,
@@ -82,7 +82,11 @@ export default class SliderPupPage {
     await this._defineElements(optionsSet);
   }
 
-  async getOptions(...options: (UserOptions | RestOptionsToSet)[]) {
+  async getOptions(...options: (UserOptions | RestOptionsToSet)[]): Promise<
+    | Options
+    | Options['classes'][keyof Options['classes']]
+    | Options[keyof Options]
+  > {
     return ((await this.pupPage.evaluate(
       (
         root: HTMLElement,
@@ -98,7 +102,9 @@ export default class SliderPupPage {
       | (Options[keyof Options] | Options['classes'][keyof Options['classes']]);
   }
 
-  get elements() {
+  get elements(): (
+    Record<'root' | 'slider' | 'range' | 'firstHandle' | 'secondHandle' | 'tooltip', ElementHandle>
+  ) {
     return {
       root: this.root,
       slider: this.slider,
@@ -112,8 +118,8 @@ export default class SliderPupPage {
   async getLabelData(
     data: 'classes' | 'coords',
     labelNumber: number,
-  ) {
-    return await this.pupPage.evaluate(
+  ): Promise<{ label: string; pip: string } | { label: Coords; pip: Coords }> {
+    return this.pupPage.evaluate(
       (dataToEval: string, LabelNumber: number) => {
         const labels = document.querySelectorAll('.jquery-slider-label');
 
@@ -163,6 +169,8 @@ export default class SliderPupPage {
             pip: pipCoords,
           } as { label: Coords; pip: Coords };
         }
+
+        return undefined;
       },
       data,
       labelNumber,
@@ -170,32 +178,32 @@ export default class SliderPupPage {
   }
 
   async getSliderCoords(): Promise<Coords> {
-    return await this.getCoords(this.slider);
+    return this.getCoords(this.slider);
   }
 
   async getRangeCoords(): Promise<Coords> {
-    return await this.getCoords(this.range);
+    return this.getCoords(this.range);
   }
 
   async getFirstHandleCoords(): Promise<Coords> {
-    return await this.getCoords(this.firstHandle);
+    return this.getCoords(this.firstHandle);
   }
 
   async getSecondHandleCoords(): Promise<Coords> {
     if (!this.secondHandle) throw new Error("Second handle doesn't exist");
 
-    return await this.getCoords(this.secondHandle);
+    return this.getCoords(this.secondHandle);
   }
 
   async getTooltipCoords(): Promise<Coords> {
     if (!this.tooltip) throw new Error("tooltip doesn't set");
-    return await this.getCoords(this.tooltip);
+    return this.getCoords(this.tooltip);
   }
 
   async getTooltipValue(): Promise<number | string> {
     if (!this.tooltip) throw new Error("tooltip doesn't set");
 
-    return await this.pupPage.evaluate(
+    return this.pupPage.evaluate(
       (tooltip: ElementHandle) => ((tooltip as unknown) as HTMLElement).innerHTML,
       this.tooltip,
     );
@@ -231,7 +239,7 @@ export default class SliderPupPage {
   }
 
   async getCoords(dom: ElementHandle): Promise<Coords> {
-    return await this.pupPage.evaluate((domToEval) => {
+    return this.pupPage.evaluate((domToEval) => {
       const {
         left,
         top,

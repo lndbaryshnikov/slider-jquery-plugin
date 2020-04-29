@@ -85,7 +85,6 @@ describe('slider events', () => {
 
       const { range } = sliderPage.elements;
       const newModeRangeCoords = await page.evaluate((rangeForCoords) => {
-        console.log(rangeForCoords.className);
         const {
           left, top, right, bottom, width, height,
         } = rangeForCoords.getBoundingClientRect();
@@ -170,9 +169,9 @@ describe('slider events', () => {
       async () => {
         let value: Options['value'];
 
-        const getValue = async (): Promise<Options['value']> => {
-          return await sliderPage.getOptions('value') as Options['value'];
-        };
+        const getValue = async (): Promise<Options['value']> => (
+          await sliderPage.getOptions('value') as Options['value']
+        );
 
         value = await getValue();
         expect(value).toBe(0);
@@ -563,9 +562,9 @@ describe('slider events', () => {
       async () => {
         let value: Options['value'];
 
-        const getValue = async (): Promise<Options['value']> => {
-          return await sliderPage.getOptions('value') as Options['value'];
-        };
+        const getValue = async (): Promise<Options['value']> => (
+          await sliderPage.getOptions('value') as Options['value']
+        );
         value = await getValue();
         expect(value).toBe(0);
 
@@ -830,7 +829,7 @@ describe('slider events', () => {
         const input = document.createElement('input');
         document.body.appendChild(input);
 
-        const changeFunction = (value: number | number[]) => {
+        const changeFunction = (value: number | number[]): void => {
           if (!Array.isArray(value)) {
             input.value = String(value);
           } else {

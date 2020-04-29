@@ -1,11 +1,11 @@
 import SliderView from '../../src/plugin/Slider/SliderView';
-import SliderModel from '../../src/plugin/Slider/SliderModel';
+import SliderModel, { Options } from '../../src/plugin/Slider/SliderModel';
 
 describe("handles rendered depending on 'range'", () => {
   let view: SliderView;
   let root: HTMLDivElement;
 
-  const getDefaultsWithRange = (range: boolean | 'min' | 'max') => {
+  const getDefaultsWithRange = (range: boolean | 'min' | 'max'): Options => {
     const defaults = SliderModel.getDefaultOptions('horizontal');
     defaults.range = range;
 

@@ -1,10 +1,12 @@
+import { UserOptions } from '../plugin/Slider/SliderModel';
+
 type MainClasses =
   | 'jquery-slider'
   | 'jquery-slider-range'
   | 'jquery-slider-handle';
 
-const getClassList = (elements: JQuery): Record<MainClasses, string> => {
-  const classList: any = {};
+const getClassList = (elements: JQuery): UserOptions['classes'] => {
+  const classList: UserOptions['classes'] = {};
 
   for (let i = 0; i < elements.length; i += 1) {
     const classesArray = elements[i].className.split(' ');

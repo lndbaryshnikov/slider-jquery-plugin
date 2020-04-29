@@ -194,7 +194,7 @@ export default class SliderLabelsView {
 
   private _setClickHandler(): void {
     this.sliderLabels.forEach((label) => {
-      const clickHandler = () => {
+      const clickHandler = (): void => {
         const labelCoords = getCoords(label);
 
         const middle = this.options.orientation === 'horizontal'

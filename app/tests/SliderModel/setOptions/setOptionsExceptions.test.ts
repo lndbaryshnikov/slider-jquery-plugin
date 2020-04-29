@@ -116,7 +116,7 @@ describe('setOptionsMethod exceptions', () => {
   });
 
   test("throws extension when type of 'min', 'max', 'step' or 'value' is not 'number'", () => {
-    const checkStringType = (type: 'min' | 'max' | 'step' | 'value') => {
+    const checkStringType = (type: 'min' | 'max' | 'step' | 'value'): void => {
       expect(() => {
         model.setOptions();
         model.setOptions(type, '34');
@@ -349,7 +349,7 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({
-        tooltip: ((() => () => 34) as unknown) as ValueFunction,
+        tooltip: ((() => (): number => 34) as unknown) as ValueFunction,
       });
     }).toThrow(errors.tooltip.incorrectFunction);
 
@@ -364,7 +364,7 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions(
         'tooltip',
-        ((() => () => 34) as unknown) as ValueFunction,
+        ((() => (): number => 34) as unknown) as ValueFunction,
       );
     }).toThrow(errors.tooltip.incorrectFunction);
   });
@@ -430,13 +430,12 @@ describe('setOptionsMethod exceptions', () => {
 
   test('throws exception when change is not function or false', () => {
     expect(() => {
-      // @ts-ignore
-      model.setOptions({ change: true });
+      model.setOptions({ change: true as unknown as false });
     }).toThrow(errors.change.incorrect);
 
     model.setOptions();
 
-    const handler = (value: number) => value;
+    const handler = (value: number): number => value;
 
     expect(() => {
       model.setOptions('change', handler);
