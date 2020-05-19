@@ -448,65 +448,6 @@ export default class SliderPanel {
         });
       }
 
-      // const getNewOption = (
-      //   optionName: keyof PanelOptions,
-      // ): PanelOptions[keyof PanelOptions] => (
-      //   newSliderOptions[optionName]
-      //     ? newSliderOptions[optionName]
-      //     : lastOptions[optionName]
-      // );
-
-      // const min = getNewOption('min') as number;
-      // const max = getNewOption('max') as number;
-      // const step = getNewOption('step') as number;
-      // const labels = getNewOption('labels');
-      // const pips = getNewOption('pips') as boolean;
-
-      // const hasLabels = !!labels;
-
-      // const pipsQuantity = ((max - min) / step) + 1;
-
-      // const labelsNumberExceeded = pipsQuantity > 16;
-      // const pipsNumberExceeded = pipsQuantity > 51;
-
-      // const newLabels = labelsNumberExceeded ? false : (labels as boolean);
-
-      // const maybeTrue = hasLabels && labelsNumberExceeded ? true : pips;
-      // const newPips = pipsNumberExceeded ? false : maybeTrue;
-
-      // const wasLabelsOptionPassed = option === 'labels';
-      // const wasPipsOptionPassed = option === 'pips';
-
-      // Object.assign(newSliderOptions, {
-      //   labels: newLabels,
-      //   pips: newPips,
-      // });
-
-      // newPanelOptions.push(
-      //   {
-      //     option: 'labels',
-      //     value: newLabels,
-      //   },
-      //   {
-      //     option: 'pips',
-      //     value: newPips,
-      //   },
-      // );
-
-      // if (wasLabelsOptionPassed && labelsNumberExceeded) {
-      //   this.configPanel.showError({
-      //     option: 'labels',
-      //     errorMessage: 'Labels cannot be shown - number of labels exceeded',
-      //   });
-      // }
-
-      // if (wasPipsOptionPassed && pipsNumberExceeded) {
-      //   this.configPanel.showError({
-      //     option: 'pips',
-      //     errorMessage: 'Pips cannot be shown - number of pips exceeded',
-      //   });
-      // }
-
       try {
         this.slider.setOptions(newSliderOptions);
 
