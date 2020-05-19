@@ -191,7 +191,7 @@ export default class SliderPanel {
             });
 
             if (isSecondEqualsOrLessThanFirst(correctFirstValue, correctSecondValue)) {
-              correctFirstValue = correctSecondValue - lastStep;
+              correctSecondValue = correctFirstValue + lastStep;
             }
           }
 
@@ -205,7 +205,7 @@ export default class SliderPanel {
             });
 
             if (isSecondEqualsOrLessThanFirst(correctFirstValue, correctSecondValue)) {
-              correctSecondValue = correctFirstValue + lastStep;
+              correctFirstValue = correctSecondValue - lastStep;
             }
           }
 

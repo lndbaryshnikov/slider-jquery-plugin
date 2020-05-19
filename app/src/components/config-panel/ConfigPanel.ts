@@ -47,13 +47,14 @@ class ConfigPanel {
     this.panel[option].setValue(value);
   }
 
-  showError({ option, errorMessage }: {
+  showError({ option, errorMessage, inputNumber }: {
     option: keyof PanelOptions;
     errorMessage: string;
+    inputNumber?: 1 | 2;
   }): void {
     const item = this.panel[option];
 
-    item.showError(errorMessage);
+    item.showError({ errorMessage, inputNumber });
   }
 
   private _definePanel(options: PanelOptions): void {

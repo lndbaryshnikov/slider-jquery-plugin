@@ -91,38 +91,39 @@ class ConfigItem {
     }
   }
 
-  showError(errorMessage: string): void {
+  showError({ errorMessage, inputNumber }: {
+    errorMessage: string;
+    inputNumber: 1 | 2;
+  }): void {
     const { type, item, item: { errorTooltip } } = this;
 
-    const dataFields: (HTMLInputElement | HTMLSelectElement)[] = [];
-    const elementName: string[] = [];
+    let dataField: (HTMLInputElement | HTMLSelectElement);
+    let elementName: string;
 
     if (type === 'range') {
-      dataFields.push((item as RangeItem).firstInput, (item as RangeItem).secondInput);
-      elementName.push('firstInput', 'secondInput');
+      const inputName = inputNumber === 1 ? 'firstInput' : 'secondInput';
+
+      dataField = (item as RangeItem)[inputName];
+      elementName = inputName;
     } else if (type === 'select') {
-      dataFields.push((item as SelectItem).select);
-      elementName.push('select');
+      dataField = (item as SelectItem).select;
+      elementName = 'select';
     } else if (type === 'input') {
-      dataFields.push((item as InputItem).input);
-      elementName.push('input');
+      dataField = (item as InputItem).input;
+      elementName = 'input';
     }
 
     errorTooltip.classList.add('config-item__error-tooltip_visible');
     errorTooltip.innerHTML = errorMessage;
 
-    dataFields.forEach((field, index) => {
-      field.classList.add(`config-item__${elementName[index]}_color_red`);
-    });
+    dataField.classList.add(`config-item__${elementName}_color_red`);
 
     const hideTooltipHandler = (clickEvent: MouseEvent): void => {
       if (clickEvent.target === errorTooltip) return;
 
       errorTooltip.classList.remove('config-item__error-tooltip_visible');
 
-      dataFields.forEach((field, index) => {
-        field.classList.remove(`config-item__${elementName[index]}_color_red`);
-      });
+      dataField.classList.remove(`config-item__${elementName}_color_red`);
 
       document.removeEventListener('click', hideTooltipHandler);
     };
