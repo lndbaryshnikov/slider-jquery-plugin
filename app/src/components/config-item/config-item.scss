@@ -17,6 +17,12 @@
     color: whitesmoke;
     text-align: center;
     margin-right: 0.3rem;
+
+    &_color {
+      &_red {
+        background-color: red;
+      }
+    }
   }
 
   &__second-input {
@@ -27,6 +33,12 @@
     padding: 0.2rem;
     color: whitesmoke;
     text-align: center;
+
+    &_color {
+      &_red {
+        background-color: red;
+      }
+    }
   }
 
   &__input {

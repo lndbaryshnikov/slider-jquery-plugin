@@ -137,6 +137,8 @@ export default class SliderPanel {
         if (isOneValuePassed(valueArray)) {
           let newFirstValue: number;
 
+          const initialValue = panelValue as number;
+
           if (wasRangeTrue) {
             valueArray.push(lastOptions.max);
             newRange = true;
@@ -152,6 +154,20 @@ export default class SliderPanel {
             if (newFirstValue === lastMax) {
               newFirstValue -= lastStep;
             }
+
+            if (initialValue < lastMin) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'First value cannot be less than min',
+                inputNumber: 1,
+              });
+            } else if (initialValue >= lastMax) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'First value cannot be equal or more than max',
+                inputNumber: 1,
+              });
+            }
           } else {
             newFirstValue = getCorrectedValue({
               value: valueArray[0],
@@ -160,12 +176,24 @@ export default class SliderPanel {
               max: lastMax,
               step: lastStep,
             });
+
+            if (initialValue < lastMin) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'Value cannot be less than min',
+                inputNumber: 1,
+              });
+            } else if (initialValue > lastMax) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'Value cannot be more than max',
+                inputNumber: 1,
+              });
+            }
           }
 
           valueArray[0] = newFirstValue;
-        }
-
-        if (areTwoValuePassed(valueArray)) {
+        } else if (areTwoValuePassed(valueArray)) {
           if (!wasRangeTrue) {
             newRange = true;
           }
@@ -181,6 +209,8 @@ export default class SliderPanel {
             second < first || second === first
           );
 
+          const [initialFirstValue, initialSecondValue] = panelValue as number[];
+
           if (isSecondChanged) {
             correctSecondValue = getCorrectedValue({
               value: correctSecondValue,
@@ -192,6 +222,24 @@ export default class SliderPanel {
 
             if (isSecondEqualsOrLessThanFirst(correctFirstValue, correctSecondValue)) {
               correctSecondValue = correctFirstValue + lastStep;
+
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'Second value cannot be equal or less than first',
+                inputNumber: 2,
+              });
+            } else if (initialSecondValue > lastMax) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'Second value cannot be more than max',
+                inputNumber: 2,
+              });
+            } else if (initialSecondValue <= lastMin) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'Second value cannot be equal or less than min',
+                inputNumber: 2,
+              });
             }
           }
 
@@ -206,6 +254,24 @@ export default class SliderPanel {
 
             if (isSecondEqualsOrLessThanFirst(correctFirstValue, correctSecondValue)) {
               correctFirstValue = correctSecondValue - lastStep;
+
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'First value cannot be equal or more than second',
+                inputNumber: 1,
+              });
+            } else if (initialFirstValue < lastMin) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'First value cannot be less than min',
+                inputNumber: 1,
+              });
+            } else if (initialFirstValue >= lastMax) {
+              this.configPanel.showError({
+                option: 'value',
+                errorMessage: 'First value cannot be equal or more than max',
+                inputNumber: 1,
+              });
             }
           }
 

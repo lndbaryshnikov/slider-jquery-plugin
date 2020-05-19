@@ -104,7 +104,7 @@ class ConfigItem {
       const inputName = inputNumber === 1 ? 'firstInput' : 'secondInput';
 
       dataField = (item as RangeItem)[inputName];
-      elementName = inputName;
+      elementName = inputNumber === 1 ? 'first-input' : 'second-input';
     } else if (type === 'select') {
       dataField = (item as SelectItem).select;
       elementName = 'select';
@@ -126,10 +126,12 @@ class ConfigItem {
       dataField.classList.remove(`config-item__${elementName}_color_red`);
 
       document.removeEventListener('click', hideTooltipHandler);
+      document.removeEventListener('keydown', hideTooltipHandler);
     };
 
     const addHideTooltipHandlerCallback = (): void => {
       document.addEventListener('click', hideTooltipHandler);
+      document.addEventListener('keydown', hideTooltipHandler);
     };
 
     window.setTimeout(addHideTooltipHandlerCallback, 500);
