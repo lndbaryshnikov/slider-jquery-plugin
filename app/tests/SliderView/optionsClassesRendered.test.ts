@@ -1,9 +1,9 @@
 import getClassList from '../../src/common/getClassList';
 import SliderModel, {
   HorizontalClasses,
-} from '../../src/plugin/Slider/SliderModel';
-import SliderPresenter from '../../src/plugin/Slider/SliderPresenter';
-import SliderView from '../../src/plugin/Slider/SliderView';
+} from '../../src/plugin/Model/SliderModel';
+import SliderPresenter from '../../src/plugin/Presenter/SliderPresenter';
+import SliderView from '../../src/plugin/View/SliderView';
 
 const defaultClasses = SliderModel.getDefaultOptions('horizontal')
   .classes as HorizontalClasses;

@@ -1,4 +1,4 @@
-import SliderModel from '../../src/plugin/Slider/SliderModel';
+import SliderModel from '../../src/plugin/Model/SliderModel';
 
 describe('getDefaultOptions method', () => {
   const horizontalDefaults = {

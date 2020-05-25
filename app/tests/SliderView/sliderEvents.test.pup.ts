@@ -1,7 +1,7 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 
-import SliderPupPage, { Coords } from '../../src/plugin/SliderPupPage/SliderPupPage';
-import { Options } from '../../src/plugin/Slider/SliderModel';
+import SliderPupPage, { Coords } from '../../test-utils/SliderPupPage/SliderPupPage';
+import { Options } from '../../src/plugin/Model/SliderModel';
 import { JQueryElementWithSlider } from '../../src/plugin/jquery-slider';
 
 describe('slider events', () => {

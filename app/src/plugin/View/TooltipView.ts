@@ -1,6 +1,6 @@
-import { ValueFunction } from '../Slider/SliderModel';
-// TODO: add possibility to add custom classes
-export default class SliderTooltipView {
+import { ValueFunction } from '../Model/SliderModel';
+
+class TooltipView {
   private tooltipText: string | number | null = null;
 
   private tooltipHtml: HTMLDivElement;
@@ -102,3 +102,5 @@ export default class SliderTooltipView {
     }
   }
 }
+
+export default TooltipView;

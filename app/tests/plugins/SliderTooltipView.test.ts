@@ -1,7 +1,7 @@
-import SliderTooltipView from '../../src/plugin/SliderTooltipView/SliderTooltipView';
+import TooltipView from '../../src/plugin/View/TooltipView';
 
 describe('tooltip works correctly', () => {
-  let tooltip: SliderTooltipView;
+  let tooltip: TooltipView;
   let root: HTMLDivElement;
   let horizontalTooltipOnDom: HTMLDivElement;
 
@@ -13,7 +13,7 @@ describe('tooltip works correctly', () => {
 
     document.body.append(root);
 
-    tooltip = new SliderTooltipView();
+    tooltip = new TooltipView();
     tooltip.setOptions({
       text: 35,
       orientation: 'horizontal',

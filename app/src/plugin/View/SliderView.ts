@@ -1,9 +1,9 @@
 import { getShift, Shift } from '../../common/getShift';
 import getCoords, { Coords } from '../../common/getCoords';
 import Observer from '../Observer/Observer';
-import SliderTooltipView from '../SliderTooltipView/SliderTooltipView';
-import SliderLabelsView from '../SliderLabelsView/SliderLabelsView';
-import { HorizontalClasses, Options, VerticalClasses } from './SliderModel';
+import TooltipView from './TooltipView';
+import LabelsView from './LabelsView';
+import { HorizontalClasses, Options, VerticalClasses } from '../Model/SliderModel';
 
 interface Html {
   wrapper: HTMLDivElement | null;
@@ -261,7 +261,7 @@ export default class SliderView {
 
   renderPlugin({ plugin, pluginView, number }: {
     plugin: string;
-    pluginView: SliderLabelsView | SliderTooltipView;
+    pluginView: LabelsView | TooltipView;
     number?: 'first' | 'second';
   }): void {
     if (plugin === 'labels') {
@@ -272,7 +272,7 @@ export default class SliderView {
       const correctNumber = !number ? 'first' : number;
 
       const doesFirstHandleContainsTooltip = this.sliderHtml.firstHandle.contains(
-        (pluginView as SliderTooltipView).html,
+        (pluginView as TooltipView).html,
       );
 
       if (correctNumber === 'first') {
@@ -291,7 +291,7 @@ export default class SliderView {
 
   destroyPlugin({ plugin, instance }: {
     plugin: 'labels' | 'tooltip';
-    instance: SliderLabelsView | SliderTooltipView;
+    instance: LabelsView | TooltipView;
   }): void {
     const isLabelOrTooltip = plugin === 'labels'
       || plugin === 'tooltip';

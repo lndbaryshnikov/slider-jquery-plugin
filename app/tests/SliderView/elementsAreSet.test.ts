@@ -1,5 +1,5 @@
-import SliderView from '../../src/plugin/Slider/SliderView';
-import SliderModel from '../../src/plugin/Slider/SliderModel';
+import SliderView from '../../src/plugin/View/SliderView';
+import SliderModel from '../../src/plugin/Model/SliderModel';
 
 const defaults = SliderModel.getDefaultOptions('horizontal');
 

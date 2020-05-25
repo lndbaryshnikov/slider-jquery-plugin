@@ -11,7 +11,7 @@ interface LabelOptions {
   valueFunc?: (value?: number) => string | number;
 }
 
-export default class SliderLabelsView {
+class LabelsView {
   private sliderLabels: HTMLDivElement[];
 
   private options: LabelOptions;
@@ -292,4 +292,5 @@ export default class SliderLabelsView {
   }
 }
 
+export default LabelsView;
 export { LabelOptions };

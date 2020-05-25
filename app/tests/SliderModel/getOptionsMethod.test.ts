@@ -1,4 +1,4 @@
-import SliderModel, { Options } from '../../src/plugin/Slider/SliderModel';
+import SliderModel, { Options } from '../../src/plugin/Model/SliderModel';
 
 describe('getOptions method', () => {
   let model: SliderModel;

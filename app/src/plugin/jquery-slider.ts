@@ -2,9 +2,9 @@ import SliderModel, {
   Options,
   RestOptionsToSet,
   UserOptions,
-} from './Slider/SliderModel';
-import SliderView from './Slider/SliderView';
-import SliderPresenter from './Slider/SliderPresenter';
+} from './Model/SliderModel';
+import SliderView from './View/SliderView';
+import SliderPresenter from './Presenter/SliderPresenter';
 
 import './jquery-slider.scss';
 

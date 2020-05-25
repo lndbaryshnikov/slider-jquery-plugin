@@ -1,6 +1,6 @@
 import { JQueryElementWithSlider } from '../../plugin/jquery-slider';
-import SliderPresenter from '../../plugin/Slider/SliderPresenter';
-import { Options, UserOptions } from '../../plugin/Slider/SliderModel';
+import SliderPresenter from '../../plugin/Presenter/SliderPresenter';
+import { Options, UserOptions } from '../../plugin/Model/SliderModel';
 import ConfigPanel, { PanelOptions } from '../config-panel/ConfigPanel';
 import {
   ValueObject,

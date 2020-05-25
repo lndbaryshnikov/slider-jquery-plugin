@@ -2,8 +2,8 @@ import {
   Browser, ElementHandle, Page, JSHandle,
 } from 'puppeteer';
 
-import { JQueryElementWithSlider } from '../jquery-slider';
-import { Options, RestOptionsToSet, UserOptions } from '../Slider/SliderModel';
+import { JQueryElementWithSlider } from '../../src/plugin/jquery-slider';
+import { Options, RestOptionsToSet, UserOptions } from '../../src/plugin/Model/SliderModel';
 
 export interface Coords {
   left: number;

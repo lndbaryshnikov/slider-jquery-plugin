@@ -1,10 +1,10 @@
-import SliderTooltipView from '../SliderTooltipView/SliderTooltipView';
-import SliderLabelsView, {
+import TooltipView from '../View/TooltipView';
+import LabelsView, {
   LabelOptions,
-} from '../SliderLabelsView/SliderLabelsView';
-import SliderPluginsFactory from '../SliderPluginsFactory/SliderPluginsFactory';
-import SliderView from './SliderView';
-import SliderModel, { Options, UserOptions } from './SliderModel';
+} from '../View/LabelsView';
+import PluginsFactory from '../pluginsFactory/PluginsFactory';
+import SliderView from '../View/SliderView';
+import SliderModel, { Options, UserOptions } from '../Model/SliderModel';
 
 class SliderPresenter {
   private data: { setUp: boolean; rendered: boolean } = {
@@ -12,14 +12,14 @@ class SliderPresenter {
     rendered: false,
   };
 
-  private pluginsFactory = new SliderPluginsFactory();
+  private pluginsFactory = new PluginsFactory();
 
   private plugins = {
     tooltipView: {
-      first: this.pluginsFactory.createView('tooltip') as SliderTooltipView,
-      second: this.pluginsFactory.createView('tooltip') as SliderTooltipView,
+      first: this.pluginsFactory.createView('tooltip') as TooltipView,
+      second: this.pluginsFactory.createView('tooltip') as TooltipView,
     },
-    labelsView: this.pluginsFactory.createView('labels') as SliderLabelsView,
+    labelsView: this.pluginsFactory.createView('labels') as LabelsView,
   };
 
   constructor(

@@ -1,4 +1,4 @@
-import { UserOptions } from '../plugin/Slider/SliderModel';
+import { UserOptions } from '../plugin/Model/SliderModel';
 
 type MainClasses =
   | 'jquery-slider'

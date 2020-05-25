@@ -1,11 +1,11 @@
-import SliderView from '../../src/plugin/Slider/SliderView';
-import SliderModel from '../../src/plugin/Slider/SliderModel';
-import SliderTooltipView from
-  '../../src/plugin/SliderTooltipView/SliderTooltipView';
+import SliderView from '../../src/plugin/View/SliderView';
+import SliderModel from '../../src/plugin/Model/SliderModel';
+import TooltipView from
+  '../../src/plugin/View/TooltipView';
 
 describe("tooltip exists on dom and contains 'value'", () => {
   let view: SliderView;
-  const tooltipView = new SliderTooltipView();
+  const tooltipView = new TooltipView();
 
   const defaultsWithTooltip = SliderModel.getDefaultOptions('horizontal');
   defaultsWithTooltip.tooltip = true;

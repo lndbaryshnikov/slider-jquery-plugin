@@ -1,4 +1,4 @@
-import { Options } from '../../plugin/Slider/SliderModel';
+import { Options } from '../../plugin/Model/SliderModel';
 import Observer from '../../plugin/Observer/Observer';
 
 import ConfigItem, {

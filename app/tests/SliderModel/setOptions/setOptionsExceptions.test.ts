@@ -2,7 +2,7 @@ import SliderModel, {
   Options,
   ValueFunction,
   UserOptions,
-} from '../../../src/plugin/Slider/SliderModel';
+} from '../../../src/plugin/Model/SliderModel';
 
 describe('setOptionsMethod exceptions', () => {
   let model: SliderModel;

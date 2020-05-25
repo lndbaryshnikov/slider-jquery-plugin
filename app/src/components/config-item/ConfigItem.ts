@@ -1,5 +1,5 @@
 import Observer from '../../plugin/Observer/Observer';
-import { Options } from '../../plugin/Slider/SliderModel';
+import { Options } from '../../plugin/Model/SliderModel';
 
 type ConfigItemType = 'input' | 'select' | 'range';
 type ConfigItemValue<T extends ConfigItemType> = T extends 'input'
