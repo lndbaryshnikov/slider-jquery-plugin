@@ -1,6 +1,6 @@
 import SliderView from '../../src/plugin/View/SliderView';
 import SliderModel from '../../src/plugin/Model/SliderModel';
-import getClassList from '../../src/common/getClassList';
+import getClassList from '../../src/utils/getClassList';
 
 describe('destroy and cleanDom methods', () => {
   let sliderView: SliderView;

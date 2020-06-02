@@ -1,4 +1,4 @@
-import areArraysEqual from '../../common/areArraysEqual';
+import areArraysEqual from '../../utils/areArraysEqual';
 import Observer from '../Observer/Observer';
 
 type HorizontalClasses = {

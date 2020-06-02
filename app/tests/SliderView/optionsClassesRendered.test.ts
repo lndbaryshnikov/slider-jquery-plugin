@@ -1,4 +1,4 @@
-import getClassList from '../../src/common/getClassList';
+import getClassList from '../../src/utils/getClassList';
 import SliderModel, {
   HorizontalClasses,
 } from '../../src/plugin/Model/SliderModel';

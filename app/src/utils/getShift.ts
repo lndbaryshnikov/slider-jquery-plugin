@@ -5,8 +5,11 @@ interface Shift {
   y: number;
 }
 
-const getShift = (event: MouseEvent, elem: HTMLElement): Shift => {
-  const elemCoords = getCoords(elem);
+const getShift = ({ event, element }: {
+  event: MouseEvent;
+  element: HTMLElement;
+  }): Shift => {
+  const elemCoords = getCoords(element);
 
   return {
     x: event.pageX - elemCoords.left,

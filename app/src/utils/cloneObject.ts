@@ -1,9 +1,9 @@
-const clone = <CustomObject>(obj: CustomObject): CustomObject => {
+const cloneObject = <CustomObject>(obj: CustomObject): CustomObject => {
   class Create {
     constructor() {
       Object.keys(obj).forEach((item) => {
         if (Object.prototype.hasOwnProperty.call(obj, item)) {
-          this[item] = typeof obj[item] === 'object' ? clone(obj[item]) : obj[item];
+          this[item] = typeof obj[item] === 'object' ? cloneObject(obj[item]) : obj[item];
         }
       });
     }
@@ -12,4 +12,4 @@ const clone = <CustomObject>(obj: CustomObject): CustomObject => {
   return new Create() as CustomObject;
 };
 
-export default clone;
+export default cloneObject;

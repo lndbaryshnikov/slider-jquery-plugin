@@ -9,6 +9,8 @@ describe("handles rendered depending on 'range'", () => {
     const defaults = SliderModel.getDefaultOptions('horizontal');
     defaults.range = range;
 
+    if (range === true) defaults.value = [0, 100];
+
     return defaults;
   };
 

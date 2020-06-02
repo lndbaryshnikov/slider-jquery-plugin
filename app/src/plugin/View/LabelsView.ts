@@ -1,4 +1,4 @@
-import getCoords, { Coords } from '../../common/getCoords';
+import getCoords, { Coords } from '../../utils/getCoords';
 import Observer from '../Observer/Observer';
 
 interface LabelOptions {
