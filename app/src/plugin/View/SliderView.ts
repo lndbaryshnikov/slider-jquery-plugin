@@ -276,16 +276,19 @@ class SliderView {
       const correctNumber = !number ? 'first' : number;
 
       const { firstHandle, secondHandle } = this.sliderHtml;
-      const doesFirstHandleContainTooltip = firstHandle.doesContainTooltip();
+
+      const doesNotContainTooltip = (handle: HandleView): boolean => (
+        handle && !handle.doesContainTooltip()
+      );
 
       if (correctNumber === 'first') {
-        if (!doesFirstHandleContainTooltip) {
+        if (doesNotContainTooltip(firstHandle)) {
           firstHandle.renderTooltip(pluginView as TooltipView);
         }
       }
 
       if (correctNumber === 'second') {
-        if (secondHandle && !doesFirstHandleContainTooltip) {
+        if (doesNotContainTooltip(secondHandle)) {
           secondHandle.renderTooltip(pluginView as TooltipView);
         }
       }
