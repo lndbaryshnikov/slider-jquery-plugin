@@ -10,10 +10,10 @@ test('slider elements are set', () => {
   expect(typeof sliderView.html).toBe('object');
 
   expect(sliderView.html.wrapper.tagName).toBe('DIV');
-  expect(sliderView.html.range.tagName).toBe('DIV');
+  expect(sliderView.html.range.html.tagName).toBe('DIV');
   expect(sliderView.html.firstHandle.html.tagName).toBe('DIV');
 
-  expect(sliderView.html.wrapper.contains(sliderView.html.range)).toBe(true);
+  expect(sliderView.html.wrapper.contains(sliderView.html.range.html)).toBe(true);
   expect(sliderView.html.wrapper.contains(sliderView.html.firstHandle.html)).toBe(
     true,
   );
