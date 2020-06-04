@@ -3,18 +3,26 @@ import { Shift, getShift } from '../../utils/getShift';
 import TooltipView from './TooltipView';
 
 type HandleMouseEvent = 'click' | 'mousedown';
+type HandleNumber = 'first' | 'second';
 
 class HandleView {
   private handle: HTMLDivElement;
 
+  private position: HandleNumber;
+
   private tooltip: TooltipView | null;
 
-  constructor() {
+  constructor(number: HandleNumber) {
+    this.position = number;
     this._createHandle();
   }
 
   get html(): HTMLDivElement {
     return this.handle;
+  }
+
+  get number(): HandleNumber {
+    return this.position;
   }
 
   onClick(listener: (event: MouseEvent) => void): void {
