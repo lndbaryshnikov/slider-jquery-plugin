@@ -1,5 +1,6 @@
 import areArraysEqual from '../../utils/areArraysEqual';
 import Observer from '../Observer/Observer';
+import OptionsErrorHandler from './OptionsErrorHandler';
 
 type HorizontalClasses = {
   'jquery-slider jquery-slider-horizontal': string;
@@ -66,6 +67,8 @@ class SliderModel {
 
   private valueUpdatedSubject = new Observer();
 
+  private optionsErrorHandler = new OptionsErrorHandler();
+
   private classes = {
     slider: {
       main: 'jquery-slider' as keyof UserOptions['classes'],
@@ -84,99 +87,8 @@ class SliderModel {
     firstHandle: 'jquery-slider-handle' as keyof Options['classes'],
   };
 
-  private static errors = {
-    notSet: 'Options are not set (to set options pass options object)',
-    alreadySet: 'Options are already set (to change - provide options)',
-    incorrectOptions:
-      'Incorrect options (should be object or key - value pairs)',
-    incorrectOptionsObject:
-      'Options are incorrect (should correspond the required format)',
-    options: {
-      notExisting: (option: string): string => `Option "${option}" doesn't exist`,
-      incorrectType: (option: string, type: string): string => (
-        `Options are incorrect (option '${option}' should be of type '${type}')`
-      ),
-    },
-    classes: {
-      notExisting: (className: string): string => `Class "${className}" does not exist`,
-      contains: 'Only option "classes" contains classes',
-      twoExtra: 'Only option "classes" can have two extra arguments',
-      customIsNotString: 'Class is incorrect (should be a string)',
-      extraWs:
-        'Options are incorrect (main classes shouldn\'t have extra whitespaces)',
-      incorrectType:
-        'Options are incorrect (classes should correspond the required format)',
-    },
-    value: {
-      beyond:
-        'Options are incorrect ("value" cannot go beyond "min" and "max")',
-      incorrectType:
-        'Options are incorrect ("value" can only be of type "number" or "array")',
-      incorrectArray:
-        'Options are incorrect ("value" array should contain two numbers)',
-      rangeNotTrue:
-        'Options are incorrect (array is allowed for "value" when "range" is true)',
-      rangeTrue:
-        'Options are incorrect ("value" should be array when "range" is true)',
-      firstMoreThanSecond:
-        'Options are incorrect (first "value" should be less than "second")',
-      notMultipleOfStep:
-        'Options are incorrect ("value" should be multiple of "step")',
-    },
-    minAndMax: {
-      lessOrMore: (option: string, lessOrMore: 'less' | 'more'): string => (
-        `Options are incorrect (option '${option}' cannot be ${lessOrMore} than 'value')`
-      ),
-    },
-    orientation: {
-      incorrect:
-        'Options are incorrect (for orientation only "vertical" and "horizontal" '
-        + 'values are allowed)',
-    },
-    range: {
-      incorrect:
-        'Options are incorrect (option "range" can only be "min", "max" or typeof "boolean")',
-    },
-    step: {
-      incorrect:
-        'Options are incorrect (option "step" value should be between "min" and "max")',
-      notAMultiple:
-        'Options are incorrect (option "step" should be a multiple of "min and "max" difference)',
-    },
-    tooltip: {
-      incorrect:
-        'Options are incorrect (option "tooltip" should be boolean true or false, or function)',
-      incorrectFunction:
-        'Options are incorrect (tooltip\'s function should return string or number)',
-    },
-    animate: {
-      incorrect:
-        'Options are incorrect (option "animate" should be "false", "slow", "fast" or number)',
-    },
-    labels: {
-      incorrect:
-        'Options are incorrect (option "labels" can only be true false, '
-        + 'or function returning string or number)',
-      incorrectFunction:
-        'Options are incorrect ("labels" function should return string or number)',
-    },
-    pips: {
-      incorrect:
-        'Options are incorrect (option "pips" should be true or false)',
-    },
-    change: {
-      incorrect:
-        'Options are incorrect (option "change" can be only function or false)',
-      incorrectFunction:
-        'Options are incorrect ("change" function has '
-        + 'two arguments and return undefined)',
-    },
-  };
-
   whenOptionsAreIncorrect(callback: (error: string) => void): void {
-    this.incorrectOptionsReceivedSubject.addObserver((error: string) => {
-      callback(error);
-    });
+    this.optionsErrorHandler.whenErrorAppeared(callback);
   }
 
   whenOptionsSet(callback: () => void): void {
@@ -189,10 +101,6 @@ class SliderModel {
     this.valueUpdatedSubject.addObserver(() => {
       callback();
     });
-  }
-
-  static get optionsErrors(): typeof SliderModel.errors {
-    return SliderModel.errors;
   }
 
   static getDefaultOptions(
@@ -270,7 +178,7 @@ class SliderModel {
 
   destroy(): void {
     if (!this.options) {
-      this._throw(SliderModel.errors.notSet);
+      this.optionsErrorHandler.throw({ errorCode: 'notSet' });
     }
 
     this.options = null;
@@ -284,11 +192,11 @@ class SliderModel {
     | Options[keyof Options]
     | Options['classes'][keyof Options['classes']]
     | void {
-    const { errors } = SliderModel;
+    const { optionsErrorHandler: errorHandler } = this;
     const areOptionsExist = !!this.options;
 
     if (!areOptionsExist) {
-      this._throw(SliderModel.errors.notSet);
+      errorHandler.throw({ errorCode: 'notSet' });
 
       return undefined;
     }
@@ -300,7 +208,7 @@ class SliderModel {
     if (option) {
       const isOptionsCorrect = option in this.options;
       if (!isOptionsCorrect) {
-        this._throw(errors.options.notExisting(option));
+        errorHandler.throw({ option, errorCode: 'notExistingOption' });
 
         return undefined;
       }
@@ -314,7 +222,7 @@ class SliderModel {
       const isClassIncorrect = className && !userClasses.includes(className);
 
       if (isClassIncorrect) {
-        this._throw(errors.classes.notExisting(className));
+        errorHandler.throw({ option: 'classes', errorCode: 'notExistingClass', value: className });
 
         return undefined;
       }
@@ -323,7 +231,7 @@ class SliderModel {
       const isClassOptionRequested = option === 'classes';
 
       if (areTwoArgumentsProvided && !isClassOptionRequested) {
-        this._throw(errors.classes.contains);
+        errorHandler.throw({ option: 'classes', errorCode: 'contains' });
 
         return undefined;
       }
@@ -346,7 +254,7 @@ class SliderModel {
     options?: UserOptions | keyof Options,
     ...restOptions: RestOptionsToSet[]
   ): void | false {
-    const { errors } = SliderModel;
+    const { optionsErrorHandler: errorHandler } = this;
 
     const areRestOptionsProvided = restOptions.length !== 0;
     const isOptionsArgumentString = typeof options === 'string';
@@ -357,7 +265,7 @@ class SliderModel {
       const areOptionsSet = !!this.options;
 
       if (!areOptionsSet) {
-        this._throw(SliderModel.errors.notSet);
+        errorHandler.throw({ errorCode: 'notSet' });
 
         return undefined;
       }
@@ -390,14 +298,14 @@ class SliderModel {
       const areOptionsSet = !!this.options;
 
       if (areOptionsSet) {
-        this._throw(errors.alreadySet);
+        errorHandler.throw({ errorCode: 'alreadySet' });
 
         return undefined;
       }
 
       this.options = SliderModel.getDefaultOptions('horizontal');
     } else {
-      this._throw(errors.incorrectOptions);
+      errorHandler.throw({ errorCode: 'incorrectObject' });
 
       return undefined;
     }
@@ -475,10 +383,10 @@ class SliderModel {
       | UserOptions[keyof UserOptions]
     )[]
   ): { result: boolean; options?: Options } {
-    const errors = SliderModel.optionsErrors;
+    const { optionsErrorHandler: errorHandler } = this;
 
     if (!(option in this.options)) {
-      this._throw(errors.options.notExisting(option));
+      errorHandler.throw({ option, errorCode: 'notExistingOption' });
 
       return { result: false };
     }
@@ -513,7 +421,7 @@ class SliderModel {
         }
       } else if (option === 'min' || option === 'max') {
         if (typeof restOptions[0] !== 'number') {
-          this._throw(errors.options.incorrectType(option, 'number'));
+          errorHandler.throw({ option, errorCode: 'incorrectOptionType', value: 'number' });
 
           return { result: false };
         }
@@ -524,12 +432,11 @@ class SliderModel {
           const isMaxGoBeforeValue = option === 'max' && restOptions[0] < this.options.value;
 
           if (isMinGoAfterValue || isMaxGoBeforeValue) {
-            this._throw(
-              errors.minAndMax.lessOrMore(
-                option,
-                option === 'min' ? 'more' : 'less',
-              ),
-            );
+            errorHandler.throw({
+              option,
+              errorCode: 'lessOrMoreThanValue',
+              value: option === 'min' ? 'more' : 'less',
+            });
 
             return { result: false };
           }
@@ -537,20 +444,21 @@ class SliderModel {
 
         if (Array.isArray(this.options.value)) {
           // when range is true and value is array
+          const [firstValue, secondValue] = this.options.value;
+
           const isMinGoAfterValue = option === 'min'
-            && (restOptions[0] > this.options.value[0]
-              || restOptions[0] > this.options.value[1]);
+            && (restOptions[0] > firstValue
+              || restOptions[0] > secondValue);
           const isMaxGoBeforeValue = option === 'max'
-            && (restOptions[0] < this.options.value[0]
-              || restOptions[0] < this.options.value[1]);
+            && (restOptions[0] < firstValue
+              || restOptions[0] < secondValue);
 
           if (isMinGoAfterValue || isMaxGoBeforeValue) {
-            this._throw(
-              errors.minAndMax.lessOrMore(
-                option,
-                option === 'min' ? 'more' : 'less',
-              ),
-            );
+            errorHandler.throw({
+              option,
+              errorCode: 'lessOrMoreThanValue',
+              value: option === 'min' ? 'more' : 'less',
+            });
 
             return { result: false };
           }
@@ -571,7 +479,7 @@ class SliderModel {
 
     if (restOptions.length === 2) {
       if (option !== 'classes') {
-        this._throw(errors.classes.twoExtra);
+        errorHandler.throw({ option: 'classes', errorCode: 'twoExtra' });
 
         return { result: false };
       }
@@ -586,7 +494,11 @@ class SliderModel {
         || !classNames.includes(restOptions[0] as keyof UserOptions['classes']);
 
       if (isClassNameCorrect) {
-        this._throw(errors.classes.notExisting(restOptions[0] as string));
+        errorHandler.throw({
+          option: 'classes',
+          errorCode: 'notExistingClass',
+          value: (restOptions[0] as string),
+        });
 
         return { result: false };
       }
@@ -600,7 +512,7 @@ class SliderModel {
       }
 
       if (typeof restOptions[1] !== 'string') {
-        this._throw(errors.classes.customIsNotString);
+        errorHandler.throw({ option: 'classes', errorCode: 'customIsNotString' });
 
         return { result: false };
       }
@@ -623,20 +535,20 @@ class SliderModel {
   private _checkOptions(options: Options): boolean {
     const defaults = SliderModel.getDefaultOptions(options.orientation);
 
-    const { errors } = SliderModel;
+    const { optionsErrorHandler: errorHandler } = this;
 
     const optionsKeys = Object.keys(options);
     const defaultOptionsKeys = Object.keys(defaults);
 
     if (!areArraysEqual(optionsKeys, defaultOptionsKeys)) {
-      this._throw(errors.incorrectOptionsObject);
+      errorHandler.throw({ errorCode: 'incorrectObjectFormat' });
 
       return false;
     }
 
     const incorrectClassesError = Object.keys(options.classes).find((mainClass) => {
       if (mainClass.trim() !== mainClass) {
-        this._throw(errors.classes.extraWs);
+        errorHandler.throw({ option: 'classes', errorCode: 'extraWs' });
 
         return true;
       }
@@ -650,14 +562,18 @@ class SliderModel {
     const defaultClassesKeys = Object.keys(defaults.classes);
 
     if (!areArraysEqual(classesKeys, defaultClassesKeys)) {
-      this._throw(errors.classes.incorrectType);
+      errorHandler.throw({ option: 'classes', errorCode: 'incorrectType' });
 
       return false;
     }
 
     const notAStringError = Object.keys(options.classes).find((mainClass) => {
       if (typeof options.classes[mainClass] !== 'string') {
-        this._throw(errors.options.incorrectType('classes', 'string'));
+        errorHandler.throw({
+          option: 'classes',
+          errorCode: 'incorrectOptionType',
+          value: 'string',
+        });
 
         return true;
       }
@@ -674,7 +590,7 @@ class SliderModel {
     ): boolean => {
       const errorParam = params.find((param) => {
         if (typeof optionsObj[param] !== type) {
-          this._throw(errors.options.incorrectType(param, type));
+          errorHandler.throw({ option: param, errorCode: 'incorrectOptionType', value: type });
 
           return true;
         }
@@ -693,7 +609,7 @@ class SliderModel {
       && !Array.isArray(options.value);
 
     if (isValueNotCorrect) {
-      this._throw(errors.value.incorrectType);
+      errorHandler.throw({ option: 'value', errorCode: 'incorrectType' });
 
       return false;
     }
@@ -702,7 +618,7 @@ class SliderModel {
       && options.orientation !== 'vertical';
 
     if (isOrientationNotCorrect) {
-      this._throw(errors.orientation.incorrect);
+      errorHandler.throw({ option: 'orientation', errorCode: 'incorrect' });
 
       return false;
     }
@@ -712,7 +628,7 @@ class SliderModel {
       && typeof options.range !== 'boolean';
 
     if (isRangeNotCorrect) {
-      this._throw(errors.range.incorrect);
+      errorHandler.throw({ option: 'range', errorCode: 'incorrect' });
 
       return false;
     }
@@ -721,14 +637,14 @@ class SliderModel {
       && Array.isArray(options.value);
 
     if (isValueArrayWhenRangeIsNotTrue) {
-      this._throw(errors.value.rangeNotTrue);
+      errorHandler.throw({ option: 'value', errorCode: 'rangeNotTrue' });
     }
 
     const isValueNotArrayWhenRangeIsTrue = options.range === true
       && !Array.isArray(options.value);
 
     if (isValueNotArrayWhenRangeIsTrue) {
-      this._throw(errors.value.rangeTrue);
+      errorHandler.throw({ option: 'value', errorCode: 'rangeTrue' });
     }
 
     const isStepNotAMultipleOfValue = (value: number): boolean => (
@@ -742,20 +658,20 @@ class SliderModel {
       const isFirstMoreOrEqualsSecond = options.value[1] <= options.value[0];
 
       if (isFirstMoreOrEqualsSecond) {
-        this._throw(errors.value.firstMoreThanSecond);
+        errorHandler.throw({ option: 'value', errorCode: 'firstMoreThanSecond' });
 
         return false;
       }
 
       const valueError = options.value.find((value) => {
         if (!isValueBetweenMinAndMax(value)) {
-          this._throw(errors.value.beyond);
+          errorHandler.throw({ option: 'value', errorCode: 'beyond' });
 
           return true;
         }
 
         if (isStepNotAMultipleOfValue(value)) {
-          this._throw(errors.value.notMultipleOfStep);
+          errorHandler.throw({ option: 'value', errorCode: 'notMultipleOfStep' });
 
           return true;
         }
@@ -766,20 +682,22 @@ class SliderModel {
       if (valueError) return false;
     } else {
       if (!isValueBetweenMinAndMax(options.value)) {
-        this._throw(errors.value.beyond);
+        errorHandler.throw({ option: 'value', errorCode: 'beyond' });
 
         return false;
       }
 
       if (isStepNotAMultipleOfValue(options.value)) {
-        this._throw(errors.value.notMultipleOfStep);
+        errorHandler.throw({ option: 'value', errorCode: 'notMultipleOfStep' });
+
+        return false;
       }
     }
 
     const isStepNotCorrect = options.step > options.max - options.min || options.step <= 0;
 
     if (isStepNotCorrect) {
-      this._throw(errors.step.incorrect);
+      errorHandler.throw({ option: 'step', errorCode: 'incorrect' });
 
       return false;
     }
@@ -789,14 +707,16 @@ class SliderModel {
     );
 
     if (isStepNotAMultipleOfMinAndMaxDifference) {
-      this._throw(errors.step.notAMultiple);
+      errorHandler.throw({ option: 'step', errorCode: 'notAMultiple' });
+
+      return false;
     }
 
     const isTooltipNotCorrect = typeof options.tooltip !== 'boolean'
       && typeof options.tooltip !== 'function';
 
     if (isTooltipNotCorrect) {
-      this._throw(errors.tooltip.incorrect);
+      errorHandler.throw({ option: 'tooltip', errorCode: 'incorrect' });
 
       return false;
     }
@@ -808,7 +728,7 @@ class SliderModel {
         && typeof expectedValue !== 'string';
 
       if (isExpectedValueNotStringAndNotNumber) {
-        this._throw(errors.tooltip.incorrectFunction);
+        errorHandler.throw({ option: 'tooltip', errorCode: 'incorrectFunction' });
 
         return false;
       }
@@ -820,13 +740,13 @@ class SliderModel {
       && typeof options.animate !== 'number';
 
     if (isAnimateNotCorrect) {
-      this._throw(errors.animate.incorrect);
+      errorHandler.throw({ option: 'animate', errorCode: 'incorrect' });
 
       return false;
     }
 
     if (typeof options.pips !== 'boolean') {
-      this._throw(errors.pips.incorrect);
+      errorHandler.throw({ option: 'pips', errorCode: 'incorrect' });
 
       return false;
     }
@@ -835,7 +755,7 @@ class SliderModel {
       && typeof options.labels !== 'boolean';
 
     if (isLabelsNotCorrect) {
-      this._throw(errors.labels.incorrect);
+      errorHandler.throw({ option: 'labels', errorCode: 'incorrect' });
 
       return false;
     }
@@ -847,7 +767,7 @@ class SliderModel {
         && typeof result !== 'number';
 
       if (isFunctionReturnIncorrectValue) {
-        this._throw(errors.labels.incorrectFunction);
+        errorHandler.throw({ option: 'labels', errorCode: 'incorrectFunction' });
 
         return false;
       }
@@ -857,7 +777,7 @@ class SliderModel {
       && options.change !== false;
 
     if (isChangeOptionNotCorrect) {
-      this._throw(errors.change.incorrect);
+      errorHandler.throw({ option: 'change', errorCode: 'incorrect' });
 
       return false;
     }
@@ -866,7 +786,7 @@ class SliderModel {
       const func = options.change;
 
       if (typeof func(options.value) !== 'undefined') {
-        this._throw(errors.change.incorrectFunction);
+        errorHandler.throw({ option: 'change', errorCode: 'incorrectFunction' });
 
         return false;
       }
@@ -891,7 +811,7 @@ class SliderModel {
       && orientation !== 'vertical';
 
     if (isOrientationNotCorrect) {
-      this._throw(SliderModel.errors.orientation.incorrect);
+      this.optionsErrorHandler.throw({ option: 'orientation', errorCode: 'incorrect' });
 
       return { result: false };
     }
@@ -951,10 +871,6 @@ class SliderModel {
         }
       }
     });
-  }
-
-  private _throw(error: string): void {
-    this.incorrectOptionsReceivedSubject.notifyObservers(error);
   }
 }
 

@@ -3,11 +3,12 @@ import SliderModel, {
   ValueFunction,
   UserOptions,
 } from '../../../src/plugin/Model/SliderModel';
+import OptionsErrorHandler from '../../../src/plugin/Model/OptionsErrorHandler';
 
 describe('setOptionsMethod exceptions', () => {
   let model: SliderModel;
 
-  const errors = SliderModel.optionsErrors;
+  const errors = OptionsErrorHandler.optionsErrors;
 
   beforeEach(() => {
     model = new SliderModel();
@@ -20,13 +21,13 @@ describe('setOptionsMethod exceptions', () => {
   test("throws error when userOptions isn't an object", () => {
     expect(() => {
       model.setOptions('options' as UserOptions);
-    }).toThrow(errors.incorrectOptions);
+    }).toThrow(errors.incorrectObject);
   });
 
   test("throws error when userOptions object doesn't correspond the required format", () => {
     expect(() => {
       model.setOptions({ minimal: 100, sweetness: 35 } as UserOptions);
-    }).toThrow(errors.incorrectOptionsObject);
+    }).toThrow(errors.incorrectObjectFormat);
   });
 
   test('throws error when main passes wrong class _options', () => {
@@ -71,7 +72,7 @@ describe('setOptionsMethod exceptions', () => {
           'jquery-slider-handle': (34 as unknown) as string,
         },
       });
-    }).toThrow(errors.options.incorrectType('classes', 'string'));
+    }).toThrow(errors.incorrectOptionType('classes', 'string'));
   });
 
   test('throws extension when range option is incorrect', () => {
@@ -91,7 +92,7 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions();
       model.setOptions('maximum' as keyof Options, 36);
-    }).toThrow(errors.options.notExisting('maximum'));
+    }).toThrow(errors.notExistingOption('maximum'));
   });
 
   test('extension of single parameter (not classes) when 3 arguments provided', () => {
@@ -105,7 +106,7 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions();
       model.setOptions('classes', 'my-jq-slider', 'slider');
-    }).toThrow(errors.classes.notExisting('my-jq-slider'));
+    }).toThrow(errors.classes.notExistingClass('my-jq-slider'));
   });
 
   test('extension of single class when custom class is not of string type', () => {
@@ -120,7 +121,7 @@ describe('setOptionsMethod exceptions', () => {
       expect(() => {
         model.setOptions();
         model.setOptions(type, '34');
-      }).toThrow(errors.options.incorrectType(type, 'number'));
+      }).toThrow(errors.incorrectOptionType(type, 'number'));
 
       model.destroy();
     };
@@ -176,24 +177,24 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions({ value: 40 });
       model.setOptions('max', 30);
-    }).toThrow(errors.minAndMax.lessOrMore('max', 'less'));
+    }).toThrow(errors.minAndMax.lessOrMoreThanValue('max', 'less'));
 
     expect(() => {
       model.setOptions({ value: [20, 30], range: true });
       model.setOptions('max', 25);
-    }).toThrow(errors.minAndMax.lessOrMore('max', 'less'));
+    }).toThrow(errors.minAndMax.lessOrMoreThanValue('max', 'less'));
   });
 
   test("throws exception when 'min', as single option passes, more than 'value'", () => {
     expect(() => {
       model.setOptions({ value: 50, max: 120 });
       model.setOptions('min', 60);
-    }).toThrow(errors.minAndMax.lessOrMore('min', 'more'));
+    }).toThrow(errors.minAndMax.lessOrMoreThanValue('min', 'more'));
 
     expect(() => {
       model.setOptions({ value: [50, 60], range: true, max: 120 });
       model.setOptions('min', 55);
-    }).toThrow(errors.minAndMax.lessOrMore('min', 'more'));
+    }).toThrow(errors.minAndMax.lessOrMoreThanValue('min', 'more'));
   });
 
   test('throws exception when first value more than second', () => {

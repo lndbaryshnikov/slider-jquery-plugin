@@ -1,8 +1,9 @@
 import SliderModel, { Options } from '../../src/plugin/Model/SliderModel';
+import OptionsErrorHandler from '../../src/plugin/Model/OptionsErrorHandler';
 
 describe('getOptions method', () => {
   let model: SliderModel;
-  const errors = SliderModel.optionsErrors;
+  const errors = OptionsErrorHandler.optionsErrors;
 
   beforeEach(() => {
     model = new SliderModel();
@@ -42,7 +43,7 @@ describe('getOptions method', () => {
 
     expect(() => {
       model.getOptions('minimal' as keyof Options);
-    }).toThrow(errors.options.notExisting('minimal'));
+    }).toThrow(errors.notExistingOption('minimal'));
   });
 
   test('return desires class', () => {
@@ -73,7 +74,7 @@ describe('getOptions method', () => {
         'jquery-slider jquery-slider-horizontal' as keyof Options['classes'],
       );
     }).toThrow(
-      errors.classes.notExisting('jquery-slider jquery-slider-horizontal'),
+      errors.classes.notExistingClass('jquery-slider jquery-slider-horizontal'),
     );
 
     expect(() => {
@@ -81,7 +82,7 @@ describe('getOptions method', () => {
         'classes',
         'jquery-slider-my-range' as keyof Options['classes'],
       );
-    }).toThrow(errors.classes.notExisting('jquery-slider-my-range'));
+    }).toThrow(errors.classes.notExistingClass('jquery-slider-my-range'));
   });
 
   test(

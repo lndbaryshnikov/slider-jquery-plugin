@@ -23,31 +23,27 @@ class SliderPresenter {
   };
 
   constructor(
-    private viewInstance: SliderView,
-    private modelInstance: SliderModel,
+    private view: SliderView,
+    private model: SliderModel,
   ) {
-    this.modelInstance.whenOptionsSet(this.makeSetOptionsToViewCallback());
-    this.modelInstance.whenOptionsAreIncorrect(
-      SliderPresenter.makeShowErrorMessageCallback(),
-    );
-    this.viewInstance.whenValueChanged(this.makeValidateValueCallback());
-    this.modelInstance.whenValueUpdated(
-      this.makeRenderHandlePositionCallback(),
-    );
+    this.model.whenOptionsSet(this.makeSetOptionsToViewCallback());
+    this.model.whenOptionsAreIncorrect(SliderPresenter.makeShowErrorMessageCallback());
+    this.view.whenValueChanged(this.makeValidateValueCallback());
+    this.model.whenValueUpdated(this.makeRenderHandlePositionCallback());
 
     const labelClickHandler = (middleCoordinate: number): void => {
-      this.viewInstance.refreshValue({ currentHandleCoordinate: middleCoordinate });
+      this.view.refreshValue({ currentHandleCoordinate: middleCoordinate });
     };
 
     this.plugins.labelsView.whenUserClicksOnLabel(labelClickHandler);
   }
 
-  get view(): SliderView {
-    return this.viewInstance;
+  get sliderView(): SliderView {
+    return this.view;
   }
 
-  get model(): SliderModel {
-    return this.modelInstance;
+  get sliderModel(): SliderModel {
+    return this.model;
   }
 
   initialize(root: HTMLElement, userOptions?: UserOptions): void {
@@ -67,7 +63,7 @@ class SliderPresenter {
       | UserOptions['classes'][keyof UserOptions['classes']]
     )[]
   ): void {
-    this.modelInstance.setOptions(options, ...restOptions);
+    this.model.setOptions(options, ...restOptions);
 
     this.data.setUp = true;
   }
@@ -80,11 +76,7 @@ class SliderPresenter {
     | Options[keyof Options]
     | Options['classes'][keyof Options['classes']]
     | void {
-    if (!this.data.setUp) {
-      throw new Error(SliderModel.optionsErrors.notSet);
-    }
-
-    return this.modelInstance.getOptions(option, className);
+    return this.model.getOptions(option, className);
   }
 
   render(root: HTMLElement): void {
@@ -95,7 +87,7 @@ class SliderPresenter {
       throw new Error('Slider is already rendered');
     }
 
-    this.viewInstance.render(root);
+    this.view.render(root);
 
     const {
       first: firstTooltipView,
@@ -105,14 +97,14 @@ class SliderPresenter {
     const { labelsView } = this.plugins;
 
     if (labelsView.state.isSet) {
-      this.viewInstance.renderPlugin({
+      this.view.renderPlugin({
         plugin: 'labels',
         pluginView: labelsView,
       });
     }
 
     if (firstTooltipView.state.isSet) {
-      this.viewInstance.renderPlugin({
+      this.view.renderPlugin({
         plugin: 'tooltip',
         pluginView: firstTooltipView,
         number: 'first',
@@ -120,7 +112,7 @@ class SliderPresenter {
     }
 
     if (secondTooltipView.state.isSet) {
-      this.viewInstance.renderPlugin({
+      this.view.renderPlugin({
         plugin: 'tooltip',
         pluginView: secondTooltipView,
         number: 'second',
@@ -135,10 +127,10 @@ class SliderPresenter {
       throw new Error("Slider isn't initialized yet");
     }
 
-    if (this.data.rendered !== false) this.viewInstance.cleanDom();
+    if (this.data.rendered !== false) this.view.cleanDom();
 
-    this.viewInstance.destroy();
-    this.modelInstance.destroy();
+    this.view.destroy();
+    this.model.destroy();
 
     this.data.setUp = false;
     this.data.rendered = false;
@@ -149,16 +141,16 @@ class SliderPresenter {
       throw new Error("Slider isn't rendered");
     }
 
-    this.viewInstance.cleanDom();
+    this.view.cleanDom();
 
     this.data.rendered = false;
   }
 
   makeSetOptionsToViewCallback() {
     return (): void => {
-      const options = this.modelInstance.getOptions() as Options;
+      const options = this.model.getOptions() as Options;
 
-      this.viewInstance.setOptions(options);
+      this.view.setOptions(options);
 
       this._toggleTooltip(options);
       this._toggleLabels(options);
@@ -173,13 +165,13 @@ class SliderPresenter {
 
   makeValidateValueCallback() {
     return (valueData: [number, 'first' | 'second']): void => {
-      this.modelInstance.refreshValue(valueData);
+      this.model.refreshValue(valueData);
     };
   }
 
   makeRenderHandlePositionCallback() {
     return (): void => {
-      const options = this.modelInstance.getOptions() as Options;
+      const options = this.model.getOptions() as Options;
 
       const {
         value, tooltip, range, change,
@@ -190,7 +182,7 @@ class SliderPresenter {
         second: secondTooltipView,
       } = this.plugins.tooltipView;
 
-      this.viewInstance.updateHandlePosition(value);
+      this.view.updateHandlePosition(value);
 
       if (firstTooltipView.state.isRendered) {
         firstTooltipView.setText({
@@ -240,14 +232,14 @@ class SliderPresenter {
       }
 
       if (this.data.rendered) {
-        this.viewInstance.renderPlugin({
+        this.view.renderPlugin({
           plugin: 'tooltip',
           pluginView: firstTooltipView,
           number: 'first',
         });
 
         if (options.range === true) {
-          this.viewInstance.renderPlugin({
+          this.view.renderPlugin({
             plugin: 'tooltip',
             pluginView: secondTooltipView,
             number: 'second',
@@ -255,7 +247,7 @@ class SliderPresenter {
         }
       }
     } else if (firstTooltipView.state.isRendered) {
-      this.viewInstance.destroyPlugin({
+      this.view.destroyPlugin({
         plugin: 'tooltip',
         instance: firstTooltipView,
       });
@@ -265,7 +257,7 @@ class SliderPresenter {
       );
 
       if (isRangeTrueWhenSecondTooltipIsRendered) {
-        this.viewInstance.destroyPlugin({
+        this.view.destroyPlugin({
           plugin: 'tooltip',
           instance: secondTooltipView,
         });
@@ -294,13 +286,13 @@ class SliderPresenter {
       labelsView.setOptions(labelsOptions);
 
       if (this.data.rendered) {
-        this.viewInstance.renderPlugin({
+        this.view.renderPlugin({
           plugin: 'labels',
           pluginView: labelsView,
         });
       }
     } else if (labelsView.state.isRendered) {
-      this.viewInstance.destroyPlugin({
+      this.view.destroyPlugin({
         plugin: 'labels',
         instance: labelsView,
       });
