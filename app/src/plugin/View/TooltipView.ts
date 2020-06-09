@@ -1,4 +1,4 @@
-import { ValueFunction } from '../Model/SliderModel';
+import { ValueFunction } from '../Model/modelOptions';
 
 class TooltipView {
   private tooltipText: string | number | null = null;

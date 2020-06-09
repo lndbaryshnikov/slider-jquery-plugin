@@ -1,55 +1,37 @@
-import SliderModel, {
-  Options,
-  ValueFunction,
-  UserOptions,
-} from '../../../src/plugin/Model/SliderModel';
-import OptionsErrorHandler from '../../../src/plugin/Model/OptionsErrorHandler';
+import ErrorHandler, { ErrorObject } from '../../../src/plugin/ErrorHandler/ErrorHandler';
+import { UserOptions, Options, ValueFunction } from '../../../src/plugin/Model/modelOptions';
+import Model from '../../../src/plugin/Model/Model';
 
 describe('setOptionsMethod exceptions', () => {
-  let model: SliderModel;
+  let model: Model;
 
-  const errors = OptionsErrorHandler.optionsErrors;
+  const errors = ErrorHandler.getOptionErrors();
 
   beforeEach(() => {
-    model = new SliderModel();
+    model = new Model();
 
-    model.whenOptionsAreIncorrect((error: string) => {
-      throw new Error(error);
+    model.whenOptionsIncorrect((errorObject: ErrorObject) => {
+      const handler = (message: string): void => {
+        throw new Error(message);
+      };
+
+      new ErrorHandler(handler).throw(errorObject);
     });
   });
 
   test("throws error when userOptions isn't an object", () => {
     expect(() => {
       model.setOptions('options' as UserOptions);
-    }).toThrow(errors.incorrectObject);
+    }).toThrow(errors.common.notAnObject);
   });
 
-  test("throws error when userOptions object doesn't correspond the required format", () => {
+  test('throws error when userOptions object does not correspond the required format', () => {
     expect(() => {
       model.setOptions({ minimal: 100, sweetness: 35 } as UserOptions);
-    }).toThrow(errors.incorrectObjectFormat);
+    }).toThrow(errors.common.incorrectNames);
   });
 
-  test('throws error when main passes wrong class _options', () => {
-    expect(() => {
-      model.setOptions({
-        classes: { 'jquery-sl': 'my-slider' },
-      } as UserOptions);
-    }).toThrow(errors.classes.incorrectType);
-  });
-
-  test("throws error when main adds whitespaces in slider's main classes", () => {
-    expect(() => {
-      model.setOptions({
-        classes: {
-          'jquery-slider  ': 'slider',
-          '  jquery-slider-range  ': 'range',
-        },
-      } as UserOptions);
-    }).toThrow(errors.classes.extraWs);
-  });
-
-  test('throws an exception when options.orientation is incorrect', () => {
+  test('throws an exception when orientation is incorrect', () => {
     expect(() => {
       model.setOptions({ orientation: 'horizontal ' as 'horizontal' });
     }).toThrow(errors.orientation.incorrect);
@@ -57,22 +39,6 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions({ orientation: 'high ' as 'vertical' });
     }).toThrow(errors.orientation.incorrect);
-  });
-
-  test('extension of singe option when options are not set', () => {
-    expect(() => {
-      model.setOptions('max', 35);
-    }).toThrow(errors.notSet);
-  });
-
-  test('throws an exceptions when custom class is not of string type', () => {
-    expect(() => {
-      model.setOptions({
-        classes: {
-          'jquery-slider-handle': (34 as unknown) as string,
-        },
-      });
-    }).toThrow(errors.incorrectOptionType('classes', 'string'));
   });
 
   test('throws extension when range option is incorrect', () => {
@@ -85,45 +51,15 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions();
       model.setOptions();
-    }).toThrow(errors.alreadySet);
+    }).toThrow(errors.common.alreadySet);
   });
 
-  test('extension of single option when options does not exist', () => {
-    expect(() => {
-      model.setOptions();
-      model.setOptions('maximum' as keyof Options, 36);
-    }).toThrow(errors.notExistingOption('maximum'));
-  });
-
-  test('extension of single parameter (not classes) when 3 arguments provided', () => {
-    expect(() => {
-      model.setOptions();
-      model.setOptions('max', 'top', 35);
-    }).toThrow(errors.classes.twoExtra);
-  });
-
-  test('single class extension when provided main class does not exist', () => {
-    expect(() => {
-      model.setOptions();
-      model.setOptions('classes', 'my-jq-slider', 'slider');
-    }).toThrow(errors.classes.notExistingClass('my-jq-slider'));
-  });
-
-  test('extension of single class when custom class is not of string type', () => {
-    expect(() => {
-      model.setOptions();
-      model.setOptions('classes', 'jquery-slider', 34);
-    }).toThrow(errors.classes.customIsNotString);
-  });
-
-  test("throws extension when type of 'min', 'max', 'step' or 'value' is not 'number'", () => {
-    const checkStringType = (type: 'min' | 'max' | 'step' | 'value'): void => {
+  test('throws extension when type of min, max, step or value is not a number', () => {
+    const errorExpression = errors.common.incorrectOptionType;
+    const checkStringType = (option: string): void => {
       expect(() => {
-        model.setOptions();
-        model.setOptions(type, '34');
-      }).toThrow(errors.incorrectOptionType(type, 'number'));
-
-      model.destroy();
+        model.setOptions({ [option]: 'false' as unknown as number });
+      }).toThrow(errorExpression(option, 'number'));
     };
 
     checkStringType('min');
@@ -131,36 +67,31 @@ describe('setOptionsMethod exceptions', () => {
     checkStringType('step');
   });
 
-  test("throws exception when type of 'value' is not number or array", () => {
+  test('throws exception when type of value is not number or array', () => {
     const error = errors.value.incorrectType;
 
     expect(() => {
       model.setOptions(({ value: '20' } as unknown) as UserOptions);
-    }).toThrow(error);
-
-    expect(() => {
-      model.setOptions();
-      model.setOptions('value', '20');
     }).toThrow(error);
   });
 
   test('throws exception when range is true but value is not an array', () => {
     expect(() => {
       model.setOptions({ range: true });
-    }).toThrow(errors.value.rangeTrue);
+    }).toThrow(errors.value.notCompatibleWithRange);
   });
 
   test('throws exception when range is not true but value is array', () => {
     expect(() => {
       model.setOptions({ value: [1, 99] });
-    }).toThrow(errors.value.rangeNotTrue);
+    }).toThrow(errors.value.notCompatibleWithRange);
   });
 
   test('throws exception when value, as single option passes, goes beyond min and max', () => {
     expect(() => {
       model.setOptions({ min: 30, max: 120, value: 40 });
-      model.setOptions('value', 20);
-    }).toThrow(errors.value.beyond);
+      model.setOptions({ value: 20 });
+    }).toThrow(errors.value.beyondBorders);
 
     expect(() => {
       model.setOptions({
@@ -169,47 +100,18 @@ describe('setOptionsMethod exceptions', () => {
         value: [40, 60],
         range: true,
       });
-      model.setOptions('value', [20, 60]);
-    }).toThrow(errors.value.beyond);
-  });
-
-  test("throws exception when 'max', as single option passes, less that 'value'", () => {
-    expect(() => {
-      model.setOptions({ value: 40 });
-      model.setOptions('max', 30);
-    }).toThrow(errors.minAndMax.lessOrMoreThanValue('max', 'less'));
-
-    expect(() => {
-      model.setOptions({ value: [20, 30], range: true });
-      model.setOptions('max', 25);
-    }).toThrow(errors.minAndMax.lessOrMoreThanValue('max', 'less'));
-  });
-
-  test("throws exception when 'min', as single option passes, more than 'value'", () => {
-    expect(() => {
-      model.setOptions({ value: 50, max: 120 });
-      model.setOptions('min', 60);
-    }).toThrow(errors.minAndMax.lessOrMoreThanValue('min', 'more'));
-
-    expect(() => {
-      model.setOptions({ value: [50, 60], range: true, max: 120 });
-      model.setOptions('min', 55);
-    }).toThrow(errors.minAndMax.lessOrMoreThanValue('min', 'more'));
+      model.setOptions({ value: [20, 60] });
+    }).toThrow(errors.value.beyondBorders);
   });
 
   test('throws exception when first value more than second', () => {
     expect(() => {
       model.setOptions({ range: true, value: [30, 20] });
     }).toThrow(errors.value.firstMoreThanSecond);
-
-    expect(() => {
-      model.setOptions({ range: true, value: [20, 30] });
-      model.setOptions('value', [30, 20]);
-    }).toThrow(errors.value.firstMoreThanSecond);
   });
 
-  test("throws exception when 'value', 'min' or 'max' are incorrect", () => {
-    const error = errors.value.beyond;
+  test('throws exception when value, min or max are incorrect', () => {
+    const error = errors.value.beyondBorders;
 
     expect(() => {
       model.setOptions({ value: 150 });
@@ -250,7 +152,7 @@ describe('setOptionsMethod exceptions', () => {
     }).toThrow(error);
   });
 
-  test("throws exception when 'value' is not a multiple of 'step'", () => {
+  test('throws exception when value is not a multiple of step', () => {
     const error = errors.value.notMultipleOfStep;
 
     expect(() => {
@@ -259,12 +161,6 @@ describe('setOptionsMethod exceptions', () => {
         step: 2,
         value: 1,
       });
-    }).toThrow(error);
-
-    expect(() => {
-      model.setOptions({ max: 15, step: 5 });
-
-      model.setOptions('value', 3);
     }).toThrow(error);
 
     expect(() => {
@@ -286,7 +182,7 @@ describe('setOptionsMethod exceptions', () => {
     }).toThrow(error);
   });
 
-  test("throws exception when 'step' is not between 'min' and 'max'", () => {
+  test('throws exception when step is not between min and max', () => {
     const error = errors.step.incorrect;
 
     expect(() => {
@@ -300,21 +196,9 @@ describe('setOptionsMethod exceptions', () => {
         step: 101,
       });
     }).toThrow(error);
-
-    expect(() => {
-      model.setOptions();
-      model.setOptions('step', -1);
-    }).toThrow(error);
-
-    model.destroy();
-
-    expect(() => {
-      model.setOptions();
-      model.setOptions('step', 103);
-    }).toThrow(error);
   });
 
-  test("throws exception when 'step' is not a multiple of 'min' and 'max' difference", () => {
+  test('throws exception when step is not a multiple of min and max difference', () => {
     const error = errors.step.notAMultiple;
 
     expect(() => {
@@ -323,19 +207,13 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({ min: 3, max: 10, value: 3 });
-      model.setOptions('step', 3);
+      model.setOptions({ step: 3 });
     }).toThrow(error);
   });
 
   test('throws exceptions when option tooltip is not true, false or function', () => {
     expect(() => {
       model.setOptions(({ tooltip: 'true' } as unknown) as UserOptions);
-    }).toThrow(errors.tooltip.incorrect);
-
-    model.setOptions();
-
-    expect(() => {
-      model.setOptions('tooltip', 34);
     }).toThrow(errors.tooltip.incorrect);
   });
 
@@ -353,24 +231,9 @@ describe('setOptionsMethod exceptions', () => {
         tooltip: ((() => (): number => 34) as unknown) as ValueFunction,
       });
     }).toThrow(errors.tooltip.incorrectFunction);
-
-    model.setOptions();
-
-    expect(() => {
-      model.setOptions('tooltip', (() => {
-        Math.round(34.5);
-      }) as ValueFunction);
-    }).toThrow(errors.tooltip.incorrectFunction);
-
-    expect(() => {
-      model.setOptions(
-        'tooltip',
-        ((() => (): number => 34) as unknown) as ValueFunction,
-      );
-    }).toThrow(errors.tooltip.incorrectFunction);
   });
 
-  test("throws exceptions when 'animate' property is incorrect", () => {
+  test('throws exceptions when animate property is incorrect', () => {
     expect(() => {
       model.setOptions({
         animate: ('slowly' as unknown) as Options['animate'],
@@ -380,19 +243,9 @@ describe('setOptionsMethod exceptions', () => {
     expect(() => {
       model.setOptions({ animate: (true as unknown) as Options['animate'] });
     }).toThrow(errors.animate.incorrect);
-
-    model.setOptions();
-
-    expect(() => {
-      model.setOptions('animate', ('slowly' as unknown) as Options['animate']);
-    }).toThrow(errors.animate.incorrect);
-
-    expect(() => {
-      model.setOptions('animate', (true as unknown) as Options['animate']);
-    }).toThrow(errors.animate.incorrect);
   });
 
-  test("throws exceptions when 'labels' or 'pips' are incorrect", () => {
+  test('throws exceptions when labels or pips are incorrect', () => {
     expect(() => {
       model.setOptions({ pips: (34 as unknown) as true });
     }).toThrow(errors.pips.incorrect);
@@ -410,23 +263,6 @@ describe('setOptionsMethod exceptions', () => {
         labels: (((value: number) => { Math.round(value); }) as unknown) as Options['labels'],
       });
     }).toThrow(errors.labels.incorrectFunction);
-
-    model.setOptions();
-
-    expect(() => {
-      model.setOptions('pips', ('each' as unknown) as Options['pips']);
-    }).toThrow(errors.pips.incorrect);
-
-    expect(() => {
-      model.setOptions('labels', ('small' as unknown) as Options['labels']);
-    }).toThrow(errors.labels.incorrect);
-
-    expect(() => {
-      model.setOptions(
-        'labels',
-        ((() => true) as unknown) as Options['labels'],
-      );
-    }).toThrow(errors.labels.incorrectFunction);
   });
 
   test('throws exception when change is not function or false', () => {
@@ -434,12 +270,10 @@ describe('setOptionsMethod exceptions', () => {
       model.setOptions({ change: true as unknown as false });
     }).toThrow(errors.change.incorrect);
 
-    model.setOptions();
-
     const handler = (value: number): number => value;
 
     expect(() => {
-      model.setOptions('change', handler);
+      model.setOptions({ change: handler });
     }).toThrow(errors.change.incorrectFunction);
   });
 });

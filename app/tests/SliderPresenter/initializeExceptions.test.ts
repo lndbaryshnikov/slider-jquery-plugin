@@ -1,31 +1,25 @@
-import SliderPresenter from '../../src/plugin/Presenter/SliderPresenter';
-import SliderView from '../../src/plugin/View/SliderView';
-import SliderModel from '../../src/plugin/Model/SliderModel';
+import Presenter from '../../src/plugin/Presenter/Presenter';
+import MainView from '../../src/plugin/View/MainView';
+import Model from '../../src/plugin/Model/Model';
 
 describe('initialize exceptions', () => {
-  let slider: SliderPresenter;
+  let slider: Presenter;
 
   beforeEach(() => {
-    slider = new SliderPresenter(new SliderView(), new SliderModel());
+    slider = new Presenter(new MainView(), new Model());
   });
 
   test('throws exceptions when render without setup', () => {
     expect(() => {
       slider.render(document.body);
-    }).toThrow("Slider isn't setUp");
+    }).toThrow('slider is not set up');
   });
 
-  test('throws exception when setUp when slider already setUp', () => {
+  test('throws exception when setUp when slider already set up', () => {
     slider.initialize(document.body);
 
     expect(() => {
       slider.initialize(document.body);
-    }).toThrow('Slider is already initialized');
-  });
-
-  test('throws exception when destroy without initialize', () => {
-    expect(() => {
-      slider.destroy();
-    }).toThrow("Slider isn't initialized yet");
+    }).toThrow('slider is already rendered');
   });
 });

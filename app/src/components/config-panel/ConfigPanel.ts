@@ -1,4 +1,3 @@
-import { Options } from '../../plugin/Model/SliderModel';
 import Observer from '../../plugin/Observer/Observer';
 
 import ConfigItem, {
@@ -6,8 +5,9 @@ import ConfigItem, {
   ConfigItemValue,
   ValueObject,
 } from '../config-item/ConfigItem';
+import { Options } from '../../plugin/Model/modelOptions';
 
-type PanelOptions = Omit<Options, 'change' | 'classes'>;
+type PanelOptions = Omit<Options, 'change'>;
 
 type Panel = {
   [key in keyof PanelOptions]: ConfigItem;

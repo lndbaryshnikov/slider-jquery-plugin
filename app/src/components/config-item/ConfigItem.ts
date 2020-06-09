@@ -1,5 +1,5 @@
 import Observer from '../../plugin/Observer/Observer';
-import { Options } from '../../plugin/Model/SliderModel';
+import { Options } from '../../plugin/Model/modelOptions';
 
 type ConfigItemType = 'input' | 'select' | 'range';
 type ConfigItemValue<T extends ConfigItemType> = T extends 'input'
@@ -8,7 +8,7 @@ type ConfigItemValue<T extends ConfigItemType> = T extends 'input'
     ? string | boolean
     : number[] | number;
 
-type PanelOptions = Omit<Options, 'change' | 'classes'>;
+type PanelOptions = Omit<Options, 'change'>;
 
 type Item = {
   wrapper: HTMLDivElement;

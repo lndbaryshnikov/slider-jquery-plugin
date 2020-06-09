@@ -1,37 +1,26 @@
-import SliderView from '../../src/plugin/View/SliderView';
-import SliderModel from '../../src/plugin/Model/SliderModel';
-import getClassList from '../../src/utils/getClassList';
+import MainView from '../../src/plugin/View/MainView';
+import Model from '../../src/plugin/Model/Model';
 
-describe('destroy and cleanDom methods', () => {
-  let sliderView: SliderView;
+describe('cleanDom method', () => {
+  let view: MainView;
   let root: HTMLElement;
 
-  const defaultOptions = SliderModel.getDefaultOptions('horizontal');
+  const { defaultOptions } = Model;
 
   beforeEach(() => {
-    sliderView = new SliderView();
-
-    sliderView.setOptions(defaultOptions);
-
+    view = new MainView();
     root = document.body;
 
-    sliderView.render(root);
+    view.setOptions(defaultOptions);
+    view.render(root);
   });
 
   test('cleanDom method works correctly', () => {
-    sliderView.cleanDom();
+    view.cleanDom();
 
     expect(document.querySelectorAll('div').length).toBe(0);
     expect(document.querySelector('.jquery-slider')).toBe(null);
     expect(document.querySelector('.jquery-slider-range')).toBe(null);
     expect(document.querySelector('.jquery-slider-handle')).toBe(null);
-  });
-
-  test('destroy method works', () => {
-    sliderView.destroy();
-
-    expect(sliderView.html).toBe(undefined);
-    expect(document.querySelectorAll('div').length).toBe(3);
-    expect(getClassList($('div'))).toEqual(defaultOptions.classes);
   });
 });

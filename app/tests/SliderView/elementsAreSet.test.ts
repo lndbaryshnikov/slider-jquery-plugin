@@ -1,20 +1,20 @@
-import SliderView from '../../src/plugin/View/SliderView';
-import SliderModel from '../../src/plugin/Model/SliderModel';
+import Model from '../../src/plugin/Model/Model';
+import MainView from '../../src/plugin/View/MainView';
 
-const defaults = SliderModel.getDefaultOptions('horizontal');
+const defaults = Model.defaultOptions;
 
-test('slider elements are set', () => {
-  const sliderView = new SliderView();
-  sliderView.setOptions(defaults);
+test('elements are set', () => {
+  const view = new MainView();
+  view.setOptions(defaults);
 
-  expect(typeof sliderView.html).toBe('object');
+  expect(typeof view.html).toBe('object');
 
-  expect(sliderView.html.wrapper.tagName).toBe('DIV');
-  expect(sliderView.html.range.html.tagName).toBe('DIV');
-  expect(sliderView.html.firstHandle.html.tagName).toBe('DIV');
+  expect(view.html.slider.tagName).toBe('DIV');
+  expect(view.html.range.html.tagName).toBe('DIV');
+  expect(view.html.firstHandle.html.tagName).toBe('DIV');
 
-  expect(sliderView.html.wrapper.contains(sliderView.html.range.html)).toBe(true);
-  expect(sliderView.html.wrapper.contains(sliderView.html.firstHandle.html)).toBe(
+  expect(view.html.slider.contains(view.html.range.html)).toBe(true);
+  expect(view.html.slider.contains(view.html.firstHandle.html)).toBe(
     true,
   );
 });

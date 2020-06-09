@@ -1,9 +1,9 @@
 import {
   Browser, ElementHandle, Page, JSHandle,
 } from 'puppeteer';
-
-import { JQueryElementWithSlider } from '../../src/plugin/jquery-slider';
-import { Options, RestOptionsToSet, UserOptions } from '../../src/plugin/Model/SliderModel';
+import { UserOptions, Options } from '../../src/plugin/Model/modelOptions';
+import SliderElement from '../../src/plugin/jquery-slider';
+import { CompleteUserOptions } from '../../src/plugin/Presenter/Presenter';
 
 export interface Coords {
   left: number;
@@ -52,7 +52,7 @@ export default class SliderPupPage {
 
   async createSlider(options?: UserOptions): Promise<void> {
     await this.pupPage.evaluate((optionsToEval: UserOptions) => {
-      const root = $("<div class='slider'></div>") as JQueryElementWithSlider;
+      const root = $("<div class='slider'></div>") as SliderElement;
 
       $('body').append(root);
 
@@ -62,19 +62,19 @@ export default class SliderPupPage {
     await this._defineElements(options);
   }
 
-  async setOptions(...options: (UserOptions | RestOptionsToSet)[]): Promise<void> {
+  async setOptions(options: CompleteUserOptions): Promise<void> {
     await this.pupPage.evaluate(
       (
         root: HTMLElement,
-        ...optionsToEval: (UserOptions | keyof Options | keyof Options)[]
+        optionsToEval: CompleteUserOptions,
       ) => {
-        ($(root) as JQueryElementWithSlider).slider(
+        ($(root) as SliderElement).slider(
           'options',
-          ...optionsToEval,
+          optionsToEval,
         );
       },
       this.root,
-      ...options as JSHandle<UserOptions | RestOptionsToSet>[],
+      options as JSHandle<CompleteUserOptions>,
     );
 
     const optionsSet = (await this.getOptions()) as Options;
@@ -82,24 +82,11 @@ export default class SliderPupPage {
     await this._defineElements(optionsSet);
   }
 
-  async getOptions(...options: (UserOptions | RestOptionsToSet)[]): Promise<
-    | Options
-    | Options['classes'][keyof Options['classes']]
-    | Options[keyof Options]
-  > {
-    return ((await this.pupPage.evaluate(
-      (
-        root: HTMLElement,
-        ...optionsToEval: (UserOptions | keyof Options | keyof Options)[]
-      ) => ($(root) as JQueryElementWithSlider).slider(
-        'options',
-        ...optionsToEval,
-      ),
+  async getOptions(): Promise<CompleteUserOptions> {
+    return await this.pupPage.evaluate(
+      (root: HTMLElement) => ($(root) as SliderElement).slider('options'),
       this.root,
-      ...options as JSHandle<UserOptions | RestOptionsToSet>[],
-    )) as unknown) as
-      | Options
-      | (Options[keyof Options] | Options['classes'][keyof Options['classes']]);
+    ) as unknown as CompleteUserOptions;
   }
 
   get elements(): (

@@ -1,110 +1,119 @@
+import RangeView from './RangeView';
+import HandleView from './HandleView';
+import { Options } from '../Model/modelOptions';
 import getCoords, { Coords } from '../../utils/getCoords';
 import Observer from '../Observer/Observer';
-import TooltipView from './TooltipView';
 import LabelsView from './LabelsView';
-import { HorizontalClasses, Options, VerticalClasses } from '../Model/SliderModel';
-import HandleView from './HandleView';
-import RangeView from './RangeView';
+import TooltipView from './TooltipView';
 
-interface SliderHtml {
-  wrapper: HTMLDivElement | null;
-  range: RangeView | null;
-  firstHandle: HandleView | null;
-  secondHandle?: HandleView | null;
-}
+type UserClasses = {
+  slider: string;
+  range: string;
+  handle: string;
+};
 
-class SliderView {
-  private sliderHtml: SliderHtml | null = null;
+type PluginHtml = {
+  slider: HTMLDivElement;
+  range: RangeView;
+  firstHandle: HandleView;
+  secondHandle?: HandleView;
+};
 
-  private root: HTMLElement | null = null;
+class MainView {
+  private pluginHtml: PluginHtml;
 
-  private options: Options | null = null;
+  private options: Options;
 
-  private classesHash: Options['classes'] | null = null;
+  private classes: UserClasses;
 
-  private handlesPositionInPixels: number[] | null = null;
+  private root: HTMLElement;
 
-  private state = {
-    rendered: false,
-  };
+  private handlesPositionInPixels: number[];
 
   private valueChangedSubject = new Observer();
 
+  isRendered(): boolean {
+    const { root } = this;
+    return root && root.contains(this.pluginHtml.slider);
+  }
+
   whenValueChanged(
-    callback: (valueData: [number, 'first' | 'second']) => void,
+    callback: (optionValue: Options['value']) => void,
   ): void {
     this.valueChangedSubject.addObserver(
-      (valueData: [number, 'first' | 'second']) => {
-        callback(valueData);
+      ({ value, handleNumber }: {
+        value: number;
+        handleNumber: 'first' | 'second';
+      }) => {
+        let optionValue: Options['value'];
+        const { value: lastOptionValue } = this.options;
+
+        if (Array.isArray(lastOptionValue)) {
+          const [firstLastValue, secondLastValue] = lastOptionValue;
+
+          optionValue = handleNumber === 'first'
+            ? [value, secondLastValue]
+            : [firstLastValue, value];
+        } else {
+          optionValue = value;
+        }
+
+        callback(optionValue);
       },
     );
   }
 
-  get html(): SliderHtml {
-    return this.sliderHtml;
+  get html(): PluginHtml {
+    return this.pluginHtml;
   }
 
-  get value(): number | number[] {
-    return this.options.value;
+  setClasses(classes: UserClasses): void {
+    this.classes = classes || this.classes || {
+      slider: '',
+      range: '',
+      handle: '',
+    };
+  }
+
+  getClasses(): UserClasses {
+    return this.classes;
   }
 
   setOptions(options: Options): void {
     this.options = options;
 
-    const wasRendered = this.state.rendered;
+    const wasRendered = this.isRendered();
 
-    let rootSnapshot: null | HTMLElement = null;
-
-    if (wasRendered) {
-      rootSnapshot = this.root;
-
-      this.cleanDom();
-    }
-
-    this._setSliderElements();
+    this.cleanDom();
+    this._setElements();
     this._setHandleMovingHandler();
     this._setSliderClickHandler();
 
-    this._setSliderClasses();
+    this._setElementsClasses();
     this._setTransition();
     this._setHandlePositionInPixels();
 
     if (wasRendered) {
-      this.render(rootSnapshot);
+      this.render(this.root);
     }
   }
 
   render(root: HTMLElement): void {
     this.root = root;
-    this.root.append(this.sliderHtml.wrapper);
-
-    this.state.rendered = true;
+    this.root.append(this.pluginHtml.slider);
 
     this._setHandlePositionInPixels();
-
-    this._renderOptions();
-  }
-
-  destroy(): void {
-    this.sliderHtml = undefined;
-    this.root = undefined;
-    this.options = undefined;
-    this.handlesPositionInPixels = undefined;
-
-    this.state.rendered = false;
+    this._renderHandlePositions();
+    this._renderRange();
   }
 
   cleanDom(): void {
-    const isRendered = !!this.root || this.root.contains(this.sliderHtml.wrapper);
+    if (!this.isRendered()) return;
 
-    if (isRendered) {
-      this.sliderHtml.wrapper.remove();
-    }
-
-    this.state.rendered = false;
+    this.pluginHtml.slider.remove();
   }
 
-  updateHandlePosition(value: Options['value']): void {
+  updateValue(value: Options['value']): void {
     this.options.value = value;
 
     this._setHandlePositionInPixels();
@@ -112,51 +121,7 @@ class SliderView {
     this._renderRange();
   }
 
-  renderPlugin({ plugin, pluginView, number }: {
-    plugin: 'tooltip' | 'labels';
-    pluginView: TooltipView | LabelsView;
-    number?: 'first' | 'second';
-  }): void {
-    if (plugin === 'labels') {
-      pluginView.render(this.sliderHtml.wrapper);
-    }
-
-    if (plugin === 'tooltip') {
-      const correctNumber = !number ? 'first' : number;
-
-      const { firstHandle, secondHandle } = this.sliderHtml;
-
-      const doesNotContainTooltip = (handle: HandleView): boolean => (
-        handle && !handle.doesContainTooltip()
-      );
-
-      if (correctNumber === 'first') {
-        if (doesNotContainTooltip(firstHandle)) {
-          firstHandle.renderTooltip(pluginView as TooltipView);
-        }
-      }
-
-      if (correctNumber === 'second') {
-        if (doesNotContainTooltip(secondHandle)) {
-          secondHandle.renderTooltip(pluginView as TooltipView);
-        }
-      }
-    }
-  }
-
-  destroyPlugin({ plugin, instance }: {
-    plugin: 'labels' | 'tooltip';
-    instance: LabelsView | TooltipView;
-  }): void {
-    const isLabelOrTooltip = plugin === 'labels'
-      || plugin === 'tooltip';
-
-    if (isLabelOrTooltip) {
-      instance.destroy();
-    }
-  }
-
-  refreshValue({ currentHandleCoordinate, handleNumber }: {
+  refreshHandlePosition({ currentHandleCoordinate, handleNumber }: {
     currentHandleCoordinate: number;
     handleNumber?: 'first' | 'second';
   }): void {
@@ -167,30 +132,27 @@ class SliderView {
 
     const { orientation, max, min } = this.options;
     const difference = max - min;
-
     const sliderCoords = this._getCoords();
-
     const isHorizontal = orientation === 'horizontal';
-
     const firstBorder = isHorizontal ? sliderCoords.left : sliderCoords.top;
     const secondBorder = isHorizontal
       ? sliderCoords.right
       : sliderCoords.bottom;
 
     if (currentHandleCoordinate > secondBorder) {
-      this.valueChangedSubject.notifyObservers([
-        isHorizontal ? max : min,
-        correctHandleNumber,
-      ]);
+      this.valueChangedSubject.notifyObservers({
+        value: isHorizontal ? max : min,
+        handleNumber: correctHandleNumber,
+      });
 
       return;
     }
 
     if (currentHandleCoordinate < firstBorder) {
-      this.valueChangedSubject.notifyObservers([
-        isHorizontal ? min : max,
-        correctHandleNumber,
-      ]);
+      this.valueChangedSubject.notifyObservers({
+        value: isHorizontal ? min : max,
+        handleNumber: correctHandleNumber,
+      });
 
       return;
     }
@@ -239,15 +201,103 @@ class SliderView {
       }
     }
 
-    this.valueChangedSubject.notifyObservers([value, correctHandleNumber]);
+    this.valueChangedSubject.notifyObservers({ value, handleNumber: correctHandleNumber });
   }
 
-  private _renderOptions(): void {
-    if (!this.state.rendered) return;
+  renderPlugin({ plugin, pluginView, number }: {
+    plugin: 'tooltip' | 'labels';
+    pluginView: TooltipView | LabelsView;
+    number?: 'first' | 'second';
+  }): void {
+    const { slider, firstHandle, secondHandle } = this.pluginHtml;
 
-    this._renderHandlePositions();
+    if (plugin === 'labels') {
+      pluginView.render(slider);
+    }
 
-    this._renderRange();
+    if (plugin === 'tooltip') {
+      const handle = !number || number === 'first' ? firstHandle : secondHandle;
+
+      const doesNotContainTooltip = handle && !handle.doesContainTooltip();
+      if (doesNotContainTooltip) {
+        handle.renderTooltip(pluginView as TooltipView);
+      }
+    }
+  }
+
+  destroyPlugin({ plugin, instance }: {
+    plugin: 'labels' | 'tooltip';
+    instance: LabelsView | TooltipView;
+  }): void {
+    const isLabelOrTooltip = plugin === 'labels'
+      || plugin === 'tooltip';
+
+    if (isLabelOrTooltip) {
+      instance.destroy();
+    }
+  }
+
+  private _setElementsClasses(): void {
+    const mainClasses = {
+      slider: 'jquery-slider',
+      range: 'jquery-slider-range',
+      handle: 'jquery-slider-handle',
+    };
+    const orientation = this.options.orientation === 'horizontal'
+      ? 'jquery-slider-horizontal' : 'jquery-slider-vertical';
+    const customClasses = this.classes || {
+      slider: '',
+      range: '',
+      handle: '',
+    };
+
+    const {
+      slider: defaultSlider,
+      range: defaultRange,
+      handle: defaultHandle,
+    } = mainClasses;
+    const {
+      slider: customSlider,
+      range: customRange,
+      handle: customHandle,
+    } = customClasses;
+
+    const sliderClass = `${defaultSlider} ${orientation} ${customSlider || ''}`;
+    const rangeClass = `${defaultRange} ${customRange || ''}`;
+    const handleClass = `${defaultHandle} ${customHandle || ''}`;
+
+    const {
+      slider, range, firstHandle, secondHandle,
+    } = this.pluginHtml;
+
+    slider.className = `${sliderClass}`;
+    range.setClass(rangeClass);
+    firstHandle.setClass(handleClass);
+
+    if (secondHandle) {
+      secondHandle.setClass(defaultHandle, customHandle);
+    }
+  }
+
+  private _setElements(): void {
+    this.pluginHtml = {
+      slider: document.createElement('div'),
+      range: new RangeView(),
+      firstHandle: new HandleView('first'),
+    };
+
+    const { slider, firstHandle, range } = this.pluginHtml;
+
+    slider.style.position = 'relative';
+    range.stickTo(slider);
+    firstHandle.stickTo(slider);
+
+    if (this.options.range === true) {
+      const secondHandle = new HandleView('second');
+      secondHandle.stickTo(slider);
+
+      this.pluginHtml.secondHandle = secondHandle;
+    }
   }
 
   private _setHandleMovingHandler(): void {
@@ -280,7 +330,7 @@ class SliderView {
           ? availableSpace.left + correctPosition + handleCoords.width / 2
           : availableSpace.top + correctPosition + handleCoords.height / 2;
 
-        this.refreshValue({
+        this.refreshHandlePosition({
           currentHandleCoordinate,
           handleNumber,
         });
@@ -298,7 +348,7 @@ class SliderView {
       return false;
     };
 
-    const { firstHandle, secondHandle } = this.sliderHtml;
+    const { firstHandle, secondHandle } = this.pluginHtml;
 
     firstHandle.onMousedown(mouseDownHandler);
 
@@ -309,7 +359,7 @@ class SliderView {
 
   private _setSliderClickHandler(): void {
     const sliderClickHandler = (clickEvent: MouseEvent): void => {
-      const { firstHandle, secondHandle } = this.sliderHtml;
+      const { firstHandle, secondHandle } = this.pluginHtml;
       const { target } = clickEvent;
       const areHandlesTargets = firstHandle.isEventTarget(target)
         || (secondHandle && secondHandle.isEventTarget(target));
@@ -324,20 +374,106 @@ class SliderView {
         ? this._getClosestHandleNumber(coordinateToMove)
         : 'first';
 
-      this.refreshValue({
+      this.refreshHandlePosition({
         currentHandleCoordinate: coordinateToMove,
         handleNumber,
       });
     };
 
-    this.sliderHtml.wrapper.addEventListener(
+    this.pluginHtml.slider.addEventListener(
       'click',
       sliderClickHandler,
     );
   }
 
+  private _setTransition(): void {
+    const { animate } = this.options;
+
+    const maybeNull = typeof animate === 'number' ? animate : 0;
+    const maybeSevenHundredOrNull = animate === 'slow' ? 700 : maybeNull;
+    const transitionMs: number = animate === 'fast' ? 300 : maybeSevenHundredOrNull;
+
+    const { firstHandle, range } = this.pluginHtml;
+
+    range.setTransition(`${transitionMs}ms`);
+
+    const makeChangeTransitionHandler = ({ handle, transition }: {
+      handle: HandleView;
+      transition: number;
+    }): () => void => (
+      (): void => {
+        handle.setTransition(`${transition}ms`);
+        range.setTransition(`${transition}ms`);
+      }
+    );
+
+    const setUITransition = (handle: HandleView): void => {
+      handle.setTransition(`${transitionMs}ms`);
+
+      handle.onMousedown(
+        makeChangeTransitionHandler({
+          handle,
+          transition: 0,
+        }),
+      );
+
+      document.addEventListener(
+        'mouseup',
+        makeChangeTransitionHandler({
+          handle,
+          transition: transitionMs,
+        }),
+      );
+    };
+
+    setUITransition(firstHandle);
+
+    if (this.options.range === true) {
+      const { secondHandle } = this.pluginHtml;
+
+      setUITransition(secondHandle);
+    }
+  }
+
+  private _setHandlePositionInPixels(): void {
+    if (!this.isRendered()) return;
+
+    const positions = [];
+
+    const {
+      min, max, value, range, orientation,
+    } = this.options;
+    const difference = max - min;
+    const firstValue = range === true
+      ? (value as number[])[0]
+      : (value as number);
+
+    const firstValueInPercents = (firstValue - min) / difference;
+
+    const { width: sliderWidth, height: sliderHeight } = this._getCoords();
+
+    const addHandlePosition = (handleValueInPercents: number): void => {
+      positions.push(
+        orientation === 'horizontal'
+          ? sliderWidth * handleValueInPercents
+          : sliderHeight * handleValueInPercents,
+      );
+    };
+
+    addHandlePosition(firstValueInPercents);
+
+    if (range === true) {
+      const [, secondValue] = value as number[];
+      const secondValueInPercents = (secondValue - min) / difference;
+
+      addHandlePosition(secondValueInPercents);
+    }
+
+    this.handlesPositionInPixels = positions;
+  }
+
   private _renderHandlePositions(): void {
-    const { firstHandle, secondHandle } = this.sliderHtml;
+    const { firstHandle, secondHandle } = this.pluginHtml;
     const [firstHandlePositionInPx, secondHandlePositionInPx] = this.handlesPositionInPixels;
 
     const moveFrom = this.options.orientation === 'horizontal' ? 'left' : 'bottom';
@@ -368,215 +504,14 @@ class SliderView {
     const endMaybeFirstOrSecond = isRangeMin ? firstHandlePosition : secondHandlePosition;
     const secondPoint = isRangeMax ? sliderEnd : endMaybeFirstOrSecond;
 
-    this.sliderHtml.range.setUp({ orientation, firstPoint, secondPoint });
-  }
-
-  private _setSliderClasses(): void {
-    const { classes } = this.options;
-
-    const defaultClasses = Object.keys(classes) as (keyof (
-      | VerticalClasses
-      | HorizontalClasses
-    ))[];
-
-    const [defaultWrapperClass, defaultRangeClass, defaultHandleClass] = defaultClasses;
-    const { wrapper, range, firstHandle } = this.sliderHtml;
-
-    wrapper.className = `${defaultWrapperClass} ${classes[defaultWrapperClass]}`;
-    range.setClass(defaultRangeClass, classes[defaultRangeClass]);
-    firstHandle.setClass(defaultHandleClass, classes[defaultHandleClass]);
-
-    if (this.sliderHtml.secondHandle) {
-      const { secondHandle } = this.sliderHtml;
-
-      secondHandle.setClass(defaultHandleClass, classes[defaultHandleClass]);
-    }
-  }
-
-  private _setTransition(): void {
-    const { animate } = this.options;
-
-    const maybeNull = typeof animate === 'number' ? animate : 0;
-    const maybeSevenHundredOrNull = animate === 'slow' ? 700 : maybeNull;
-    const transitionMs: number = animate === 'fast' ? 300 : maybeSevenHundredOrNull;
-
-    const { firstHandle, range } = this.sliderHtml;
-
-    range.setTransition(`${transitionMs}ms`);
-
-    const makeChangeTransitionHandler = ({ handle, transition }: {
-      handle: HandleView;
-      transition: number;
-    }): () => void => (
-      (): void => {
-        handle.setTransition(`${transition}ms`);
-        range.setTransition(`${transition}ms`);
-      }
-    );
-
-    const setTransition = (handle: HandleView): void => {
-      handle.setTransition(`${transitionMs}ms`);
-
-      handle.onMousedown(
-        makeChangeTransitionHandler({
-          handle,
-          transition: 0,
-        }),
-      );
-
-      document.addEventListener(
-        'mouseup',
-        makeChangeTransitionHandler({
-          handle,
-          transition: transitionMs,
-        }),
-      );
-    };
-
-    setTransition(firstHandle);
-
-    if (this.options.range === true) {
-      const { secondHandle } = this.sliderHtml;
-
-      setTransition(secondHandle);
-    }
-  }
-
-  private _setHandlePositionInPixels(): void {
-    if (!this.state.rendered) return;
-
-    this.handlesPositionInPixels = [];
-
-    const {
-      min, max, value, range, orientation,
-    } = this.options;
-    const difference = max - min;
-
-    const firstValue = range === true
-      ? (value as number[])[0]
-      : (value as number);
-
-    const firstValueInPercents = (firstValue - min) / difference;
-
-    const { width: sliderWidth, height: sliderHeight } = this._getCoords();
-
-    const addHandlePosition = (handleValueInPercents: number): void => {
-      this.handlesPositionInPixels.push(
-        orientation === 'horizontal'
-          ? sliderWidth * handleValueInPercents
-          : sliderHeight * handleValueInPercents,
-      );
-    };
-
-    addHandlePosition(firstValueInPercents);
-
-    if (range === true) {
-      const [, secondValue] = value as number[];
-      const secondValueInPercents = (secondValue - min) / difference;
-
-      addHandlePosition(secondValueInPercents);
-    }
-  }
-
-  private _countAvailableHandleSpace(
-    targetHandleNumber: 'first' | 'second',
-  ): Omit<Coords, 'centerX' | 'centerY'> {
-    const { firstHandle, secondHandle } = this.sliderHtml;
-    const isHorizontal = this.options.orientation === 'horizontal';
-
-    let {
-      right, left, top, bottom, width, height,
-    }: Coords = this._getCoords();
-
-    if (this.options.range === true) {
-      const firstHandleCoords = firstHandle.getCoords();
-      const secondHandleCoords = secondHandle.getCoords();
-
-      if (targetHandleNumber === 'first') {
-        if (isHorizontal) {
-          right = secondHandleCoords.left - firstHandleCoords.width / 2;
-        } else {
-          top = secondHandleCoords.bottom + firstHandleCoords.height / 2;
-        }
-      } else if (isHorizontal) {
-        left = firstHandleCoords.right + secondHandleCoords.width / 2;
-      } else {
-        bottom = firstHandleCoords.top - secondHandleCoords.height / 2;
-      }
-
-      width = right - left;
-      height = bottom - top;
-    }
-
-    return {
-      right, left, top, bottom, width, height,
-    };
-  }
-
-  private _getTargetHandle(eventTarget: EventTarget): HandleView | false {
-    const { firstHandle, secondHandle } = this.sliderHtml;
-    const maybeSecond = secondHandle && secondHandle.isEventTarget(eventTarget)
-      ? secondHandle : false;
-
-    return firstHandle.isEventTarget(eventTarget) ? firstHandle : maybeSecond;
-  }
-
-  private _setSliderElements(): void {
-    this.sliderHtml = {
-      wrapper: document.createElement('div'),
-      range: new RangeView(),
-      firstHandle: new HandleView('first'),
-    };
-
-    this.sliderHtml.wrapper.style.position = 'relative';
-
-    const { wrapper, firstHandle, range } = this.sliderHtml;
-
-    range.stickTo(wrapper);
-    firstHandle.stickTo(wrapper);
-
-    if (this.options.range === true) {
-      const secondHandle = new HandleView('second');
-      secondHandle.stickTo(wrapper);
-
-      this.sliderHtml.secondHandle = secondHandle;
-    }
-  }
-
-  private _hasClassesChanged(): boolean {
-    if (!this.classesHash) return true;
-
-    const { classes } = this.options;
-    const hash = this.classesHash;
-
-    return Object.keys(this.options.classes).reduce(
-      (result, mainClass): boolean => {
-        if (
-          Object.prototype.hasOwnProperty.call(this.options.classes, mainClass)
-        ) {
-          const isClassSameAsInHash = mainClass in hash
-            && classes[mainClass] === hash[mainClass];
-
-          if (!isClassSameAsInHash) {
-            return true;
-          }
-        }
-
-        return false;
-      },
-      false,
-    );
-  }
-
-  private _getCoords(): Coords {
-    return getCoords(this.sliderHtml.wrapper);
+    this.pluginHtml.range.setUp({ orientation, firstPoint, secondPoint });
   }
 
   private _getClosestHandleNumber(coordinate: number): 'first' | 'second' {
     let handleNumber: 'first' | 'second';
 
     const { orientation, range } = this.options;
-    const { firstHandle, secondHandle } = this.sliderHtml;
+    const { firstHandle, secondHandle } = this.pluginHtml;
 
     if (range !== true) return undefined;
 
@@ -621,6 +556,54 @@ class SliderView {
 
     return handleNumber;
   }
+
+  private _countAvailableHandleSpace(
+    targetHandleNumber: 'first' | 'second',
+  ): Omit<Coords, 'centerX' | 'centerY'> {
+    const { firstHandle, secondHandle } = this.pluginHtml;
+    const isHorizontal = this.options.orientation === 'horizontal';
+
+    let {
+      right, left, top, bottom, width, height,
+    }: Coords = this._getCoords();
+
+    if (this.options.range === true) {
+      const firstHandleCoords = firstHandle.getCoords();
+      const secondHandleCoords = secondHandle.getCoords();
+
+      if (targetHandleNumber === 'first') {
+        if (isHorizontal) {
+          right = secondHandleCoords.left - firstHandleCoords.width / 2;
+        } else {
+          top = secondHandleCoords.bottom + firstHandleCoords.height / 2;
+        }
+      } else if (isHorizontal) {
+        left = firstHandleCoords.right + secondHandleCoords.width / 2;
+      } else {
+        bottom = firstHandleCoords.top - secondHandleCoords.height / 2;
+      }
+
+      width = right - left;
+      height = bottom - top;
+    }
+
+    return {
+      right, left, top, bottom, width, height,
+    };
+  }
+
+  private _getTargetHandle(eventTarget: EventTarget): HandleView | false {
+    const { firstHandle, secondHandle } = this.pluginHtml;
+    const maybeSecond = secondHandle && secondHandle.isEventTarget(eventTarget)
+      ? secondHandle : false;
+
+    return firstHandle.isEventTarget(eventTarget) ? firstHandle : maybeSecond;
+  }
+
+  private _getCoords(): Coords {
+    return getCoords(this.pluginHtml.slider);
+  }
 }
 
-export default SliderView;
+export default MainView;
+export { UserClasses };

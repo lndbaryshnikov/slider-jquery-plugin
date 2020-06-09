@@ -1,17 +1,17 @@
-import { JQueryElementWithSlider } from '../../plugin/jquery-slider';
-import SliderPresenter from '../../plugin/Presenter/SliderPresenter';
-import { Options, UserOptions } from '../../plugin/Model/SliderModel';
 import ConfigPanel, { PanelOptions } from '../config-panel/ConfigPanel';
 import {
   ValueObject,
   ConfigItemValue,
   ConfigItemType,
 } from '../config-item/ConfigItem';
+import Presenter from '../../plugin/Presenter/Presenter';
+import SliderElement from '../../plugin/jquery-slider';
+import { Options, UserOptions } from '../../plugin/Model/modelOptions';
 
 export default class SliderPanel {
   private configPanel: ConfigPanel;
 
-  private slider: SliderPresenter;
+  private slider: Presenter;
 
   constructor(private wrapper: HTMLDivElement) {
     this._defineElements();
@@ -20,7 +20,7 @@ export default class SliderPanel {
       this.configPanel.setValue({ option: 'value', value });
     };
 
-    this.slider.setOptions('change', sliderValueChangeHandler);
+    this.slider.setOptions({ change: sliderValueChangeHandler });
 
     this.configPanel.whenOptionValueChange(this._makeRefreshSliderCallback());
   }
@@ -30,7 +30,7 @@ export default class SliderPanel {
 
     const $sliderWrapper = $(
       this.wrapper.querySelector('.js-slider'),
-    ) as JQueryElementWithSlider;
+    ) as SliderElement;
     const options = $sliderWrapper.data('options');
 
     $sliderWrapper.slider(options);
@@ -530,9 +530,8 @@ export default class SliderPanel {
   }
 
   private _getPanelOptions(sliderOptions: Options): PanelOptions {
-    const panelOptions = $.extend(true, {}, sliderOptions);
+    const panelOptions = { ...sliderOptions };
     delete panelOptions.change;
-    delete panelOptions.classes;
 
     return panelOptions;
   }

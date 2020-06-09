@@ -1,17 +1,16 @@
-import SliderView from '../../src/plugin/View/SliderView';
-import SliderModel from '../../src/plugin/Model/SliderModel';
-import TooltipView from
-  '../../src/plugin/View/TooltipView';
+import MainView from '../../src/plugin/View/MainView';
+import Model from '../../src/plugin/Model/Model';
+import TooltipView from '../../src/plugin/View/TooltipView';
 
-describe("tooltip exists on dom and contains 'value'", () => {
-  let view: SliderView;
+describe('tooltip exists on dom and contains value', () => {
+  let view: MainView;
   const tooltipView = new TooltipView();
 
-  const defaultsWithTooltip = SliderModel.getDefaultOptions('horizontal');
+  const defaultsWithTooltip = Model.defaultOptions;
   defaultsWithTooltip.tooltip = true;
 
   beforeEach(() => {
-    view = new SliderView();
+    view = new MainView();
   });
 
   test('tooltip rendered correctly', () => {
@@ -35,9 +34,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
     expect(handle.contains(tooltip)).toBeTruthy();
     expect(tooltip.innerHTML).toBe('0');
 
-    const defaultsWIthAnotherValue = SliderModel.getDefaultOptions(
-      'horizontal',
-    );
+    const defaultsWIthAnotherValue = Model.defaultOptions;
     defaultsWIthAnotherValue.value = 50;
 
     tooltipView.setOptions({
@@ -51,9 +48,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
   });
 
   test('tooltip rendered correctly with function for value', () => {
-    const defaultsWithTooltipFunction = SliderModel.getDefaultOptions(
-      'horizontal',
-    );
+    const defaultsWithTooltipFunction = Model.defaultOptions;
     defaultsWithTooltipFunction.tooltip = (value: number): string => `${value}$`;
 
     tooltipView.setOptions({
@@ -74,9 +69,7 @@ describe("tooltip exists on dom and contains 'value'", () => {
 
     expect(tooltip.innerHTML).toBe('0$');
 
-    const defaultsWithAnotherValue = SliderModel.getDefaultOptions(
-      'horizontal',
-    );
+    const defaultsWithAnotherValue = Model.defaultOptions;
     defaultsWithAnotherValue.value = 70;
 
     tooltipView.setOptions({

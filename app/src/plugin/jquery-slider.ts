@@ -1,33 +1,29 @@
-import SliderModel, {
-  Options,
-  RestOptionsToSet,
-  UserOptions,
-} from './Model/SliderModel';
-import SliderView from './View/SliderView';
-import SliderPresenter from './Presenter/SliderPresenter';
-
 import './jquery-slider.scss';
+import Presenter, { CompleteUserOptions } from './Presenter/Presenter';
+import MainView from './View/MainView';
+import Model from './Model/Model';
 
-interface JQueryElementWithSlider extends JQuery<HTMLElement> {
+interface SliderElement extends JQuery<HTMLElement> {
   slider: (
-    method?: UserOptions | keyof SliderMethods,
-    ...options: (UserOptions | keyof Options | RestOptionsToSet)[]
+    method?: CompleteUserOptions | keyof PluginMethods,
+    options?: CompleteUserOptions
   ) => void;
 }
 
-interface SliderMethods {
-  init: (options?: Options) => this;
-  options: (...options: (UserOptions | string)[]) => this;
+interface PluginMethods {
+  init: (options?: CompleteUserOptions) => this;
+  options: (options: CompleteUserOptions) => this;
+  remove: () => this;
 }
 
 (($): void => {
   const getData = (element: JQuery<HTMLElement>): {
-    slider?: SliderPresenter;
+    slider?: Presenter;
   } => element.data('slider');
 
   const setData = ({ root, slider }: {
-    root: JQueryElementWithSlider;
-    slider: SliderPresenter;
+    root: SliderElement;
+    slider: Presenter;
   }): void => {
     root.data('slider', {
       root,
@@ -35,24 +31,20 @@ interface SliderMethods {
     });
   };
 
-  const throwErr = (existsOrNot: boolean): void => {
-    if (existsOrNot) {
-      throw new Error('jQuery.slider already exists on this DOM element');
-    }
+  const throwError = (existsOrNot: boolean): void => {
+    const message = existsOrNot
+      ? 'jQuery.slider already exists on this DOM element'
+      : 'jQuery.slider does not exist on this DOM element';
 
-    if (!existsOrNot) {
-      throw new Error("jQuery.slider doesn't exist on this DOM element");
-    }
-
-    throw new Error('Incorrect argument');
+    throw new Error(message);
   };
 
   const sliderMethods = {
-    init(userOptions?: UserOptions): void | JQuery {
-      const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
+    init(userOptions?: CompleteUserOptions): void | JQuery {
+      const $this = ((this as unknown) as SliderElement).eq(0);
 
       if (!getData($this)) {
-        const slider = new SliderPresenter(new SliderView(), new SliderModel());
+        const slider = new Presenter(new MainView(), new Model());
 
         slider.initialize($this[0], userOptions);
 
@@ -60,123 +52,62 @@ interface SliderMethods {
           root: $this,
           slider,
         });
-
         return $this;
       }
-
-      throwErr(true);
+      throwError(true);
 
       return undefined;
     },
-
-    destroy(): void {
-      const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
+    remove(): void {
+      const $this = ((this as unknown) as SliderElement).eq(0);
       const data = getData($this);
 
       if (data) {
-        data.slider.destroy();
-
-        $this.removeData('slider');
-      } else throwErr(false);
+        data.slider.remove();
+      } else {
+        throwError(false);
+      }
     },
-
-    options(...userOptions: (UserOptions | string)[]): (
+    options(userOptions?: CompleteUserOptions): (
     | void
-    | Options[keyof Options]
-    | Options
-    | JQueryElementWithSlider
-    | Options['classes'][keyof Options['classes']]
+    | CompleteUserOptions
+    | SliderElement
     ) {
-      const $this = ((this as unknown) as JQueryElementWithSlider).eq(0);
-
+      const $this = ((this as unknown) as SliderElement).eq(0);
       const data = getData($this);
       if (data) {
         const { slider } = data;
 
-        if (userOptions.length === 0) {
-          return slider.getOptions() as Options;
+        if (!userOptions) {
+          return slider.getOptions();
         }
+        slider.setOptions(userOptions);
 
-        const [firstArg, secondArg] = userOptions;
-
-        const isOnlyObjectPasses = userOptions.length === 1
-          && typeof firstArg === 'object';
-
-        if (isOnlyObjectPasses) {
-          slider.setOptions(firstArg as UserOptions);
-
-          return $this;
-        }
-
-        const isOneArgPassed = userOptions.length === 1;
-        const isTwoArgsPassed = userOptions.length === 2;
-        const isThreeArgsPassed = userOptions.length === 3;
-
-        const isFirstArgString = typeof firstArg === 'string';
-        const isSecondArgString = typeof secondArg === 'string';
-        const isFirstArgClasses = firstArg === 'classes';
-
-        const isSingleClassPassed = isThreeArgsPassed && isFirstArgClasses;
-        const isNotObjectPassed = isTwoArgsPassed || isSingleClassPassed;
-        const isOneOptionPassed = isNotObjectPassed && isFirstArgString;
-
-        const isTwoArgsWithFirstClassPassed = isTwoArgsPassed && isFirstArgClasses;
-        const isSingleClassRequested = isTwoArgsWithFirstClassPassed && isSecondArgString;
-
-        if (isOneOptionPassed) {
-          if (isSingleClassRequested) {
-            return slider.getOptions(
-              firstArg as keyof Options,
-              secondArg as keyof UserOptions['classes'],
-            );
-          }
-
-          const options = userOptions.slice(1) as (
-            | UserOptions[keyof UserOptions]
-            | UserOptions['classes'][keyof UserOptions['classes']]
-          )[];
-
-          slider.setOptions(firstArg as keyof Options, ...options);
-
-          return $this;
-        }
-
-        const isAnyOptionRequested = (
-          (isTwoArgsWithFirstClassPassed || isOneArgPassed)
-          && isFirstArgString
-        );
-
-        if (isAnyOptionRequested) {
-          return slider.getOptions(
-            firstArg as keyof Options,
-            secondArg as keyof UserOptions['classes'],
-          );
-        }
-
-        throw new Error('Passed options are incorrect');
-      } else {
-        throwErr(false);
+        return $this;
       }
+      throwError(false);
 
       return undefined;
     },
   };
 
   // eslint-disable-next-line no-param-reassign,func-names
-  ($.fn as JQueryElementWithSlider).slider = function (
-    method?: UserOptions | keyof SliderMethods,
-    ...options: (UserOptions | keyof Options | RestOptionsToSet)[]
+  ($.fn as SliderElement).slider = function (
+    method?: CompleteUserOptions | keyof PluginMethods,
+    options?: CompleteUserOptions,
   ): void {
-    if (sliderMethods[method as keyof SliderMethods]) {
-      return sliderMethods[method as keyof SliderMethods].apply(this, options);
+    if (sliderMethods[method as keyof PluginMethods]) {
+      return sliderMethods[method as keyof PluginMethods].call(this, options);
     }
 
-    const isObjectPassed = typeof method === 'object';
-    const isNothingPassed = !method && options.length === 0;
+    const isObjectPassed = typeof method === 'object' && !options;
+    const isNothingPassed = !method && !options;
     const isObjectOrNothingPassed = isObjectPassed || isNothingPassed;
 
     if (isObjectOrNothingPassed) {
-      return sliderMethods.init.call(this, method as UserOptions);
+      const pluginOptions = method as CompleteUserOptions;
+
+      return sliderMethods.init.call(this, pluginOptions);
     }
     $.error(`Method '${method}' doesn't exist for jQuery.slider`);
 
@@ -184,5 +115,4 @@ interface SliderMethods {
   };
 })(jQuery);
 
-// eslint-disable-next-line import/prefer-default-export
-export { JQueryElementWithSlider };
+export default SliderElement;
