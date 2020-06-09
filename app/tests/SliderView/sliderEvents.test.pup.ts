@@ -82,8 +82,6 @@ describe('slider events', () => {
     test("range changes correctly when options.range = 'min'", async () => {
       await sliderPage.setOptions({ range: 'min' });
 
-      console.log(await sliderPage.getOptions());
-
       const { range } = sliderPage.elements;
       const newModeRangeCoords = await page.evaluate((rangeForCoords) => {
         const {

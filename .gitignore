@@ -1,8 +1,11 @@
-# Dependency directories
+# Dependency Directories
 node_modules/
 .idea/
 
 # Dist
 dist/
+
+# Test Coverage
+coverage/
 
 
