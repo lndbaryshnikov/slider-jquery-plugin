@@ -64,21 +64,14 @@ export default class SliderPupPage {
 
   async setOptions(options: CompleteUserOptions): Promise<void> {
     await this.pupPage.evaluate(
-      (
-        root: HTMLElement,
-        optionsToEval: CompleteUserOptions,
-      ) => {
-        ($(root) as SliderElement).slider(
-          'options',
-          optionsToEval,
-        );
+      (root: HTMLElement, optionsToEval: CompleteUserOptions) => {
+        ($(root) as SliderElement).slider('options', optionsToEval);
       },
       this.root,
       options as JSHandle<CompleteUserOptions>,
     );
 
     const optionsSet = (await this.getOptions()) as Options;
-
     await this._defineElements(optionsSet);
   }
 
@@ -109,9 +102,8 @@ export default class SliderPupPage {
     return this.pupPage.evaluate(
       (dataToEval: string, LabelNumber: number) => {
         const labels = document.querySelectorAll('.jquery-slider-label');
-
-        const labelNeeded = labels[LabelNumber - 1];
-        const labelFirstChild = labelNeeded.children[0];
+        const labelNeeded = labels[LabelNumber - 1] as HTMLElement;
+        const labelFirstChild = labelNeeded.children[0] as HTMLElement;
 
         if (dataToEval === 'classes') {
           const labelClass = labelNeeded.className;
@@ -146,9 +138,9 @@ export default class SliderPupPage {
         };
 
         if (dataToEval === 'coords') {
-          const labelCoords = getCoords(labelNeeded as HTMLElement);
+          const labelCoords = getCoords(labelNeeded);
           const pipCoords = labelFirstChild
-            ? getCoords(labelFirstChild as HTMLElement)
+            ? getCoords(labelFirstChild)
             : null;
 
           return {
@@ -177,18 +169,18 @@ export default class SliderPupPage {
   }
 
   async getSecondHandleCoords(): Promise<Coords> {
-    if (!this.secondHandle) throw new Error("Second handle doesn't exist");
+    if (!this.secondHandle) throw new Error('second handle does not exist');
 
     return this.getCoords(this.secondHandle);
   }
 
   async getTooltipCoords(): Promise<Coords> {
-    if (!this.tooltip) throw new Error("tooltip doesn't set");
+    if (!this.tooltip) throw new Error('tooltip does not set');
     return this.getCoords(this.tooltip);
   }
 
   async getTooltipValue(): Promise<number | string> {
-    if (!this.tooltip) throw new Error("tooltip doesn't set");
+    if (!this.tooltip) throw new Error('tooltip does not set');
 
     return this.pupPage.evaluate(
       (tooltip: ElementHandle) => ((tooltip as unknown) as HTMLElement).innerHTML,
@@ -248,33 +240,30 @@ export default class SliderPupPage {
   }
 
   async getSliderMiddle(): Promise<{ left: number; top: number }> {
+    const {
+      left, width, top, height,
+    } = await this.getCoords(this.slider);
+
     return {
-      left:
-        (await this.getCoords(this.slider)).left
-        + (await this.getCoords(this.slider)).width / 2,
-      top:
-        (await this.getCoords(this.slider)).top
-        + (await this.getCoords(this.slider)).height / 2,
+      left: left + width / 2,
+      top: top + height / 2,
     };
   }
 
-  async moveHandleToCoords(
-    X: number,
-    Y: number,
-    isSecond?: true,
-  ): Promise<void> {
-    if (isSecond && !this.secondHandle) throw new Error("second handle doesn't exist");
+  async moveHandleToCoords(X: number, Y: number, isSecond?: true): Promise<void> {
+    if (isSecond && !this.secondHandle) {
+      throw new Error('second handle doesn\'t exist');
+    }
 
-    let handleCoords: Coords;
+    const handleCoords = isSecond
+      ? await this.getCoords(this.secondHandle)
+      : await this.getCoords(this.firstHandle);
 
-    if (isSecond) {
-      handleCoords = await this.getCoords(this.secondHandle);
-    } else handleCoords = await this.getCoords(this.firstHandle);
+    const {
+      left, width, top, height,
+    } = handleCoords;
 
-    await this.pupPage.mouse.move(
-      handleCoords.left + handleCoords.width / 2,
-      handleCoords.top + handleCoords.height / 2,
-    );
+    await this.pupPage.mouse.move(left + width / 2, top + height / 2);
     await this.pupPage.mouse.down();
     await this.pupPage.mouse.move(X, Y);
     await this.pupPage.mouse.up();
@@ -302,7 +291,6 @@ export default class SliderPupPage {
     const isRangeTrue = options && options.range === true;
 
     if (isRangeTrue) {
-      // eslint-disable-next-line prefer-destructuring
       [, this.secondHandle] = await this.pupPage.$$('.jquery-slider-handle');
     } else this.secondHandle = null;
 

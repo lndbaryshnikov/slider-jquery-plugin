@@ -31,7 +31,7 @@ describe('tooltip works correctly', () => {
     expect(root.contains(tooltip.html)).toBeTruthy();
   });
 
-  test("tooltip's value is correct", () => {
+  test('tooltip\'s value is correct', () => {
     expect(horizontalTooltipOnDom.innerHTML).toBe('35');
 
     tooltip.setText({ text: 23 });

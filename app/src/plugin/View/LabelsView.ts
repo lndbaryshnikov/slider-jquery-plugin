@@ -92,13 +92,11 @@ class LabelsView {
 
       currentLabelIndent += interval;
     });
-
     this.labelHtml = scale;
   }
 
   remove(): void {
     this.root.removeChild(this.labelHtml);
-
     this.root = null;
     this.labelHtml = null;
   }
@@ -117,7 +115,6 @@ class LabelsView {
 
   private _createLabels(): void {
     const labels: HTMLDivElement[] = [];
-
     const { min, max, step } = this.options;
 
     for (let value = min; value <= max; value += step) {
@@ -141,7 +138,6 @@ class LabelsView {
 
       label.append(pip);
     }
-
     return label;
   }
 

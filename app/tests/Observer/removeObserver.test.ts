@@ -1,7 +1,7 @@
 import Observer from '../../src/plugin/Observer/Observer';
 
 describe('removeObserver method', () => {
-  it('removeObserver method works', () => {
+  it('observer removed', () => {
     const observer = new Observer();
 
     observer.addObserver((str: string) => `Hello, ${str}`);
@@ -14,9 +14,11 @@ describe('removeObserver method', () => {
 
     expect(observer.observers.length).toBe(2);
 
+    const [firstObserver, secondObserver] = observer.observers;
+
     expect([
-      observer.observers[0].toString(),
-      observer.observers[1].toString(),
+      firstObserver.toString(),
+      secondObserver.toString(),
     ]).toEqual([
       ((str: string): string => `Hello, ${str}`).toString(),
       ((str: string): string => `I'm ${str}`).toString(),

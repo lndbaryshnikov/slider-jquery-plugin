@@ -5,7 +5,6 @@ import TooltipView from '../../src/plugin/View/TooltipView';
 describe('tooltip exists on dom and contains value', () => {
   let view: MainView;
   const tooltipView = new TooltipView();
-
   const defaultsWithTooltip = Model.defaultOptions;
   defaultsWithTooltip.tooltip = true;
 
@@ -20,7 +19,6 @@ describe('tooltip exists on dom and contains value', () => {
     });
 
     view.setOptions(defaultsWithTooltip);
-
     view.render(document.body);
     view.renderPlugin({
       plugin: 'tooltip',

@@ -1,7 +1,7 @@
 import Observer from '../../src/plugin/Observer/Observer';
 
 describe('addObserver method', () => {
-  test('addObserver method works', () => {
+  test('observers are added in list', () => {
     const observer = new Observer();
 
     observer.addObserver((error: string): string => error);
@@ -18,25 +18,22 @@ describe('addObserver method', () => {
   });
 
   test('throws an error when observer already in the list', () => {
-    const makeFuncForTestErrors = (
-      firstFunc: Function,
-      secondFunc: Function = firstFunc,
+    const makeTwoObserversTestFunction = (
+      first: Function,
+      secondFunc: Function = first,
     ): Function => (): void => {
       const observer = new Observer();
 
-      observer.addObserver(firstFunc);
+      observer.addObserver(first);
       observer.addObserver(secondFunc);
     };
 
     expect(
-      makeFuncForTestErrors(
-        () => 'hello',
-        (x: string) => x,
-      ),
+      makeTwoObserversTestFunction(() => 'hello', (x: string) => x),
     ).not.toThrow('Observer already in the list');
 
     expect(
-      makeFuncForTestErrors(() => 'hello'),
+      makeTwoObserversTestFunction(() => 'hello'),
     ).toThrow('Observer already in the list');
   });
 });

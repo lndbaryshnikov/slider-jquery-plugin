@@ -39,7 +39,6 @@ class TooltipView {
 
   render(root: HTMLElement): void {
     this.root = root;
-
     this.root.append(this.tooltipHtml);
   }
 
@@ -53,28 +52,25 @@ class TooltipView {
 
   setOrientation(orientation: 'horizontal' | 'vertical'): void {
     this.orientation = orientation;
-
     this._setOrientationClass();
   }
 
   cleanTextField(): void {
     this.tooltipText = null;
-
     this.tooltipHtml.innerHTML = '';
   }
 
   remove(): void {
     this.root.removeChild(this.tooltipHtml);
-
     this.root = null;
   }
 
   destroy(): void {
     if (this.state.isRendered) this.remove();
     this.cleanTextField();
+
     this.orientation = null;
     this.root = null;
-
     this.tooltipHtml.className = 'jquery-slider-tooltip';
   }
 

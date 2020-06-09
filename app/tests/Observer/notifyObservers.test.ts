@@ -1,7 +1,7 @@
 import Observer from '../../src/plugin/Observer/Observer';
 
 describe('notifyObservers', () => {
-  test('notifyObserver works', () => {
+  test('observers called', () => {
     const observer = new Observer();
 
     const firstMock = jest.fn();

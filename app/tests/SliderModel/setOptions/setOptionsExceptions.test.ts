@@ -19,7 +19,7 @@ describe('setOptionsMethod exceptions', () => {
     });
   });
 
-  test("throws error when userOptions isn't an object", () => {
+  test('throws error when userOptions is not an object', () => {
     expect(() => {
       model.setOptions('options' as UserOptions);
     }).toThrow(errors.common.notAnObject);
@@ -33,7 +33,7 @@ describe('setOptionsMethod exceptions', () => {
 
   test('throws an exception when orientation is incorrect', () => {
     expect(() => {
-      model.setOptions({ orientation: 'horizontal ' as 'horizontal' });
+      model.setOptions({ orientation: 'horzontal ' as 'horizontal' });
     }).toThrow(errors.orientation.incorrect);
 
     expect(() => {
@@ -56,15 +56,15 @@ describe('setOptionsMethod exceptions', () => {
 
   test('throws extension when type of min, max, step or value is not a number', () => {
     const errorExpression = errors.common.incorrectOptionType;
-    const checkStringType = (option: string): void => {
+    const checkType = (option: string): void => {
       expect(() => {
         model.setOptions({ [option]: 'false' as unknown as number });
       }).toThrow(errorExpression(option, 'number'));
     };
 
-    checkStringType('min');
-    checkStringType('max');
-    checkStringType('step');
+    checkType('min');
+    checkType('max');
+    checkType('step');
   });
 
   test('throws exception when type of value is not number or array', () => {
@@ -165,20 +165,12 @@ describe('setOptionsMethod exceptions', () => {
 
     expect(() => {
       model.setOptions({ max: 15, step: 5 });
-
-      model.setOptions({
-        range: true,
-        value: [1, 5],
-      });
+      model.setOptions({ range: true, value: [1, 5] });
     }).toThrow(error);
 
     expect(() => {
       model.setOptions({ max: 15, step: 5 });
-
-      model.setOptions({
-        range: true,
-        value: [1, 3],
-      });
+      model.setOptions({ range: true, value: [1, 3] });
     }).toThrow(error);
   });
 
@@ -186,15 +178,11 @@ describe('setOptionsMethod exceptions', () => {
     const error = errors.step.incorrect;
 
     expect(() => {
-      model.setOptions({
-        step: -1,
-      });
+      model.setOptions({ step: -1 });
     }).toThrow(error);
 
     expect(() => {
-      model.setOptions({
-        step: 101,
-      });
+      model.setOptions({ step: 101 });
     }).toThrow(error);
   });
 
@@ -220,9 +208,7 @@ describe('setOptionsMethod exceptions', () => {
   test('throws exceptions when tooltip function is incorrect', () => {
     expect(() => {
       model.setOptions({
-        tooltip: ((() => {
-          Math.round(34.5);
-        }) as unknown) as ValueFunction,
+        tooltip: ((() => { Math.round(34.5); }) as unknown) as ValueFunction,
       });
     }).toThrow(errors.tooltip.incorrectFunction);
 
