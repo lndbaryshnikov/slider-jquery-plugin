@@ -1,19 +1,19 @@
 import MainView, { UserClasses } from '../View/MainView';
 import { UserOptions, Options } from '../Model/modelOptions';
-import pluginsFactory from '../pluginsFactory/PluginsFactory';
 import ErrorHandler, { ErrorObject } from '../ErrorHandler/ErrorHandler';
 import Model from '../Model/Model';
-import { LabelOptions } from '../View/LabelsView';
+import LabelsView, { LabelOptions } from '../View/LabelsView';
+import TooltipView from '../View/TooltipView';
 
 type CompleteUserOptions = UserOptions & { classes?: UserClasses };
 
 class Presenter {
   private plugins = {
     tooltipView: {
-      first: pluginsFactory.createTooltipView(),
-      second: pluginsFactory.createTooltipView(),
+      first: new TooltipView(),
+      second: new TooltipView(),
     },
-    labelsView: pluginsFactory.createLabelsView(),
+    labelsView: new LabelsView(),
   };
 
   constructor(
