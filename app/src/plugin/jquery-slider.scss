@@ -2,6 +2,7 @@
   background-color: lightgrey;
   margin: 5em;
   border-radius: 5px;
+  position: relative;
 
   &-horizontal {
     width: 20em;
@@ -16,6 +17,7 @@
   &-range {
     background-color: grey;
     border-radius: 5px;
+    position: absolute;
 
     @at-root {
       .jquery-slider-horizontal #{&} {
@@ -32,6 +34,7 @@
     background-color: sandybrown;
     border-radius: 50%;
     cursor: pointer;
+    position: absolute;
 
     @at-root {
       .jquery-slider-horizontal #{&} {
@@ -57,6 +60,7 @@
     color: whitesmoke;
     user-select: none;
     cursor: auto;
+    position: absolute;
 
     &::after {
       content: '';
@@ -95,6 +99,8 @@
   }
 
   &-labels-scale {
+    position: absolute;
+
     &-horizontal {
       top: 1em;
       height: 1.7em;
@@ -111,6 +117,7 @@
     cursor: pointer;
     font-size: 1em;
     text-align: center;
+    position: absolute;
 
     &-horizontal {
       height: 1.2em;
@@ -125,6 +132,7 @@
 
   &-pip {
     background-color: black;
+    position: absolute;
 
     &-horizontal {
       bottom: 100%;

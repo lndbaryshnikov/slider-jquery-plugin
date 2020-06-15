@@ -288,7 +288,6 @@ class MainView {
 
     const { slider, firstHandle, range } = this.pluginHtml;
 
-    slider.style.position = 'relative';
     range.stickTo(slider);
     firstHandle.stickTo(slider);
 

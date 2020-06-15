@@ -77,7 +77,6 @@ class TooltipView {
   private _create(): void {
     const tooltip = document.createElement('div');
     tooltip.setAttribute('class', 'jquery-slider-tooltip');
-    tooltip.style.position = 'absolute';
 
     const stopMousedownPropagationHandler = (clickEvent: MouseEvent): void => {
       clickEvent.stopPropagation();

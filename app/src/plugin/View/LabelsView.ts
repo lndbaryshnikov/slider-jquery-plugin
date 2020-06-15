@@ -66,7 +66,6 @@ class LabelsView {
       'class',
       `jquery-slider-labels-scale jquery-slider-labels-scale-${this.options.orientation}`,
     );
-    scale.style.position = 'absolute';
     scale.style[widthOrHeight] = `${sliderSize}px`;
 
     root.append(scale);
@@ -128,14 +127,11 @@ class LabelsView {
     const label = document.createElement('div');
 
     label.setAttribute('class', 'jquery-slider-label');
-    label.style.position = 'absolute';
 
     if (this.options.pips) {
       const pip = document.createElement('div');
 
       pip.setAttribute('class', 'jquery-slider-pip');
-      pip.style.position = 'absolute';
-
       label.append(pip);
     }
     return label;

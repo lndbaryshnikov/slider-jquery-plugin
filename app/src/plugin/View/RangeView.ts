@@ -38,8 +38,6 @@ class RangeView {
 
   _createRange(): void {
     const range = document.createElement('div');
-    range.style.position = 'absolute';
-
     this.range = range;
   }
 }

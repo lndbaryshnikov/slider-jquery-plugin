@@ -73,15 +73,13 @@ class HandleView {
     this.tooltip = tooltip;
   }
 
-  doesContainTooltip() {
+  doesContainTooltip(): boolean {
     const { tooltip, handle } = this;
     return tooltip && handle.contains(tooltip.html);
   }
 
   private _createHandle(): void {
     const handle = document.createElement('div');
-
-    handle.style.position = 'absolute';
     handle.ondragstart = (): false => false;
 
     this.handle = handle;
