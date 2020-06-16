@@ -1,12 +1,12 @@
+import Presenter from '../../plugin/Presenter/Presenter';
+import SliderElement from '../../plugin/main';
+import { Options, UserOptions } from '../../plugin/Model/modelOptions';
 import ConfigPanel, { PanelOptions } from '../config-panel/ConfigPanel';
 import {
   ValueObject,
   ConfigItemValue,
   ConfigItemType,
 } from '../config-item/ConfigItem';
-import Presenter from '../../plugin/Presenter/Presenter';
-import SliderElement from '../../plugin/main';
-import { Options, UserOptions } from '../../plugin/Model/modelOptions';
 
 export default class SliderPanel {
   private configPanel: ConfigPanel;

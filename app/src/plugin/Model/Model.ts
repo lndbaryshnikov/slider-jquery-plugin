@@ -1,6 +1,6 @@
-import modelOptions, { Options, UserOptions } from './modelOptions';
 import Observer from '../Observer/Observer';
 import { ErrorObject } from '../ErrorHandler/ErrorHandler';
+import modelOptions, { Options, UserOptions } from './modelOptions';
 import modelValidationUtils from './modelValidationUtils';
 
 class Model {

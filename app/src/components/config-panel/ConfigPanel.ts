@@ -1,11 +1,10 @@
 import Observer from '../../plugin/Observer/Observer';
-
+import { Options } from '../../plugin/Model/modelOptions';
 import ConfigItem, {
   ConfigItemType,
   ConfigItemValue,
   ValueObject,
 } from '../config-item/ConfigItem';
-import { Options } from '../../plugin/Model/modelOptions';
 
 type PanelOptions = Omit<Options, 'change'>;
 

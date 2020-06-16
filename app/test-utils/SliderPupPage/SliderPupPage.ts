@@ -1,6 +1,7 @@
 import {
   Browser, ElementHandle, Page, JSHandle,
 } from 'puppeteer';
+
 import { UserOptions, Options } from '../../src/plugin/Model/modelOptions';
 import SliderElement from '../../src/plugin/main';
 import { CompleteUserOptions } from '../../src/plugin/Presenter/Presenter';

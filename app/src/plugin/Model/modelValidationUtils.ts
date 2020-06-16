@@ -1,5 +1,5 @@
-import modelOptions, { Options } from './modelOptions';
 import areArraysEqual from '../../utils/areArraysEqual';
+import modelOptions, { Options } from './modelOptions';
 
 type ValidationResult = { result: boolean; errorCode?: string };
 

@@ -1,8 +1,8 @@
-import RangeView from './RangeView';
-import HandleView from './HandleView';
-import { Options } from '../Model/modelOptions';
 import getCoords, { Coords } from '../../utils/getCoords';
 import Observer from '../Observer/Observer';
+import { Options } from '../Model/modelOptions';
+import RangeView from './RangeView';
+import HandleView from './HandleView';
 import LabelsView from './LabelsView';
 import TooltipView from './TooltipView';
 
