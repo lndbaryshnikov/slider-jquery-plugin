@@ -1,11 +1,19 @@
-.slider {
-  @at-root {
-    .jquery-slider-vertical#{&} {
-      margin: 2rem 4rem;
+.slider {  
+  &__body {
+    &_orientation {
+      &_horizontal {
+        margin: 3rem 3rem 4rem 2rem;
+      }
+  
+      &_vertical {
+        margin: 2rem 4rem;
+      }
     }
 
-    .jquery-slider-horizontal#{&} {
-      margin: 3rem 3rem 4rem 2rem;
+    &_border-color {
+      &_black {
+        border: 0.5px solid black;
+      }
     }
   }
 
@@ -22,18 +30,74 @@
       &_gray {
         background-color: grey;
 
-        .jquery-slider-tooltip {
-          background-color: grey;
+        // .jquery-slider-tooltip {
+        //   background-color: grey;
 
-          &::after {
-            @at-root {
-              .jquery-slider-horizontal #{&} {
-                border-color: grey transparent transparent;
-              }
+        //   &::after {
+        //     @at-root {
+        //       .jquery-slider_orientation_horizontal #{&} {
+        //         border-color: grey transparent transparent;
+        //       }
 
-              .jquery-slider-vertical #{&} {
-                border-color: transparent grey transparent transparent;
-              }
+        //       .jquery-slider_orientation_vertical #{&} {
+        //         border-color: transparent grey transparent transparent;
+        //       }
+        //     }
+        //   }
+        // }
+      }
+
+      &_white {
+        background-color: white;
+        border: 0.06rem solid black;
+
+        // .jquery-slider-tooltip {
+        //   background-color: white;
+        //   border: 0.06rem solid black;
+        //   color: black;
+
+        //   @at-root {
+        //     .jquery-slider_orientation_horizontal #{&} {
+        //       top: -2.28rem;
+        //       left: -0.795rem;
+        //     }
+
+        //     .jquery-slider_orientation_vertical #{&} {
+        //       top: -0.42rem;
+        //     }
+        //   }
+
+        //   &::after {
+        //     @at-root {
+        //       .jquery-slider_orientation_horizontal #{&} {
+        //         border-color: black transparent transparent;
+        //         margin-left: -0.3rem;
+        //       }
+
+        //       .jquery-slider_orientation_vertical #{&} {
+        //         border-color: transparent black transparent transparent;
+        //         margin-top: -0.3rem;
+        //       }
+        //     }
+        //   }
+        // }
+      }
+    }
+  }
+
+  &__tooltip {
+    &_color {
+      &_gray {
+        background-color: grey;
+
+        &::after {
+          @at-root {
+            .slider__body_orientation_horizontal #{&} {
+              border-color: grey transparent transparent;
+            }
+
+            .slider__body_orientation_vertical #{&} {
+              border-color: transparent grey transparent transparent;
             }
           }
         }
@@ -42,40 +106,28 @@
       &_white {
         background-color: white;
         border: 0.06rem solid black;
+        color: black;
 
         @at-root {
-          .jquery-slider-horizontal #{&} {
-            top: -95%;
+          .slider__body_orientation_horizontal #{&} {
+            top: -2.28rem;
+            left: -0.85rem;
+          }
+
+          .slider__body_orientation_vertical #{&} {
+            top: -0.42rem;
           }
         }
 
-        .jquery-slider-tooltip {
-          background-color: white;
-          border: 0.06rem solid black;
-          color: black;
-
+        &::after {
           @at-root {
-            .jquery-slider-horizontal #{&} {
-              top: -2.28rem;
-              left: -0.795rem;
+            .slider__body_orientation_horizontal #{&} {
+              border-color: black transparent transparent;
             }
 
-            .jquery-slider-vertical #{&} {
-              top: -0.42rem;
-            }
-          }
-
-          &::after {
-            @at-root {
-              .jquery-slider-horizontal #{&} {
-                border-color: black transparent transparent;
-                margin-left: -0.3rem;
-              }
-
-              .jquery-slider-vertical #{&} {
-                border-color: transparent black transparent transparent;
-                margin-top: -0.3rem;
-              }
+            .slider__body_orientation_vertical #{&} {
+              border-color: transparent black transparent transparent;
+              margin-top: -0.3rem;
             }
           }
         }

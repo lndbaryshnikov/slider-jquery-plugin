@@ -34,17 +34,17 @@ describe('handles rendered depending on range', () => {
     view.setOptions(defaultsRangeFalse);
     view.render(root);
 
-    expect(document.querySelectorAll('.jquery-slider-handle').length).toBe(1);
+    expect(document.querySelectorAll('.jquery-slider__handle').length).toBe(1);
 
     view.setOptions(defaultsRangeMin);
 
-    expect(document.querySelectorAll('.jquery-slider-handle').length).toBe(1);
+    expect(document.querySelectorAll('.jquery-slider__handle').length).toBe(1);
   });
 
   test('two handles rendered when range is true', () => {
     view.setOptions(defaultsRangeTrue);
     view.render(root);
 
-    expect(document.querySelectorAll('.jquery-slider-handle').length).toBe(2);
+    expect(document.querySelectorAll('.jquery-slider__handle').length).toBe(2);
   });
 });

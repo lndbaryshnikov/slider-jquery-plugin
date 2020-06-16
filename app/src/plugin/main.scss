@@ -4,72 +4,76 @@
   border-radius: 5px;
   position: relative;
 
-  &-horizontal {
-    width: 20em;
-    height: 7px;
+  &_orientation {
+    &_horizontal {
+      width: 20em;
+      height: 7px;
+    }
+  
+    &_vertical {
+      width: 7px;
+      height: 20em;
+    }
   }
-
-  &-vertical {
-    width: 7px;
-    height: 20em;
-  }
-
-  &-range {
+  
+  &__range {
     background-color: grey;
     border-radius: 5px;
     position: absolute;
 
-    @at-root {
-      .jquery-slider-horizontal #{&} {
+    &_orientation {
+      &_horizontal {
         height: 100%;
       }
 
-      .jquery-slider-vertical #{&} {
+      &_vertical {
         width: 100%;
       }
     }
   }
 
-  &-handle {
+  &__handle {
     background-color: sandybrown;
     border-radius: 50%;
     cursor: pointer;
     position: absolute;
 
-    @at-root {
-      .jquery-slider-horizontal #{&} {
+    &_orientation {
+      &_horizontal {
         height: 1.1em;
         width: 1.1em;
         top: -80%;
       }
 
-      .jquery-slider-vertical #{&} {
+      &_vertical {
         height: 1.1em;
         width: 1.1em;
         left: -70%;
       }
     }
   }
+}
 
-  &-tooltip {
-    background-color: sandybrown;
-    font-size: 1.1em;
-    text-align: center;
-    border-radius: 20%;
-    line-height: 28px;
-    color: whitesmoke;
-    user-select: none;
-    cursor: auto;
+.jquery-slider-tooltip {
+  background-color: sandybrown;
+  font-size: 1.1em;
+  text-align: center;
+  border-radius: 20%;
+  line-height: 28px;
+  color: whitesmoke;
+  user-select: none;
+  cursor: auto;
+  position: absolute;
+
+  &::after {
+    content: '';
     position: absolute;
+    border-width: 5px;
+    border-style: solid;
+  }
 
-    &::after {
-      content: '';
-      position: absolute;
-      border-width: 5px;
-      border-style: solid;
-    }
-
-    &-horizontal {
+  &_orientation {
+    &_horizontal {
       top: -35px;
       left: -13px;
       width: 2.5em;
@@ -83,7 +87,7 @@
       }
     }
 
-    &-vertical {
+    &_vertical {
       top: -6px;
       right: -3em;
       width: 2.5em;
@@ -97,53 +101,59 @@
       }
     }
   }
+}
 
-  &-labels-scale {
-    position: absolute;
+.jquery-slider-scale {
+  position: absolute;
 
-    &-horizontal {
+  &_orientation {
+    &_horizontal {
       top: 1em;
       height: 1.7em;
     }
-
-    &-vertical {
+  
+    &_vertical {
       right: 1.5em;
       width: 2em;
     }
   }
 
-  &-label {
+  &__label {
     user-select: none;
     cursor: pointer;
     font-size: 1em;
     text-align: center;
     position: absolute;
 
-    &-horizontal {
-      height: 1.2em;
-      bottom: 0;
-    }
-
-    &-vertical {
-      width: 1.5em;
-      right: 0;
+    &_orientation {
+      &_horizontal {
+        height: 1.2em;
+        bottom: 0;
+      }
+  
+      &_vertical {
+        width: 1.5em;
+        right: 0;
+      }
     }
   }
 
-  &-pip {
+  &__pip {
     background-color: black;
     position: absolute;
 
-    &-horizontal {
-      bottom: 100%;
-      width: 0.1em;
-      height: 0.5em;
-    }
-
-    &-vertical {
-      left: 110%;
-      height: 0.1em;
-      width: 0.5em;
+    &_orientation {
+      &_horizontal {
+        bottom: 100%;
+        width: 0.1em;
+        height: 0.5em;
+      }
+  
+      &_vertical {
+        left: 110%;
+        height: 0.1em;
+        width: 0.5em;
+      }
     }
   }
 }

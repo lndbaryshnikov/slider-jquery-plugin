@@ -6,12 +6,7 @@ import Observer from '../Observer/Observer';
 import LabelsView from './LabelsView';
 import TooltipView from './TooltipView';
 
-type UserClasses = {
-  slider: string;
-  range: string;
-  handle: string;
-};
-
+type Classes = Record<'slider' | 'range' | 'handle', string>;
 type PluginHtml = {
   slider: HTMLDivElement;
   range: RangeView;
@@ -24,7 +19,7 @@ class MainView {
 
   private options: Options;
 
-  private classes: UserClasses;
+  private classes: Classes;
 
   private root: HTMLElement;
 
@@ -67,7 +62,7 @@ class MainView {
     return this.pluginHtml;
   }
 
-  setClasses(classes: UserClasses): void {
+  setClasses(classes: Classes): void {
     this.classes = classes || this.classes || {
       slider: '',
       range: '',
@@ -75,7 +70,7 @@ class MainView {
     };
   }
 
-  getClasses(): UserClasses {
+  getClasses(): Classes {
     return this.classes;
   }
 
@@ -238,44 +233,51 @@ class MainView {
   }
 
   private _setElementsClasses(): void {
-    const mainClasses = {
-      slider: 'jquery-slider',
-      range: 'jquery-slider-range',
-      handle: 'jquery-slider-handle',
+    const main = {
+      slider: 'jquery-slider jquery-slider_orientation_',
+      range: 'jquery-slider__range jquery-slider__range_orientation_',
+      handle: 'jquery-slider__handle jquery-slider__handle_orientation_',
     };
-    const orientation = this.options.orientation === 'horizontal'
-      ? 'jquery-slider-horizontal' : 'jquery-slider-vertical';
-    const customClasses = this.classes || {
+    const custom = this.classes || {
       slider: '',
       range: '',
       handle: '',
     };
+    const { orientation } = this.options;
+
+    const fullMain = {};
+    const fullCustom = {};
+
+    Object.keys(main).forEach((type) => {
+      fullMain[type] = `${main[type]}${orientation}`;
+      fullCustom[type] = custom[type] ? `${custom[type]}${orientation}` : '';
+    });
 
     const {
-      slider: defaultSlider,
-      range: defaultRange,
-      handle: defaultHandle,
-    } = mainClasses;
+      slider: sliderMain,
+      range: rangeMain,
+      handle: handleMain,
+    } = fullMain as Classes;
     const {
-      slider: customSlider,
-      range: customRange,
-      handle: customHandle,
-    } = customClasses;
+      slider: sliderCustom,
+      range: rangeCustom,
+      handle: handleCustom,
+    } = fullCustom as Classes;
 
-    const sliderClass = `${defaultSlider} ${orientation} ${customSlider || ''}`;
-    const rangeClass = `${defaultRange} ${customRange || ''}`;
-    const handleClass = `${defaultHandle} ${customHandle || ''}`;
+    const sliderClass = `${sliderMain} ${sliderCustom}`;
+    const rangeClass = `${rangeMain} ${rangeCustom}`;
+    const handleClass = `${handleMain} ${handleCustom}`;
 
     const {
       slider, range, firstHandle, secondHandle,
     } = this.pluginHtml;
 
-    slider.className = `${sliderClass}`;
+    slider.className = sliderClass;
     range.setClass(rangeClass);
     firstHandle.setClass(handleClass);
 
     if (secondHandle) {
-      secondHandle.setClass(defaultHandle, customHandle);
+      secondHandle.setClass(handleClass);
     }
   }
 
@@ -605,4 +607,4 @@ class MainView {
 }
 
 export default MainView;
-export { UserClasses };
+export { Classes as UserClasses };

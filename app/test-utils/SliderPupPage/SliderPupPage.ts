@@ -2,7 +2,7 @@ import {
   Browser, ElementHandle, Page, JSHandle,
 } from 'puppeteer';
 import { UserOptions, Options } from '../../src/plugin/Model/modelOptions';
-import SliderElement from '../../src/plugin/jquery-slider';
+import SliderElement from '../../src/plugin/main';
 import { CompleteUserOptions } from '../../src/plugin/Presenter/Presenter';
 
 export interface Coords {
@@ -101,7 +101,7 @@ export default class SliderPupPage {
   ): Promise<{ label: string; pip: string } | { label: Coords; pip: Coords }> {
     return this.pupPage.evaluate(
       (dataToEval: string, LabelNumber: number) => {
-        const labels = document.querySelectorAll('.jquery-slider-label');
+        const labels = document.querySelectorAll('.jquery-slider-scale__label');
         const labelNeeded = labels[LabelNumber - 1] as HTMLElement;
         const labelFirstChild = labelNeeded.children[0] as HTMLElement;
 
@@ -285,13 +285,13 @@ export default class SliderPupPage {
   private async _defineElements(options: Options | UserOptions): Promise<void> {
     this.root = await this.pupPage.$('.slider');
     this.slider = await this.pupPage.$('.jquery-slider');
-    this.range = await this.pupPage.$('.jquery-slider-range');
-    this.firstHandle = await this.pupPage.$('.jquery-slider-handle');
+    this.range = await this.pupPage.$('.jquery-slider__range');
+    this.firstHandle = await this.pupPage.$('.jquery-slider__handle');
 
     const isRangeTrue = options && options.range === true;
 
     if (isRangeTrue) {
-      [, this.secondHandle] = await this.pupPage.$$('.jquery-slider-handle');
+      [, this.secondHandle] = await this.pupPage.$$('.jquery-slider__handle');
     } else this.secondHandle = null;
 
     const isTooltipRequired = options && options.tooltip;

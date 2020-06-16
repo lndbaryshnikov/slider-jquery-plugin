@@ -15,7 +15,7 @@ describe('tooltip works correctly', () => {
 
     tooltip = new TooltipView();
     tooltip.setOptions({
-      text: 35,
+      value: 35,
       orientation: 'horizontal',
     });
     tooltip.render(root);
@@ -34,7 +34,7 @@ describe('tooltip works correctly', () => {
   test('tooltip\'s value is correct', () => {
     expect(horizontalTooltipOnDom.innerHTML).toBe('35');
 
-    tooltip.setText({ text: 23 });
+    tooltip.setValue({ value: 23 });
 
     expect(horizontalTooltipOnDom.innerHTML).toBe('23');
   });
@@ -42,10 +42,10 @@ describe('tooltip works correctly', () => {
   test('rest methods', () => {
     tooltip.cleanTextField();
 
-    expect(tooltip.text).toBe(null);
+    expect(tooltip.value).toBe(null);
     expect(horizontalTooltipOnDom.innerHTML).toBe('');
 
-    tooltip.setText({ text: 12345 });
+    tooltip.setValue({ value: 12345 });
 
     expect(horizontalTooltipOnDom.innerHTML).toBe('12345');
 
@@ -58,36 +58,36 @@ describe('tooltip works correctly', () => {
     tooltip.destroy();
 
     expect(root.contains(tooltip.html)).toBe(false);
-    expect(tooltip.text).toBe(null);
+    expect(tooltip.value).toBe(null);
     expect(tooltip.html.className).toBe('jquery-slider-tooltip');
     expect(tooltip.html.innerHTML).toBe('');
   });
 
   test('setOrientation', () => {
     expect(horizontalTooltipOnDom.className).toBe(
-      'jquery-slider-tooltip jquery-slider-tooltip-horizontal',
+      'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',
     );
 
-    tooltip.setOrientation('vertical');
+    tooltip.setClasses({ orientation: 'vertical' });
     expect(horizontalTooltipOnDom.className).toBe(
-      'jquery-slider-tooltip jquery-slider-tooltip-vertical',
+      'jquery-slider-tooltip jquery-slider-tooltip_orientation_vertical ',
     );
 
-    tooltip.setOrientation('horizontal');
+    tooltip.setClasses({ orientation: 'horizontal' });
     expect(horizontalTooltipOnDom.className).toBe(
-      'jquery-slider-tooltip jquery-slider-tooltip-horizontal',
+      'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',
     );
   });
 
   test('tooltip works with value function', () => {
-    tooltip.destroy();
+    tooltip.remove();
 
     tooltip.setOptions({
-      text: 70,
+      value: 70,
       orientation: 'horizontal',
-      func: (value: number) => `${value}$`,
+      valueFunction: (value: number) => `${value}$`,
     });
 
-    expect(tooltip.text).toBe('70$');
+    expect(tooltip.value).toBe('70$');
   });
 });

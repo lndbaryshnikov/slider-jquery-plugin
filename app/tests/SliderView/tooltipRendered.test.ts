@@ -14,7 +14,7 @@ describe('tooltip exists on dom and contains value', () => {
 
   test('tooltip rendered correctly', () => {
     tooltipView.setOptions({
-      text: defaultsWithTooltip.value as number,
+      value: defaultsWithTooltip.value as number,
       orientation: defaultsWithTooltip.orientation,
     });
 
@@ -25,7 +25,7 @@ describe('tooltip exists on dom and contains value', () => {
       pluginView: tooltipView,
     });
 
-    const handle = document.querySelector('.jquery-slider-handle');
+    const handle = document.querySelector('.jquery-slider__handle');
     const tooltip = document.querySelector('.jquery-slider-tooltip');
 
     expect(!!tooltip).toBeTruthy();
@@ -36,7 +36,7 @@ describe('tooltip exists on dom and contains value', () => {
     defaultsWIthAnotherValue.value = 50;
 
     tooltipView.setOptions({
-      text: defaultsWIthAnotherValue.value,
+      value: defaultsWIthAnotherValue.value,
       orientation: defaultsWithTooltip.orientation,
     });
 
@@ -50,9 +50,9 @@ describe('tooltip exists on dom and contains value', () => {
     defaultsWithTooltipFunction.tooltip = (value: number): string => `${value}$`;
 
     tooltipView.setOptions({
-      text: defaultsWithTooltipFunction.value as number,
+      value: defaultsWithTooltipFunction.value as number,
       orientation: defaultsWithTooltipFunction.orientation,
-      func: defaultsWithTooltipFunction.tooltip,
+      valueFunction: defaultsWithTooltipFunction.tooltip,
     });
 
     view.setOptions(defaultsWithTooltip);
@@ -71,9 +71,9 @@ describe('tooltip exists on dom and contains value', () => {
     defaultsWithAnotherValue.value = 70;
 
     tooltipView.setOptions({
-      text: defaultsWithAnotherValue.value,
+      value: defaultsWithAnotherValue.value,
       orientation: defaultsWithTooltipFunction.orientation,
-      func: defaultsWithTooltipFunction.tooltip,
+      valueFunction: defaultsWithTooltipFunction.tooltip,
     });
 
     view.setOptions(defaultsWithAnotherValue);

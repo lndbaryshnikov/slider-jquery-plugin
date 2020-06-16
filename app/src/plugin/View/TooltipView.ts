@@ -1,7 +1,7 @@
 import { ValueFunction } from '../Model/modelOptions';
 
 class TooltipView {
-  private tooltipText: string | number | null = null;
+  private tooltipValue: string | number | null = null;
 
   private tooltipHtml: HTMLDivElement;
 
@@ -17,24 +17,27 @@ class TooltipView {
     return this.tooltipHtml;
   }
 
-  get text(): string | number | null {
-    return this.tooltipText;
+  get value(): string | number | null {
+    return this.tooltipValue;
   }
 
   get state(): { isRendered: boolean; isSet: boolean } {
     return {
       isRendered: !!this.root,
-      isSet: !!(this.orientation && this.tooltipText),
+      isSet: !!(this.orientation && this.tooltipValue),
     };
   }
 
-  setOptions({ text, orientation, func }: {
-    text: number;
+  setOptions({
+    value, orientation, valueFunction, className,
+  }: {
+    value: number;
     orientation: 'horizontal' | 'vertical';
-    func?: ValueFunction;
+    valueFunction?: ValueFunction;
+    className?: string;
   }): void {
-    this.setText({ text, func });
-    this.setOrientation(orientation);
+    this.setValue({ value, valueFunction });
+    this.setClasses({ orientation, customClass: className });
   }
 
   render(root: HTMLElement): void {
@@ -42,21 +45,27 @@ class TooltipView {
     this.root.append(this.tooltipHtml);
   }
 
-  setText({ text, func }: { text: number; func?: ValueFunction }): void {
-    if (func) {
-      this.tooltipText = func(text);
-    } else this.tooltipText = text;
+  setValue({ value, valueFunction }: { value: number; valueFunction?: ValueFunction }): void {
+    if (valueFunction) {
+      this.tooltipValue = valueFunction(value);
+    } else this.tooltipValue = value;
 
-    this.tooltipHtml.innerHTML = String(this.tooltipText);
+    this.tooltipHtml.innerHTML = String(this.tooltipValue);
   }
 
-  setOrientation(orientation: 'horizontal' | 'vertical'): void {
+  setClasses({ orientation, customClass }: {
+    orientation: 'horizontal' | 'vertical';
+    customClass?: string;
+  }): void {
     this.orientation = orientation;
-    this._setOrientationClass();
+
+    const main = `jquery-slider-tooltip jquery-slider-tooltip_orientation_${orientation}`;
+    const custom = customClass ? `${customClass}${orientation}` : '';
+    this.tooltipHtml.className = `${main} ${custom}`;
   }
 
   cleanTextField(): void {
-    this.tooltipText = null;
+    this.tooltipValue = null;
     this.tooltipHtml.innerHTML = '';
   }
 
@@ -85,16 +94,6 @@ class TooltipView {
     tooltip.addEventListener('mousedown', stopMousedownPropagationHandler);
 
     this.tooltipHtml = tooltip;
-  }
-
-  private _setOrientationClass(): void {
-    this.tooltipHtml.setAttribute('class', 'jquery-slider-tooltip');
-
-    if (this.orientation === 'horizontal') {
-      this.tooltipHtml.classList.add('jquery-slider-tooltip-horizontal');
-    } else if (this.orientation === 'vertical') {
-      this.tooltipHtml.classList.add('jquery-slider-tooltip-vertical');
-    }
   }
 }
 

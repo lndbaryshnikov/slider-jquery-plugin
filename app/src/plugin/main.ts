@@ -1,4 +1,4 @@
-import './jquery-slider.scss';
+import './main.scss';
 import Presenter, { CompleteUserOptions } from './Presenter/Presenter';
 import MainView from './View/MainView';
 import Model from './Model/Model';

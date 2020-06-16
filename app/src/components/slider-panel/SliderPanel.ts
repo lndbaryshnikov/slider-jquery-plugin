@@ -5,7 +5,7 @@ import {
   ConfigItemType,
 } from '../config-item/ConfigItem';
 import Presenter from '../../plugin/Presenter/Presenter';
-import SliderElement from '../../plugin/jquery-slider';
+import SliderElement from '../../plugin/main';
 import { Options, UserOptions } from '../../plugin/Model/modelOptions';
 
 export default class SliderPanel {

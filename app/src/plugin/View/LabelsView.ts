@@ -8,7 +8,7 @@ interface LabelOptions {
   min: number;
   max: number;
   step: number;
-  valueFunc?: (value?: number) => string | number;
+  valueFunction?: (value?: number) => string | number;
 }
 
 class LabelsView {
@@ -44,7 +44,7 @@ class LabelsView {
 
     this._createLabels();
     this._setClasses();
-    if (this.options.labels) this._setText();
+    if (this.options.labels) this._setValue();
     this._setClickHandler();
   }
 
@@ -64,7 +64,7 @@ class LabelsView {
     const scale = document.createElement('div');
     scale.setAttribute(
       'class',
-      `jquery-slider-labels-scale jquery-slider-labels-scale-${this.options.orientation}`,
+      `jquery-slider-scale jquery-slider-scale_orientation_${this.options.orientation}`,
     );
     scale.style[widthOrHeight] = `${sliderSize}px`;
 
@@ -126,12 +126,12 @@ class LabelsView {
   private _getLabel(): HTMLDivElement {
     const label = document.createElement('div');
 
-    label.setAttribute('class', 'jquery-slider-label');
+    label.setAttribute('class', 'jquery-slider-scale__label');
 
     if (this.options.pips) {
       const pip = document.createElement('div');
 
-      pip.setAttribute('class', 'jquery-slider-pip');
+      pip.setAttribute('class', 'jquery-slider-scale__pip');
       label.append(pip);
     }
     return label;
@@ -146,22 +146,22 @@ class LabelsView {
     if (areNoLabelsOrPipsRequired) return;
 
     this.sliderLabels.forEach((label) => {
-      label.setAttribute('class', 'jquery-slider-label');
-      label.classList.add(`jquery-slider-label-${orientation}`);
+      label.setAttribute('class', 'jquery-slider-scale__label');
+      label.classList.add(`jquery-slider-scale__label_orientation_${orientation}`);
 
       if (this.options.pips) {
         const pip = label.children[0];
 
-        pip.setAttribute('class', 'jquery-slider-pip');
-        pip.classList.add(`jquery-slider-pip-${orientation}`);
+        pip.setAttribute('class', 'jquery-slider-scale__pip');
+        pip.classList.add(`jquery-slider-scale__pip_orientation_${orientation}`);
       }
     });
   }
 
-  private _setText(): void {
+  private _setValue(): void {
     if (!this.options.labels) return;
 
-    const { min, step, valueFunc } = this.options;
+    const { min, step, valueFunction: valueFunc } = this.options;
 
     for (
       let i = 0, value = min;

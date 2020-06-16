@@ -5,7 +5,7 @@ import Model from '../Model/Model';
 import LabelsView, { LabelOptions } from '../View/LabelsView';
 import TooltipView from '../View/TooltipView';
 
-type CompleteUserOptions = UserOptions & { classes?: UserClasses };
+type CompleteUserOptions = UserOptions & { classes?: UserClasses & { tooltip: string } };
 
 class Presenter {
   private plugins = {
@@ -14,17 +14,20 @@ class Presenter {
       second: new TooltipView(),
     },
     labelsView: new LabelsView(),
-  };
+  }
 
-  constructor(
-    private view: MainView,
-    private model: Model,
-  ) {
-    this.model.whenOptionsSet(this.updateView.bind(this));
-    this.model.whenOptionsIncorrect(this.showError.bind(this));
-    this.view.whenValueChanged(this.validateNewValue.bind(this));
-    this.model.whenValueUpdated(this.updateValue.bind(this));
-    this.plugins.labelsView.whenUserClicksOnLabel(this.updateHandlePosition.bind(this));
+  private pluginClasses: {
+    tooltip: string;
+  }
+
+  constructor(private view: MainView, private model: Model) {
+    model.whenOptionsSet(this.updateView.bind(this));
+    model.whenOptionsIncorrect(this.showError.bind(this));
+    view.whenValueChanged(this.validateNewValue.bind(this));
+    model.whenValueUpdated(this.updateValue.bind(this));
+
+    const { labelsView } = this.plugins;
+    labelsView.whenUserClicksOnLabel(this.updateHandlePosition.bind(this));
   }
 
   initialize(root: HTMLElement, userOptions?: UserOptions): void {
@@ -53,6 +56,12 @@ class Presenter {
 
     if (classes) {
       delete modelOptions.classes;
+
+      const tooltipClass = classes.tooltip;
+      if (tooltipClass) {
+        this.pluginClasses = { tooltip: tooltipClass };
+        delete viewClasses.tooltip;
+      }
     }
 
     this.view.setClasses(viewClasses);
@@ -64,7 +73,7 @@ class Presenter {
     const viewClasses = this.view.getClasses();
 
     if (viewClasses) {
-      return { ...modelOptions, classes: { ...viewClasses } };
+      return { ...modelOptions, classes: { ...viewClasses, ...this.pluginClasses } };
     }
     return { ...modelOptions };
   }
@@ -94,19 +103,10 @@ class Presenter {
     }
 
     if (firstTooltipView.state.isSet) {
-      this.view.renderPlugin({
-        plugin: 'tooltip',
-        pluginView: firstTooltipView,
-        number: 'first',
-      });
+      this._renderTooltip('first');
     }
-
     if (secondTooltipView.state.isSet) {
-      this.view.renderPlugin({
-        plugin: 'tooltip',
-        pluginView: secondTooltipView,
-        number: 'second',
-      });
+      this._renderTooltip('second');
     }
   }
 
@@ -119,7 +119,7 @@ class Presenter {
 
     this.view.setOptions(options);
 
-    this._toggleTooltip(options);
+    this._toggleTooltips(options);
     this._toggleLabels(options);
   }
 
@@ -148,16 +148,16 @@ class Presenter {
     this.view.updateValue(value);
 
     if (firstTooltipView.state.isRendered) {
-      firstTooltipView.setText({
-        text: range !== true ? (value as number) : (value as number[])[0],
-        func: typeof tooltip === 'function' ? tooltip : null,
+      firstTooltipView.setValue({
+        value: range !== true ? (value as number) : (value as number[])[0],
+        valueFunction: typeof tooltip === 'function' ? tooltip : null,
       });
     }
 
     if (secondTooltipView.state.isRendered) {
-      secondTooltipView.setText({
-        text: range !== true ? (value as number) : (value as number[])[1],
-        func: typeof tooltip === 'function' ? tooltip : null,
+      secondTooltipView.setValue({
+        value: range !== true ? (value as number) : (value as number[])[1],
+        valueFunction: typeof tooltip === 'function' ? tooltip : null,
       });
     }
 
@@ -170,70 +170,18 @@ class Presenter {
     this.view.refreshHandlePosition({ currentHandleCoordinate: handleCoordinate });
   }
 
-  private _toggleTooltip(options: Options): void {
-    const {
-      first: firstTooltipView,
-      second: secondTooltipView,
-    } = this.plugins.tooltipView;
-
-    const {
-      orientation, value, range, tooltip,
-    } = options;
+  private _toggleTooltips(options: Options): void {
+    const { range, tooltip } = options;
 
     if (tooltip) {
-      if (range !== true) {
-        firstTooltipView.setOptions({
-          text: value as number,
-          orientation,
-          func: typeof tooltip === 'function' ? tooltip : null,
-        });
-      } else {
-        const [firstValue, secondValue] = value as number[];
+      this._setTooltip({ handleNumber: 'first', options });
 
-        firstTooltipView.setOptions({
-          text: firstValue,
-          orientation,
-          func: typeof tooltip === 'function' ? tooltip : null,
-        });
-
-        secondTooltipView.setOptions({
-          text: secondValue,
-          orientation,
-          func: typeof tooltip === 'function' ? tooltip : null,
-        });
+      if (range === true) {
+        this._setTooltip({ handleNumber: 'second', options });
       }
-
-      if (this.view.isRendered()) {
-        this.view.renderPlugin({
-          plugin: 'tooltip',
-          pluginView: firstTooltipView,
-          number: 'first',
-        });
-
-        if (range === true) {
-          this.view.renderPlugin({
-            plugin: 'tooltip',
-            pluginView: secondTooltipView,
-            number: 'second',
-          });
-        }
-      }
-    } else if (firstTooltipView.state.isRendered) {
-      this.view.destroyPlugin({
-        plugin: 'tooltip',
-        instance: firstTooltipView,
-      });
-
-      const isRangeTrueWhenSecondTooltipIsRendered = (
-        range === true && secondTooltipView.state.isRendered
-      );
-
-      if (isRangeTrueWhenSecondTooltipIsRendered) {
-        this.view.destroyPlugin({
-          plugin: 'tooltip',
-          instance: secondTooltipView,
-        });
-      }
+    } else {
+      this._destroyTooltip('first');
+      this._destroyTooltip('second');
     }
   }
 
@@ -251,7 +199,7 @@ class Presenter {
       };
 
       if (typeof labels === 'function') {
-        labelsOptions.valueFunc = labels;
+        labelsOptions.valueFunction = labels;
       }
 
       labelsView.setOptions(labelsOptions);
@@ -268,6 +216,57 @@ class Presenter {
         instance: labelsView,
       });
     }
+  }
+
+  private _setTooltip({ handleNumber, options }: {
+    handleNumber: 'first' | 'second';
+    options: Options;
+  }): void {
+    const { value, orientation, tooltip } = options;
+    const valueFunction = typeof tooltip === 'function' ? tooltip : null;
+
+    const tooltipView = this.plugins.tooltipView[handleNumber];
+
+    let tooltipValue: number;
+    if (Array.isArray(value)) {
+      const [firstValue, secondValue] = value;
+
+      tooltipValue = handleNumber === 'first' ? firstValue : secondValue;
+    } else {
+      tooltipValue = value;
+    }
+
+    tooltipView.setOptions({
+      value: tooltipValue,
+      orientation,
+      valueFunction,
+      className: this.pluginClasses && this.pluginClasses.tooltip,
+    });
+
+    if (this.view.isRendered()) {
+      this._renderTooltip(handleNumber);
+    }
+  }
+
+  private _renderTooltip(handleNumber: 'first' | 'second'): void {
+    const tooltipView = this.plugins.tooltipView[handleNumber];
+
+    this.view.renderPlugin({
+      plugin: 'tooltip',
+      pluginView: tooltipView,
+      number: handleNumber,
+    });
+  }
+
+  private _destroyTooltip(handleNumber: 'first' | 'second'): void {
+    const tooltipView = this.plugins.tooltipView[handleNumber];
+
+    if (!tooltipView.state.isRendered) return;
+
+    this.view.destroyPlugin({
+      plugin: 'tooltip',
+      instance: tooltipView,
+    });
   }
 }
 
