@@ -29,58 +29,11 @@
     &_color {
       &_gray {
         background-color: grey;
-
-        // .jquery-slider-tooltip {
-        //   background-color: grey;
-
-        //   &::after {
-        //     @at-root {
-        //       .jquery-slider_orientation_horizontal #{&} {
-        //         border-color: grey transparent transparent;
-        //       }
-
-        //       .jquery-slider_orientation_vertical #{&} {
-        //         border-color: transparent grey transparent transparent;
-        //       }
-        //     }
-        //   }
-        // }
       }
 
       &_white {
         background-color: white;
         border: 0.06rem solid black;
-
-        // .jquery-slider-tooltip {
-        //   background-color: white;
-        //   border: 0.06rem solid black;
-        //   color: black;
-
-        //   @at-root {
-        //     .jquery-slider_orientation_horizontal #{&} {
-        //       top: -2.28rem;
-        //       left: -0.795rem;
-        //     }
-
-        //     .jquery-slider_orientation_vertical #{&} {
-        //       top: -0.42rem;
-        //     }
-        //   }
-
-        //   &::after {
-        //     @at-root {
-        //       .jquery-slider_orientation_horizontal #{&} {
-        //         border-color: black transparent transparent;
-        //         margin-left: -0.3rem;
-        //       }
-
-        //       .jquery-slider_orientation_vertical #{&} {
-        //         border-color: transparent black transparent transparent;
-        //         margin-top: -0.3rem;
-        //       }
-        //     }
-        //   }
-        // }
       }
     }
   }
