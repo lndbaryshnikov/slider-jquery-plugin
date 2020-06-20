@@ -1,8 +1,9 @@
 import getCoords, { Coords } from '../../utils/getCoords';
+import { Shift } from '../../utils/getShift';
 import Observer from '../Observer/Observer';
 import { Options } from '../Model/modelOptions';
 import RangeView from './RangeView';
-import HandleView from './HandleView';
+import HandleView, { HandleNumber } from './HandleView';
 import LabelsView from './LabelsView';
 import TooltipView from './TooltipView';
 
@@ -81,11 +82,10 @@ class MainView {
 
     this.cleanDom();
     this._setElements();
-    this._setHandleMovingHandler();
     this._setSliderClickHandler();
 
     this._setElementsClasses();
-    this._setTransition();
+    this._setUITransition();
     this._setHandlePositionInPixels();
 
     if (wasRendered) {
@@ -292,70 +292,64 @@ class MainView {
 
     range.stickTo(slider);
     firstHandle.stickTo(slider);
+    firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
 
     if (this.options.range === true) {
       const secondHandle = new HandleView('second');
       secondHandle.stickTo(slider);
+      secondHandle.whenMouseDown(this._allowHandleMoving.bind(this));
 
       this.pluginHtml.secondHandle = secondHandle;
     }
   }
 
-  private _setHandleMovingHandler(): void {
-    const mouseDownHandler = (mouseDownEvent: MouseEvent): false => {
-      const handle = this._getTargetHandle(mouseDownEvent.target) as HandleView;
-      const handleNumber = handle.number;
-      const handleCoords = handle.getCoords();
+  private _allowHandleMoving({ handleNumber, halfOfHandle, cursorShift }: {
+    handleNumber: HandleNumber;
+    halfOfHandle: Record<'width' | 'height', number>;
+    cursorShift: Shift;
+  }): void {
+    this._cleanUITransition();
 
-      const { x: shiftX, y: shiftY } = handle.getCursorShift(mouseDownEvent);
-      const availableSpace = this._countAvailableHandleSpace(handleNumber);
+    const availableSpace = this._countAvailableHandleSpace(handleNumber);
 
-      const mouseMoveHandler = (mouseMoveEvent: MouseEvent): void => {
-        const isHorizontal = this.options.orientation === 'horizontal';
-        const newPosition = isHorizontal
-          ? mouseMoveEvent.pageX - shiftX - availableSpace.left
-          : mouseMoveEvent.pageY - shiftY - availableSpace.top;
+    const mouseMoveHandler = (mouseMoveEvent: MouseEvent): void => {
+      const isHorizontal = this.options.orientation === 'horizontal';
+      const { pageX: eventX, pageY: eventY } = mouseMoveEvent;
+      const { x: shiftX, y: shiftY } = cursorShift;
 
-        const firstEdge = isHorizontal
-          ? 0 - handleCoords.width / 2
-          : 0 - handleCoords.height / 2;
+      const newPosition = isHorizontal
+        ? eventX - shiftX - availableSpace.left
+        : eventY - shiftY - availableSpace.top;
 
-        const secondEdge = isHorizontal
-          ? availableSpace.width - handleCoords.width / 2
-          : availableSpace.height - handleCoords.height / 2;
+      const firstEdge = isHorizontal
+        ? 0 - halfOfHandle.width
+        : 0 - halfOfHandle.height;
 
-        const maybeSecondEdge = newPosition > secondEdge ? secondEdge : newPosition;
-        const correctPosition = newPosition < firstEdge ? firstEdge : maybeSecondEdge;
+      const secondEdge = isHorizontal
+        ? availableSpace.width - halfOfHandle.width
+        : availableSpace.height - halfOfHandle.height;
 
-        const currentHandleCoordinate = isHorizontal
-          ? availableSpace.left + correctPosition + handleCoords.width / 2
-          : availableSpace.top + correctPosition + handleCoords.height / 2;
+      const maybeSecondEdge = newPosition > secondEdge ? secondEdge : newPosition;
+      const correctPosition = newPosition < firstEdge ? firstEdge : maybeSecondEdge;
 
-        this.refreshHandlePosition({
-          currentHandleCoordinate,
-          handleNumber,
-        });
-      };
+      const currentHandleCoordinate = isHorizontal
+        ? availableSpace.left + correctPosition + halfOfHandle.width
+        : availableSpace.top + correctPosition + halfOfHandle.height;
 
-      document.addEventListener('mousemove', mouseMoveHandler);
-
-      const mouseUpHandler = (): void => {
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
-      };
-
-      document.addEventListener('mouseup', mouseUpHandler);
-
-      return false;
+      this.refreshHandlePosition({
+        currentHandleCoordinate,
+        handleNumber,
+      });
     };
 
-    const { firstHandle, secondHandle } = this.pluginHtml;
+    document.addEventListener('mousemove', mouseMoveHandler);
 
-    firstHandle.onMousedown(mouseDownHandler);
+    const mouseUpHandler = (): void => {
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
 
-    if (this.options.range === true) {
-      secondHandle.onMousedown(mouseDownHandler);
-    }
+    document.addEventListener('mouseup', mouseUpHandler);
   }
 
   private _setSliderClickHandler(): void {
@@ -387,53 +381,32 @@ class MainView {
     );
   }
 
-  private _setTransition(): void {
+  private _setUITransition(): void {
     const { animate } = this.options;
 
     const maybeNull = typeof animate === 'number' ? animate : 0;
     const maybeSevenHundredOrNull = animate === 'slow' ? 700 : maybeNull;
     const transitionMs: number = animate === 'fast' ? 300 : maybeSevenHundredOrNull;
 
-    const { firstHandle, range } = this.pluginHtml;
+    const { firstHandle, secondHandle, range } = this.pluginHtml;
 
-    range.setTransition(`${transitionMs}ms`);
-
-    const makeChangeTransitionHandler = ({ handle, transition }: {
-      handle: HandleView;
-      transition: number;
-    }): () => void => (
-      (): void => {
-        handle.setTransition(`${transition}ms`);
-        range.setTransition(`${transition}ms`);
-      }
-    );
-
-    const setUITransition = (handle: HandleView): void => {
-      handle.setTransition(`${transitionMs}ms`);
-
-      handle.onMousedown(
-        makeChangeTransitionHandler({
-          handle,
-          transition: 0,
-        }),
-      );
-
-      document.addEventListener(
-        'mouseup',
-        makeChangeTransitionHandler({
-          handle,
-          transition: transitionMs,
-        }),
-      );
+    const applyTransition = (): void => {
+      firstHandle.setTransition(transitionMs);
+      if (secondHandle) secondHandle.setTransition(transitionMs);
+      range.setTransition(transitionMs);
     };
 
-    setUITransition(firstHandle);
+    applyTransition();
 
-    if (this.options.range === true) {
-      const { secondHandle } = this.pluginHtml;
+    document.addEventListener('mouseup', applyTransition);
+  }
 
-      setUITransition(secondHandle);
-    }
+  private _cleanUITransition(): void {
+    const { firstHandle, secondHandle, range } = this.pluginHtml;
+
+    firstHandle.setTransition(0);
+    if (secondHandle) secondHandle.setTransition(0);
+    range.setTransition(0);
   }
 
   private _setHandlePositionInPixels(): void {

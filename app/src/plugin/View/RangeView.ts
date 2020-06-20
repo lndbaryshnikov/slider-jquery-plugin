@@ -17,8 +17,8 @@ class RangeView {
     this.range.className = classes.join(' ');
   }
 
-  setTransition(transitionValue: string): void {
-    this.range.style.transition = transitionValue;
+  setTransition(transitionValue: number): void {
+    this.range.style.transition = `${transitionValue}ms`;
   }
 
   setUp({

@@ -1,5 +1,6 @@
 import getCoords, { Coords } from '../../utils/getCoords';
 import { Shift, getShift } from '../../utils/getShift';
+import Observer from '../Observer/Observer';
 import TooltipView from './TooltipView';
 
 type HandleMouseEvent = 'click' | 'mousedown';
@@ -12,9 +13,32 @@ class HandleView {
 
   private tooltip: TooltipView | null;
 
+  private mouseDownSubject = new Observer();
+
   constructor(number: HandleNumber) {
     this.position = number;
     this._createHandle();
+    this._setListeners();
+  }
+
+  whenMouseDown(
+    callback: ({ handleNumber, halfOfHandle }: {
+      handleNumber: HandleNumber;
+      halfOfHandle: Record<'width' | 'height', number>;
+      cursorShift: Shift;
+    }) => void,
+  ): void {
+    this.mouseDownSubject.addObserver((cursorShift: Shift) => {
+      const { width: handleWidth, height: handleHeight } = this.getCoords();
+
+      const handleNumber = this.number;
+      const halfOfHandle = {
+        width: handleWidth / 2,
+        height: handleHeight / 2,
+      };
+
+      callback({ handleNumber, halfOfHandle, cursorShift });
+    });
   }
 
   get html(): HTMLDivElement {
@@ -25,14 +49,6 @@ class HandleView {
     return this.position;
   }
 
-  onClick(listener: (event: MouseEvent) => void): void {
-    this.handle.addEventListener('click', listener);
-  }
-
-  onMousedown(listener: (event: MouseEvent) => false | void): void {
-    this.handle.addEventListener('mousedown', listener);
-  }
-
   stickTo(root: HTMLDivElement): void {
     root.append(this.handle);
   }
@@ -41,8 +57,8 @@ class HandleView {
     this.handle.className = classes.join(' ');
   }
 
-  setTransition(transitionValue: string): void {
-    this.handle.style.transition = transitionValue;
+  setTransition(transitionValue: number): void {
+    this.handle.style.transition = `${transitionValue}ms`;
   }
 
   getCoords(): Coords {
@@ -84,9 +100,21 @@ class HandleView {
 
     this.handle = handle;
   }
+
+  private _setListeners(): void {
+    const notify = (mouseDownEvent: MouseEvent): false => {
+      const cursorShift = this.getCursorShift(mouseDownEvent);
+      this.mouseDownSubject.notifyObservers(cursorShift);
+
+      return false;
+    };
+
+    this.handle.addEventListener('mousedown', notify);
+  }
 }
 
 export default HandleView;
 export {
   HandleMouseEvent,
+  HandleNumber,
 };
