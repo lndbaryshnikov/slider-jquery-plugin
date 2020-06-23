@@ -7,7 +7,7 @@ import HandleView, { HandleNumber } from './HandleView';
 import LabelsView from './LabelsView';
 import TooltipView from './TooltipView';
 
-type Classes = Record<'slider' | 'range' | 'handle', string>;
+type MainStyles = Record<'slider' | 'range' | 'handle', string>;
 type PluginHtml = {
   slider: HTMLElement;
   range: RangeView;
@@ -20,9 +20,11 @@ class MainView {
 
   private options: Options;
 
-  private classes: Classes;
+  private styles: MainStyles;
 
   private root: HTMLElement;
+
+  private modifiers: MainStyles;
 
   private handlesPositionInPixels: number[];
 
@@ -62,16 +64,28 @@ class MainView {
     return this.pluginHtml;
   }
 
-  setClasses(classes: Classes): void {
-    this.classes = classes || this.classes || {
+  setStyles(styles: MainStyles): void {
+    this.styles = styles || this.styles;
+
+    const modifiers = this.styles ? { ...this.styles } : {
       slider: '',
       range: '',
       handle: '',
     };
+
+    Object.entries(modifiers).forEach(([key, value]) => {
+      const modifierName = key === 'slider'
+        ? 'jquery-slider_color'
+        : `jquery-slider__${key}_color`;
+
+      modifiers[key] = value ? `${modifierName}_${value}` : value;
+    });
+
+    this.modifiers = modifiers;
   }
 
-  getClasses(): Classes {
-    return this.classes;
+  getStyles(): MainStyles {
+    return this.styles;
   }
 
   setOptions(options: Options): void {
@@ -226,39 +240,31 @@ class MainView {
 
   private _setElementsClasses(): void {
     const main = {
-      slider: 'jquery-slider jquery-slider_orientation_',
-      range: 'jquery-slider__range jquery-slider__range_orientation_',
-      handle: 'jquery-slider__handle jquery-slider__handle_orientation_',
+      slider: 'jquery-slider jquery-slider_orientation',
+      range: 'jquery-slider__range jquery-slider__range_orientation',
+      handle: 'jquery-slider__handle jquery-slider__handle_orientation',
     };
-    const custom = this.classes || {
+    const colorsModifiers = this.modifiers || {
       slider: '',
       range: '',
       handle: '',
     };
     const { orientation } = this.options;
 
-    const fullMain = {};
-    const fullCustom = {};
-
-    Object.keys(main).forEach((type) => {
-      fullMain[type] = `${main[type]}${orientation}`;
-      fullCustom[type] = custom[type] ? `${custom[type]}${orientation}` : '';
-    });
-
     const {
       slider: sliderMain,
       range: rangeMain,
       handle: handleMain,
-    } = fullMain as Classes;
+    } = main as MainStyles;
     const {
-      slider: sliderCustom,
-      range: rangeCustom,
-      handle: handleCustom,
-    } = fullCustom as Classes;
+      slider: sliderColor,
+      range: rangeColor,
+      handle: handleColor,
+    } = colorsModifiers;
 
-    const sliderClass = `${sliderMain} ${sliderCustom}`;
-    const rangeClass = `${rangeMain} ${rangeCustom}`;
-    const handleClass = `${handleMain} ${handleCustom}`;
+    const sliderClass = `${sliderMain}_${orientation} ${sliderColor || ''}`;
+    const rangeClass = `${rangeMain}_${orientation} ${rangeColor || ''}`;
+    const handleClass = `${handleMain}_${orientation} ${handleColor || ''}`;
 
     const {
       slider, range, firstHandle, secondHandle,
@@ -274,8 +280,8 @@ class MainView {
   }
 
   private _setElements(): void {
-    const wasPluginSet = this.pluginHtml;
-    this.pluginHtml = this.pluginHtml || {
+    this.root.innerHTML = '';
+    this.pluginHtml = {
       slider: this.root,
       range: new RangeView(),
       firstHandle: new HandleView('first'),
@@ -284,14 +290,14 @@ class MainView {
     const { slider, firstHandle, range } = this.pluginHtml;
     let { secondHandle } = this.pluginHtml;
 
-    if (!wasPluginSet) {
-      range.stickTo(slider);
-      firstHandle.stickTo(slider);
-      firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
-    }
+    // firstHandle.reset();
+
+    range.stickTo(slider);
+    firstHandle.stickTo(slider);
+    firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
 
     const isRangeChangedToTrue = this.options.range === true && !secondHandle;
-    const isRangeChangedToFalse = this.options.range !== true && secondHandle;
+    const isRangeChangedToFalse = this.options.range !== true && !!secondHandle;
 
     if (isRangeChangedToTrue) {
       secondHandle = new HandleView('second');
@@ -581,4 +587,4 @@ class MainView {
 }
 
 export default MainView;
-export { Classes as UserClasses };
+export { MainStyles };

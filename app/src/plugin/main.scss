@@ -1,24 +1,26 @@
 .jquery-slider {
   background-color: lightgrey;
   margin: 5em;
-  border-radius: 5px;
+  border-radius: 0.3rem;
   position: relative;
 
   &_orientation {
     &_horizontal {
       width: 20em;
-      height: 7px;
+      height: 0.4rem;
+      margin: 3rem 3rem 4rem 2rem;
     }
   
     &_vertical {
-      width: 7px;
+      width: 0.4rem;
       height: 20em;
+      margin: 2rem 4rem;
     }
   }
   
   &__range {
     background-color: grey;
-    border-radius: 5px;
+    border-radius: 0.3rem;
     position: absolute;
 
     &_orientation {
@@ -28,6 +30,12 @@
 
       &_vertical {
         width: 100%;
+      }
+    }
+
+    &_color {
+      &_orange {
+        background-color: orangered;
       }
     }
   }
@@ -48,7 +56,18 @@
       &_vertical {
         height: 1.1em;
         width: 1.1em;
-        left: -70%;
+        left: -75%;
+      }
+    }
+
+    &_color {
+      &_gray {
+        background-color: grey;
+      }
+
+      &_white {
+        background-color: white;
+        border: 0.06rem solid black;
       }
     }
   }
@@ -98,6 +117,55 @@
         right: 100%;
         margin-top: -5px;
         border-color: transparent sandybrown transparent transparent;
+      }
+    }
+  }
+
+  &_color {
+    &_gray {
+      background-color: grey;
+
+      &::after {
+        @at-root {
+          .jquery-slider_orientation_horizontal #{&} {
+            border-color: grey transparent transparent;
+          }
+
+          .jquery-slider_orientation_vertical #{&} {
+            border-color: transparent grey transparent transparent;
+          }
+        }
+      }
+    }
+
+    &_white {
+      background-color: white;
+      border: 0.06rem solid black;
+      color: black;
+
+      @at-root {
+        .jquery-slider_orientation_horizontal #{&} {
+          top: -2.4rem;
+          left: -0.85rem;
+        }
+
+        .jquery-slider_orientation_vertical #{&} {
+          top: -0.42rem;
+          right: -3.45rem;
+        }
+      }
+
+      &::after {
+        @at-root {
+          .jquery-slider_orientation_horizontal #{&} {
+            border-color: black transparent transparent;
+          }
+
+          .jquery-slider_orientation_vertical #{&} {
+            border-color: transparent black transparent transparent;
+            margin-top: -0.3rem;
+          }
+        }
       }
     }
   }

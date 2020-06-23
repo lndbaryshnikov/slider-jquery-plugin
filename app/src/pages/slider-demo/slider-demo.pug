@@ -30,9 +30,6 @@ body
           tooltip: true,
           max: 10,
           value: 3,
-          classes: {
-            slider: 'slider__body slider__body_orientation_',
-          },
         }
       })
 
@@ -45,12 +42,11 @@ body
           max: 10,
           labels: true,
           tooltip: true,
-          classes: {
-            slider: 'slider__body slider__body_orientation_',
-            range: 'slider__range slider__range_color_orange slider__range_orientation_',
-            handle: 'slider__handle slider__handle_color_gray slider__handle_orientation_',
-            tooltip: 'slider__tooltip slider__tooltip_color_gray slider__tooltip_orientation_'
-          }
+          styles: {
+            range: 'orange',
+            handle: 'gray',
+            tooltip: 'gray',
+          },
         }
       })
 
@@ -62,12 +58,11 @@ body
           max: 8,
           value: 5,
           labels: false,
-          classes: {
-            slider: 'slider__body slider__body_border-color_black slider__body_orientation_',
-            handle: 'slider__handle slider__handle_color_white slider__handle_orientation_',
-            tooltip: 'slider__tooltip slider__tooltip_color_white slider__tooltip_orientation_'
+          styles: {
+            handle: 'white',
+            tooltip: 'white',
           },
-        }
+        },
       })
 
     .panel-wrapper
@@ -79,13 +74,12 @@ body
           value: 10,
           labels: false,
           pips: true,
-          classes: {
-            slider: 'slider__body slider__body_border-color_black slider__body_orientation_',
-            range: 'slider__range slider__range_color_orange slider__range_orientation_',
-            handle: 'slider__handle slider__handle_color_white slider__handle_orientation_',
-            tooltip: 'slider__tooltip slider__tooltip_color_white slider__tooltip_orientation_'
+          styles: {
+            range: 'orange',
+            handle: 'white',
+            tooltip: 'white',
           },
-        }
+        },
       })
 
   .sign Leonid Baryshnikov (GitHub: https://github.com/lndbaryshnikov)

@@ -29,15 +29,15 @@ class TooltipView {
   }
 
   setOptions({
-    value, orientation, valueFunction, className,
+    value, orientation, valueFunction, style,
   }: {
     value: number;
     orientation: 'horizontal' | 'vertical';
     valueFunction?: ValueFunction;
-    className?: string;
+    style?: string;
   }): void {
     this.setValue({ value, valueFunction });
-    this.setClasses({ orientation, customClass: className });
+    this.setStyle({ orientation, style });
   }
 
   render(root: HTMLElement): void {
@@ -53,14 +53,14 @@ class TooltipView {
     this.tooltipHtml.innerHTML = String(this.tooltipValue);
   }
 
-  setClasses({ orientation, customClass }: {
+  setStyle({ orientation, style }: {
     orientation: 'horizontal' | 'vertical';
-    customClass?: string;
+    style?: string;
   }): void {
     this.orientation = orientation;
 
     const main = `jquery-slider-tooltip jquery-slider-tooltip_orientation_${orientation}`;
-    const custom = customClass ? `${customClass}${orientation}` : '';
+    const custom = style ? `jquery-slider-tooltip_color_${style}` : '';
     this.tooltipHtml.className = `${main} ${custom}`;
   }
 

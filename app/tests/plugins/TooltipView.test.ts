@@ -68,12 +68,12 @@ describe('tooltip works correctly', () => {
       'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',
     );
 
-    tooltip.setClasses({ orientation: 'vertical' });
+    tooltip.setStyle({ orientation: 'vertical' });
     expect(horizontalTooltipOnDom.className).toBe(
       'jquery-slider-tooltip jquery-slider-tooltip_orientation_vertical ',
     );
 
-    tooltip.setClasses({ orientation: 'horizontal' });
+    tooltip.setStyle({ orientation: 'horizontal' });
     expect(horizontalTooltipOnDom.className).toBe(
       'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',
     );

@@ -239,14 +239,14 @@ describe('slider events', () => {
 
         const newHandleCoords = await sliderPage.getFirstHandleCoords();
 
-        expect(newHandleCoords.top).toBe(yExpected);
+        expect(newHandleCoords.top.toFixed(3)).toBe(yExpected.toFixed(3));
       };
 
       await testPosition(0.07, 0);
       await testPosition(0.1, 0.2);
       await testPosition(0.13, 0.2);
       await testPosition(0.5, 0.6);
-      await testPosition(0.73, 0.8);
+      await testPosition(0.75, 0.8);
       await testPosition(0.84, 0.8);
       await testPosition(0.9, 1);
     }, timeout);

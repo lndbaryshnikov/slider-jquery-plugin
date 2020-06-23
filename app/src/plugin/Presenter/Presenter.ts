@@ -1,11 +1,11 @@
-import MainView, { UserClasses } from '../View/MainView';
+import MainView, { MainStyles } from '../View/MainView';
 import { UserOptions, Options } from '../Model/modelOptions';
 import ErrorHandler, { ErrorObject } from '../ErrorHandler/ErrorHandler';
 import Model from '../Model/Model';
 import LabelsView, { LabelOptions } from '../View/LabelsView';
 import TooltipView from '../View/TooltipView';
 
-type CompleteUserOptions = UserOptions & { classes?: UserClasses & { tooltip: string } };
+type CompleteUserOptions = UserOptions & { styles?: MainStyles & { tooltip: string } };
 
 class Presenter {
   private plugins = {
@@ -16,7 +16,7 @@ class Presenter {
     labelsView: new LabelsView(),
   }
 
-  private pluginClasses: {
+  private pluginStyles: {
     tooltip: string;
   }
 
@@ -51,29 +51,29 @@ class Presenter {
     }
 
     const modelOptions = { ...options };
-    const { classes } = options;
-    const viewClasses = classes ? { ...classes } : undefined;
+    const { styles } = options;
+    const viewStyles = styles ? { ...styles } : undefined;
 
-    if (classes) {
-      delete modelOptions.classes;
+    if (styles) {
+      delete modelOptions.styles;
 
-      const tooltipClass = classes.tooltip;
-      if (tooltipClass) {
-        this.pluginClasses = { tooltip: tooltipClass };
-        delete viewClasses.tooltip;
+      const tooltipStyle = styles.tooltip;
+      if (tooltipStyle) {
+        this.pluginStyles = { tooltip: tooltipStyle };
+        delete viewStyles.tooltip;
       }
     }
 
-    this.view.setClasses(viewClasses);
+    this.view.setStyles(viewStyles);
     this.model.setOptions(modelOptions);
   }
 
   getOptions(): CompleteUserOptions {
     const modelOptions = this.model.getOptions();
-    const viewClasses = this.view.getClasses();
+    const viewStyles = this.view.getStyles();
 
-    if (viewClasses) {
-      return { ...modelOptions, classes: { ...viewClasses, ...this.pluginClasses } };
+    if (viewStyles) {
+      return { ...modelOptions, styles: { ...viewStyles, ...this.pluginStyles } };
     }
     return { ...modelOptions };
   }
@@ -240,7 +240,7 @@ class Presenter {
       value: tooltipValue,
       orientation,
       valueFunction,
-      className: this.pluginClasses && this.pluginClasses.tooltip,
+      style: this.pluginStyles && this.pluginStyles.tooltip,
     });
 
     if (this.view.isRendered()) {

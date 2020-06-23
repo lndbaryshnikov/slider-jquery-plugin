@@ -24,7 +24,7 @@ class LabelsView {
 
   get state(): { isRendered: boolean; isSet: boolean } {
     return {
-      isRendered: !!(this.root && this.labelHtml),
+      isRendered: !!(this.root && this.root.contains(this.labelHtml)),
       isSet: !!(this.options && this.sliderLabels),
     };
   }
