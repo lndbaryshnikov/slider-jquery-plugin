@@ -9,7 +9,7 @@ class RangeView {
     return this.range;
   }
 
-  stickTo(root: HTMLDivElement): void {
+  stickTo(root: HTMLElement): void {
     root.append(this.range);
   }
 

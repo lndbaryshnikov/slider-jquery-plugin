@@ -49,7 +49,7 @@ class HandleView {
     return this.position;
   }
 
-  stickTo(root: HTMLDivElement): void {
+  stickTo(root: HTMLElement): void {
     root.append(this.handle);
   }
 

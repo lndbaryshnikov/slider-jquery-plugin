@@ -824,7 +824,7 @@ describe('slider events', () => {
             input.value = `${value[0]} - ${value[1]}`;
           }
         };
-        ($('.slider') as SliderElement)
+        ($('.jquery-slider') as SliderElement)
           .slider('options', { change: changeFunction });
       });
 

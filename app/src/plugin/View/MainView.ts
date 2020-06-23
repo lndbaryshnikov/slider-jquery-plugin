@@ -9,7 +9,7 @@ import TooltipView from './TooltipView';
 
 type Classes = Record<'slider' | 'range' | 'handle', string>;
 type PluginHtml = {
-  slider: HTMLDivElement;
+  slider: HTMLElement;
   range: RangeView;
   firstHandle: HandleView;
   secondHandle?: HandleView;
@@ -29,8 +29,7 @@ class MainView {
   private valueChangedSubject = new Observer();
 
   isRendered(): boolean {
-    const { root } = this;
-    return root && root.contains(this.pluginHtml.slider);
+    return !!this.root;
   }
 
   whenValueChanged(
@@ -78,34 +77,27 @@ class MainView {
   setOptions(options: Options): void {
     this.options = options;
 
-    const wasRendered = this.isRendered();
-
-    this.cleanDom();
-    this._setElements();
-    this._setSliderClickHandler();
-
-    this._setElementsClasses();
-    this._setUITransition();
-    this._setHandlePositionInPixels();
-
-    if (wasRendered) {
-      this.render(this.root);
+    if (this.isRendered()) {
+      this.render();
     }
   }
 
-  render(root: HTMLElement): void {
-    this.root = root;
-    this.root.append(this.pluginHtml.slider);
+  render(root?: HTMLElement): void {
+    this.root = root || this.root;
 
+    this._setElements();
+    this._setSliderClickHandler();
+    this._setElementsClasses();
+    this._setUITransition();
     this._setHandlePositionInPixels();
     this._renderHandlePositions();
     this._renderRange();
   }
 
-  cleanDom(): void {
-    if (!this.isRendered()) return;
-
-    this.pluginHtml.slider.remove();
+  destroy(): void {
+    if (this.isRendered()) {
+      this.pluginHtml.slider.remove();
+    }
   }
 
   updateValue(value: Options['value']): void {
@@ -282,24 +274,33 @@ class MainView {
   }
 
   private _setElements(): void {
-    this.pluginHtml = {
-      slider: document.createElement('div'),
+    const wasPluginSet = this.pluginHtml;
+    this.pluginHtml = this.pluginHtml || {
+      slider: this.root,
       range: new RangeView(),
       firstHandle: new HandleView('first'),
     };
 
     const { slider, firstHandle, range } = this.pluginHtml;
+    let { secondHandle } = this.pluginHtml;
 
-    range.stickTo(slider);
-    firstHandle.stickTo(slider);
-    firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
+    if (!wasPluginSet) {
+      range.stickTo(slider);
+      firstHandle.stickTo(slider);
+      firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
+    }
 
-    if (this.options.range === true) {
-      const secondHandle = new HandleView('second');
+    const isRangeChangedToTrue = this.options.range === true && !secondHandle;
+    const isRangeChangedToFalse = this.options.range !== true && secondHandle;
+
+    if (isRangeChangedToTrue) {
+      secondHandle = new HandleView('second');
       secondHandle.stickTo(slider);
       secondHandle.whenMouseDown(this._allowHandleMoving.bind(this));
 
       this.pluginHtml.secondHandle = secondHandle;
+    } else if (isRangeChangedToFalse) {
+      delete this.pluginHtml.secondHandle;
     }
   }
 

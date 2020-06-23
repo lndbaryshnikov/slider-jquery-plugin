@@ -53,7 +53,7 @@ export default class SliderPupPage {
 
   async createSlider(options?: UserOptions): Promise<void> {
     await this.pupPage.evaluate((optionsToEval: UserOptions) => {
-      const root = $("<div class='slider'></div>") as SliderElement;
+      const root = $("<div class='jquery-slider'></div>") as SliderElement;
 
       $('body').append(root);
 
@@ -284,7 +284,7 @@ export default class SliderPupPage {
   }
 
   private async _defineElements(options: Options | UserOptions): Promise<void> {
-    this.root = await this.pupPage.$('.slider');
+    this.root = await this.pupPage.$('.jquery-slider');
     this.slider = await this.pupPage.$('.jquery-slider');
     this.range = await this.pupPage.$('.jquery-slider__range');
     this.firstHandle = await this.pupPage.$('.jquery-slider__handle');

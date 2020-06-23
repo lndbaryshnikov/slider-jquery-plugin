@@ -58,12 +58,12 @@ interface PluginMethods {
 
       return undefined;
     },
-    remove(): void {
+    destroy(): void {
       const $this = ((this as unknown) as SliderElement).eq(0);
       const data = getData($this);
 
       if (data) {
-        data.slider.remove();
+        data.slider.destroy();
       } else {
         throwError(false);
       }

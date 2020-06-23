@@ -7,6 +7,10 @@ test('elements are set', () => {
   const view = new MainView();
   view.setOptions(defaults);
 
+  const container = document.createElement('div');
+
+  view.render(container);
+
   expect(typeof view.html).toBe('object');
 
   expect(view.html.slider.tagName).toBe('DIV');

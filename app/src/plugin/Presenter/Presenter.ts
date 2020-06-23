@@ -110,8 +110,8 @@ class Presenter {
     }
   }
 
-  remove(): void {
-    this.view.cleanDom();
+  destroy(): void {
+    this.view.destroy();
   }
 
   updateView(): void {
