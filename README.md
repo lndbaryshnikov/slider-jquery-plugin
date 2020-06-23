@@ -50,15 +50,6 @@ $ npm run lint
 Для работы приложению необходима одна глобальная зависимость - 
 библиотека JQuery, которая должна быть подключена выше в коде. 
 
-Также в package.json прописаны все необходимые npm-скрипты. Ниже 
-приведены наиболее важные из них:
-* "jest" - запуск jest-тестов
-* "watchJest" - запуск тестов в режиме watch
-* "jestPup" - запуск связки jest-puppeteer для тестирования View
-(используется отдельный конфиг jest)
-* "watchJestPup" - связка jest-puppeteer в режиме watch для View
-* "eslint" - проверка кода линтером
-
 Архитектура приложения построена на принципах MVP-архитектуры 
 с Passive View.
 
@@ -96,10 +87,8 @@ $ npm run lint
     $("#selector").slider(); //инициализация с настройками по умолчанию
     $("#selector").slider({min: 10, tooltip: true }); //инициализация с пользовательскими настройками
     $("#selector").slider("options"); //возвращает объект текущих настроек
-    $("#selector").slider("options", "pips"); //возвращает значение конкретной опции
     $("#selector").slider("options", { range: false, orientation: "vertical" }); //устанавливает новые опции
-    $("#selector").slider("options", "step", 10); //устанавливает конкретную опцию
-    $("#selector").slider("destroy"); //удаляет слайдер и его связь с элементом ".selector"
+    $("#selector").slider("destroy"); //удаляет слайдер
 ```
 
 Сладер предусматривает следующии опции для конфигурации:
@@ -118,9 +107,10 @@ $ npm run lint
         change: ((value: number | number[]) => void) | false;
 
         classes: {
-                "jquery-slider": string;
-                "jquery-slider-range": string;
-                "jquery-slider-handle": string;
+                slider: string;
+                range: string;
+                handle: string;
+                tooltip: string;
             };
     };
 ```
