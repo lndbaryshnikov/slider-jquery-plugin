@@ -53,8 +53,16 @@ class HandleView {
     root.append(this.handle);
   }
 
-  setClass(...classes: string[]): void {
-    this.handle.className = classes.join(' ');
+  setModifiers({ orientation, color }: {
+    orientation: string;
+    color: string;
+  }): void {
+    const classes: string[] = [];
+
+    if (orientation) classes.push(`jquery-slider__handle_orientation_${orientation}`);
+    if (color) classes.push(`jquery-slider__handle_color_${color}`);
+
+    this.handle.classList.add(...classes);
   }
 
   setTransition(transitionValue: number): void {
@@ -96,6 +104,7 @@ class HandleView {
 
   private _createHandle(): void {
     const handle = document.createElement('div');
+    handle.setAttribute('class', 'jquery-slider__handle');
     handle.ondragstart = (): false => false;
 
     this.handle = handle;

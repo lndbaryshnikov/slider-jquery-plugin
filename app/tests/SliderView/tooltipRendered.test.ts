@@ -1,46 +1,35 @@
 import MainView from '../../src/plugin/View/MainView';
 import Model from '../../src/plugin/Model/Model';
-import TooltipView from '../../src/plugin/View/TooltipView';
 
 describe('tooltip exists on dom and contains value', () => {
   let view: MainView;
-  const tooltipView = new TooltipView();
-  const defaultsWithTooltip = Model.defaultOptions;
-  defaultsWithTooltip.tooltip = true;
+  let root: HTMLDivElement;
+  const defaultsWithTooltip = { ...Model.defaultOptions, ...{ tooltip: true } };
 
   beforeEach(() => {
+    root = document.createElement('div');
+    document.body.append(root);
     view = new MainView();
   });
 
-  test('tooltip rendered correctly', () => {
-    tooltipView.setOptions({
-      value: defaultsWithTooltip.value as number,
-      orientation: defaultsWithTooltip.orientation,
-    });
+  afterEach(() => {
+    root.remove();
+  });
 
+  test('tooltip rendered correctly', () => {
     view.setOptions(defaultsWithTooltip);
-    view.render(document.body);
-    view.renderPlugin({
-      plugin: 'tooltip',
-      pluginView: tooltipView,
-    });
+    view.render(root);
 
     const handle = document.querySelector('.jquery-slider__handle');
-    const tooltip = document.querySelector('.jquery-slider-tooltip');
+    let tooltip = document.querySelector('.jquery-slider-tooltip');
 
     expect(!!tooltip).toBeTruthy();
     expect(handle.contains(tooltip)).toBeTruthy();
     expect(tooltip.innerHTML).toBe('0');
 
-    const defaultsWIthAnotherValue = Model.defaultOptions;
-    defaultsWIthAnotherValue.value = 50;
-
-    tooltipView.setOptions({
-      value: defaultsWIthAnotherValue.value,
-      orientation: defaultsWithTooltip.orientation,
-    });
-
+    const defaultsWIthAnotherValue = { ...defaultsWithTooltip, ...{ value: 50 } };
     view.setOptions(defaultsWIthAnotherValue);
+    tooltip = document.querySelector('.jquery-slider-tooltip');
 
     expect(tooltip.innerHTML).toBe('50');
   });
@@ -49,34 +38,16 @@ describe('tooltip exists on dom and contains value', () => {
     const defaultsWithTooltipFunction = Model.defaultOptions;
     defaultsWithTooltipFunction.tooltip = (value: number): string => `${value}$`;
 
-    tooltipView.setOptions({
-      value: defaultsWithTooltipFunction.value as number,
-      orientation: defaultsWithTooltipFunction.orientation,
-      valueFunction: defaultsWithTooltipFunction.tooltip,
-    });
-
-    view.setOptions(defaultsWithTooltip);
-
+    view.setOptions(defaultsWithTooltipFunction);
     view.render(document.body);
-    view.renderPlugin({
-      plugin: 'tooltip',
-      pluginView: tooltipView,
-    });
 
-    const tooltip = document.querySelector('.jquery-slider-tooltip');
+    let tooltip = document.querySelector('.jquery-slider-tooltip');
 
     expect(tooltip.innerHTML).toBe('0$');
 
-    const defaultsWithAnotherValue = Model.defaultOptions;
-    defaultsWithAnotherValue.value = 70;
-
-    tooltipView.setOptions({
-      value: defaultsWithAnotherValue.value,
-      orientation: defaultsWithTooltipFunction.orientation,
-      valueFunction: defaultsWithTooltipFunction.tooltip,
-    });
-
+    const defaultsWithAnotherValue = { ...defaultsWithTooltipFunction, ...{ value: 70 } };
     view.setOptions(defaultsWithAnotherValue);
+    tooltip = document.querySelector('.jquery-slider-tooltip');
 
     expect(tooltip.innerHTML).toBe('70$');
   });

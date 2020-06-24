@@ -329,7 +329,7 @@ describe('slider events', () => {
         const pipMiddle = labelCoords.pip.top + labelCoords.pip.height / 2;
 
         expect(labelMiddle).toBe(handleMiddle);
-        expect(pipMiddle).toBe(handleMiddle);
+        expect(Math.round(pipMiddle)).toBe(handleMiddle);
       }
     }, timeout);
 
@@ -705,7 +705,7 @@ describe('slider events', () => {
         const pipMiddle = labelCoords.pip.left + labelCoords.pip.width / 2;
 
         expect(labelMiddle).toBe(handleMiddle);
-        expect(pipMiddle).toBe(handleMiddle);
+        expect(Math.round(pipMiddle)).toBe(handleMiddle);
       }
     }, timeout);
 

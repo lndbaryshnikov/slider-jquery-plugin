@@ -1,13 +1,13 @@
 import { ValueFunction } from '../Model/modelOptions';
 
 class TooltipView {
-  private tooltipValue: string | number | null = null;
+  private tooltipValue: string | number;
 
   private tooltipHtml: HTMLDivElement;
 
-  private orientation: 'horizontal' | 'vertical' | null = null;
+  private orientation: 'horizontal' | 'vertical';
 
-  private root: HTMLElement | null = null;
+  private root: HTMLElement;
 
   constructor() {
     this._create();
@@ -72,15 +72,6 @@ class TooltipView {
   remove(): void {
     this.root.removeChild(this.tooltipHtml);
     this.root = null;
-  }
-
-  destroy(): void {
-    if (this.state.isRendered) this.remove();
-    this.cleanTextField();
-
-    this.orientation = null;
-    this.root = null;
-    this.tooltipHtml.className = 'jquery-slider-tooltip';
   }
 
   private _create(): void {

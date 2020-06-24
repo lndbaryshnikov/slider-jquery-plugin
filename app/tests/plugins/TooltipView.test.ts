@@ -54,15 +54,6 @@ describe('tooltip works correctly', () => {
     expect(root.contains(tooltip.html)).toBe(false);
   });
 
-  test('destroy method works', () => {
-    tooltip.destroy();
-
-    expect(root.contains(tooltip.html)).toBe(false);
-    expect(tooltip.value).toBe(null);
-    expect(tooltip.html.className).toBe('jquery-slider-tooltip');
-    expect(tooltip.html.innerHTML).toBe('');
-  });
-
   test('setOrientation', () => {
     expect(horizontalTooltipOnDom.className).toBe(
       'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',

@@ -13,8 +13,16 @@ class RangeView {
     root.append(this.range);
   }
 
-  setClass(...classes: string[]): void {
-    this.range.className = classes.join(' ');
+  setModifiers({ orientation, color }: {
+    orientation: string;
+    color: string;
+  }): void {
+    const classes: string[] = [];
+
+    if (orientation) classes.push(`jquery-slider__range_orientation_${orientation}`);
+    if (color) classes.push(`jquery-slider__range_color_${color}`);
+
+    this.range.classList.add(...classes);
   }
 
   setTransition(transitionValue: number): void {
@@ -38,6 +46,7 @@ class RangeView {
 
   _createRange(): void {
     const range = document.createElement('div');
+    range.setAttribute('class', 'jquery-slider__range');
     this.range = range;
   }
 }
