@@ -1,6 +1,6 @@
-import TooltipView from '../../src/plugin/View/TooltipView';
+import TooltipView from '../../../src/plugin/View/TooltipView';
 
-describe('tooltip works correctly', () => {
+describe('Tooltip view', () => {
   let tooltip: TooltipView;
   let root: HTMLDivElement;
   let horizontalTooltipOnDom: HTMLDivElement;

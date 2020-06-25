@@ -1,5 +1,5 @@
-import Model from '../../src/plugin/Model/Model';
-import MainView from '../../src/plugin/View/MainView';
+import Model from '../../../src/plugin/Model/Model';
+import MainView from '../../../src/plugin/View/MainView';
 
 const defaults = Model.defaultOptions;
 

@@ -1,8 +1,83 @@
-import ErrorHandler, { ErrorObject } from '../../../src/plugin/ErrorHandler/ErrorHandler';
-import { UserOptions, Options, ValueFunction } from '../../../src/plugin/Model/modelOptions';
-import Model from '../../../src/plugin/Model/Model';
+import Model from '../../src/plugin/Model/Model';
+import { UserOptions, Options, ValueFunction } from '../../src/plugin/Model/modelOptions';
+import ErrorHandler, { ErrorObject } from '../../src/plugin/ErrorHandler/ErrorHandler';
 
-describe('setOptionsMethod exceptions', () => {
+describe('setOptions method', () => {
+  let model: Model;
+
+  beforeEach(() => {
+    model = new Model();
+  });
+
+  test('extending options', () => {
+    const userOptions = { min: 20, max: 60, value: 30 };
+    const testOptions = { ...Model.defaultOptions, ...userOptions };
+
+    model.setOptions({ min: 20, max: 60, value: 30 });
+
+    expect(model.getOptions()).toEqual(testOptions);
+  });
+
+  test('extending when options are already set', () => {
+    const firstUserOptions = {
+      value: 50,
+      min: 30,
+      range: 'min',
+    } as UserOptions;
+
+    const secondUserOptions = {
+      max: 154,
+      min: 13,
+      range: 'max',
+      orientation: 'vertical',
+    } as UserOptions;
+
+    model.setOptions(firstUserOptions);
+    model.setOptions(secondUserOptions);
+
+    const expectedOptions = {
+      ...Model.defaultOptions,
+      ...firstUserOptions,
+      ...secondUserOptions,
+    };
+
+    expect(model.getOptions()).toEqual(expectedOptions);
+  });
+
+  test('model stops when gets error', () => {
+    const incorrectOptionsSubscriber = jest.fn();
+    const optionsSetSubscriber = jest.fn();
+    const valueUpdatedSubscriber = jest.fn();
+
+    model.whenOptionsIncorrect(incorrectOptionsSubscriber);
+    model.whenOptionsSet(optionsSetSubscriber);
+    model.whenValueUpdated(valueUpdatedSubscriber);
+
+    model.setOptions();
+
+    expect(optionsSetSubscriber).toHaveBeenCalledTimes(1);
+
+    model.setOptions('options' as unknown as Options);
+    model.setOptions();
+
+    expect(incorrectOptionsSubscriber).toHaveBeenCalledTimes(2);
+    expect(optionsSetSubscriber).toHaveBeenCalledTimes(1);
+
+    model.setOptions({ maximum: 3 } as unknown as Options);
+    model.setOptions({ min: 'three' } as unknown as Options);
+    model.setOptions({ value: [3, 2] } as unknown as Options);
+
+    expect(incorrectOptionsSubscriber).toHaveBeenCalledTimes(5);
+    expect(optionsSetSubscriber).toHaveBeenCalledTimes(1);
+
+    model.refreshValue(300);
+
+    expect(incorrectOptionsSubscriber).toHaveBeenCalledTimes(6);
+    expect(valueUpdatedSubscriber).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe('Options extending exceptions', () => {
   let model: Model;
 
   const errors = ErrorHandler.getOptionErrors();

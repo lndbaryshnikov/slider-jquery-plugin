@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "server": "webpack-dev-server --mode development --open --env development",
     "build": "webpack --mode production --env production",
     "test": "npm run build && npm run jest && npm run jestPup",
-    "server": "webpack-dev-server --mode development --open --env development",
-    "lint": "npm run eslint && npm run stylelint && npm run pug-lint",
+    "lint": "npm run eslint && npm run stylelint && npm run pugLint",
+    "coverage": "jest -c jest.config.js --coverage",
     "deploy": "gh-pages -d dist",
+    "check": "npm run lint && npm run test",
     "dev": "webpack --mode development --env development",
     "watch": "webpack --mode development --watch --env development",
     "jest": "jest -c jest.config.js",
@@ -17,9 +19,9 @@
     "watchJestPup": "jest -c jest.config.pup.js --watchAll",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx app",
     "eslintFix": "eslint --ext .js,.jsx,.ts,.tsx app --fix",
-    "pug-lint": "pug-lint --config .pug-lintrc app",
+    "pugLint": "pug-lint --config .pug-lintrc app",
     "stylelint": "stylelint --config .stylelintrc \"app/src/**/*.scss\"",
-    "stylelint-fix": "stylelint --config .stylelintrc \"app/src/**/*.scss\" --fix"
+    "stylelintFix": "stylelint --config .stylelintrc \"app/src/**/*.scss\" --fix"
   },
   "repository": {
     "type": "git",

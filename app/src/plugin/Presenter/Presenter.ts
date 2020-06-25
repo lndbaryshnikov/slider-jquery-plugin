@@ -3,7 +3,7 @@ import { UserOptions, Options } from '../Model/modelOptions';
 import ErrorHandler, { ErrorObject } from '../ErrorHandler/ErrorHandler';
 import Model from '../Model/Model';
 
-type CompleteUserOptions = UserOptions & { styles?: MainStyles & { tooltip: string } };
+type CompleteUserOptions = UserOptions & { styles?: MainStyles & { tooltip?: string } };
 
 class Presenter {
   private pluginStyles: {
@@ -15,6 +15,14 @@ class Presenter {
     model.whenOptionsIncorrect(this.showError.bind(this));
     view.whenValueChanged(this.validateNewValue.bind(this));
     model.whenValueUpdated(this.updateValue.bind(this));
+  }
+
+  getModel(): Model {
+    return this.model;
+  }
+
+  getView(): MainView {
+    return this.view;
   }
 
   initialize(root: HTMLElement, userOptions?: UserOptions): void {
@@ -34,7 +42,6 @@ class Presenter {
 
     if (typeof options !== 'object') {
       this.showError({ errorCode: 'notAnObject' });
-      return;
     }
 
     const modelOptions = { ...options };
@@ -96,7 +103,7 @@ class Presenter {
 
     this.view.renderValue(value);
 
-    if (!!change && typeof change === 'function') {
+    if (change && typeof change === 'function') {
       change(options.value);
     }
   }

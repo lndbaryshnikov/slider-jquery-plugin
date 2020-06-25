@@ -1,5 +1,5 @@
-import MainView from '../../src/plugin/View/MainView';
-import Model from '../../src/plugin/Model/Model';
+import MainView from '../../../src/plugin/View/MainView';
+import Model from '../../../src/plugin/Model/Model';
 
 describe('destroy method', () => {
   let view: MainView;

@@ -7,7 +7,10 @@ import HandleView, { HandleNumber } from './HandleView';
 import LabelsView, { LabelOptions } from './LabelsView';
 import TooltipView from './TooltipView';
 
-type MainStyles = Record<'slider' | 'range' | 'handle' | 'tooltip', string>;
+type MainStyles = {
+  [key in 'range' | 'slider' | 'handle' | 'tooltip']?: string;
+};
+
 type ViewComponents = {
   range: RangeView;
   firstHandle: HandleView;
@@ -64,13 +67,12 @@ class MainView {
     return { ...{ slider: this.root }, ...this.components };
   }
 
+  getOptions(): Options {
+    return this.options;
+  }
+
   setStyles(styles?: MainStyles): void {
-    this.styles = styles || this.styles || {
-      slider: '',
-      range: '',
-      handle: '',
-      tooltip: '',
-    };
+    this.styles = styles || this.styles;
   }
 
   getStyles(): MainStyles {
@@ -94,7 +96,7 @@ class MainView {
     this._setSliderClickHandler();
     this._setUITransition();
     this._setHandlePositionInPixels();
-    this._renderHandlePositions();
+    this._renderHandles();
     this._renderRange();
   }
 
@@ -108,7 +110,7 @@ class MainView {
     this.options.value = value;
 
     this._setHandlePositionInPixels();
-    this._renderHandlePositions();
+    this._renderHandles();
     this._renderRange();
 
     const { firstTooltip, secondTooltip } = this.components;
@@ -216,12 +218,11 @@ class MainView {
       range: new RangeView(),
       firstHandle: new HandleView('first'),
     };
-    const { root } = this;
-    const { slider: sliderColor } = this.styles;
+    const { root, styles } = this;
 
     root.classList.add(`jquery-slider_orientation_${this.options.orientation}`);
-    if (sliderColor) {
-      root.classList.add(`jquery-slider_color_${sliderColor}`);
+    if (styles && styles.slider) {
+      root.classList.add(`jquery-slider_color_${styles.slider}`);
     }
 
     this._setRange();
@@ -235,14 +236,14 @@ class MainView {
     range.stickTo(this.root);
 
     const { orientation } = this.options;
-    range.setModifiers({ orientation, color: this.styles.range });
+    range.setModifiers({ orientation, color: this.styles && this.styles.range });
   }
 
   private _setHandles(): void {
     const { firstHandle } = this.components;
     let { secondHandle } = this.components;
     const { range, orientation } = this.options;
-    const handleModifiers = { orientation, color: this.styles.handle };
+    const handleModifiers = { orientation, color: this.styles && this.styles.handle };
 
     firstHandle.stickTo(this.root);
     firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
@@ -311,7 +312,7 @@ class MainView {
         value: tooltipValue,
         orientation,
         valueFunction,
-        style: this.styles.tooltip,
+        style: this.styles && this.styles.tooltip,
       });
 
       const { firstHandle, secondHandle } = this.components;
@@ -474,7 +475,7 @@ class MainView {
     this.handlesPosition = positions;
   }
 
-  private _renderHandlePositions(): void {
+  private _renderHandles(): void {
     const { firstHandle, secondHandle } = this.components;
     const [firstHandlePositionInPx, secondHandlePositionInPx] = this.handlesPosition;
 

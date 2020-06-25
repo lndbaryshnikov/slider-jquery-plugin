@@ -1,6 +1,6 @@
-import MainView from '../../src/plugin/View/MainView';
-import Model from '../../src/plugin/Model/Model';
-import { Options } from '../../src/plugin/Model/modelOptions';
+import MainView from '../../../src/plugin/View/MainView';
+import Model from '../../../src/plugin/Model/Model';
+import { Options } from '../../../src/plugin/Model/modelOptions';
 
 describe('handles rendered depending on range', () => {
   let view: MainView;
