@@ -1,84 +1,138 @@
+import MainView from '../../../src/plugin/View/MainView';
+import Model from '../../../src/plugin/Model/Model';
 import TooltipView from '../../../src/plugin/View/TooltipView';
+import { Options } from '../../../src/plugin/Model/modelOptions';
 
-describe('Tooltip view', () => {
-  let tooltip: TooltipView;
+describe('TooltipView tests', () => {
+  let view: MainView;
   let root: HTMLDivElement;
-  let horizontalTooltipOnDom: HTMLDivElement;
+  let tooltip: TooltipView;
+  const userOptions = {
+    value: 35,
+    orientation: 'horizontal' as Options['orientation'],
+  };
+  const defaultsWithTooltip = { ...Model.defaultOptions, ...{ tooltip: true } };
+  const horizontalClass = 'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ';
+  const verticalClass = 'jquery-slider-tooltip jquery-slider-tooltip_orientation_vertical ';
 
   beforeEach(() => {
     root = document.createElement('div');
-    root.style.width = '5px';
-    root.style.height = '5px';
-    root.style.margin = '100px';
-
     document.body.append(root);
-
+    view = new MainView();
     tooltip = new TooltipView();
-    tooltip.setOptions({
-      value: 35,
-      orientation: 'horizontal',
-    });
-    tooltip.render(root);
-
-    horizontalTooltipOnDom = document.querySelector('.jquery-slider-tooltip');
   });
 
   afterEach(() => {
     root.remove();
   });
 
-  test('tooltip exists', () => {
-    expect(root.contains(tooltip.html)).toBeTruthy();
+  describe('render method', () => {
+    test('tooltip rendered correctly', () => {
+      view.setOptions(defaultsWithTooltip);
+      view.render(root);
+
+      const handle = document.querySelector('.jquery-slider__handle');
+      let tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+
+      expect(!!tooltipOnDon).toBeTruthy();
+      expect(handle.contains(tooltipOnDon)).toBeTruthy();
+      expect(tooltipOnDon.innerHTML).toBe('0');
+
+      const defaultsWIthAnotherValue = { ...defaultsWithTooltip, ...{ value: 50 } };
+      view.setOptions(defaultsWIthAnotherValue);
+      tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+
+      expect(tooltipOnDon.innerHTML).toBe('50');
+    });
+
+    test('tooltip rendered correctly with function for value', () => {
+      const defaultsWithFunction = Model.defaultOptions;
+      defaultsWithFunction.tooltip = (value: number): string => `${value}$`;
+
+      view.setOptions(defaultsWithFunction);
+      view.render(root);
+
+      let tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+
+      expect(tooltipOnDon.innerHTML).toBe('0$');
+
+      const defaultsWithAnotherValue = { ...defaultsWithFunction, ...{ value: 70 } };
+      view.setOptions(defaultsWithAnotherValue);
+      tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+
+      expect(tooltipOnDon.innerHTML).toBe('70$');
+    });
   });
 
-  test('tooltip\'s value is correct', () => {
-    expect(horizontalTooltipOnDom.innerHTML).toBe('35');
-
-    tooltip.setValue({ value: 23 });
-
-    expect(horizontalTooltipOnDom.innerHTML).toBe('23');
-  });
-
-  test('rest methods', () => {
+  test('cleanTextField, setValue, remove methods', () => {
+    tooltip.setOptions(userOptions);
+    tooltip.render(root);
     tooltip.cleanTextField();
 
+    const tooltipOnDom = document.querySelector('.jquery-slider-tooltip');
+
     expect(tooltip.value).toBe(null);
-    expect(horizontalTooltipOnDom.innerHTML).toBe('');
+    expect(tooltipOnDom.innerHTML).toBe('');
 
     tooltip.setValue({ value: 12345 });
 
-    expect(horizontalTooltipOnDom.innerHTML).toBe('12345');
+    expect(tooltipOnDom.innerHTML).toBe('12345');
 
     tooltip.remove();
 
     expect(root.contains(tooltip.html)).toBe(false);
   });
 
-  test('setOrientation', () => {
-    expect(horizontalTooltipOnDom.className).toBe(
-      'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',
-    );
+  test('setOrientation method', () => {
+    tooltip.setOptions(userOptions);
+    tooltip.render(root);
+
+    const tooltipOnDom = document.querySelector('.jquery-slider-tooltip');
+
+    expect(tooltipOnDom.className).toBe(horizontalClass);
 
     tooltip.setStyle({ orientation: 'vertical' });
-    expect(horizontalTooltipOnDom.className).toBe(
-      'jquery-slider-tooltip jquery-slider-tooltip_orientation_vertical ',
-    );
+
+    expect(tooltipOnDom.className).toBe(verticalClass);
 
     tooltip.setStyle({ orientation: 'horizontal' });
-    expect(horizontalTooltipOnDom.className).toBe(
-      'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ',
-    );
+
+    expect(tooltipOnDom.className).toBe(horizontalClass);
   });
 
-  test('tooltip works with value function', () => {
-    tooltip.remove();
-
-    tooltip.setOptions({
-      value: 70,
-      orientation: 'horizontal',
-      valueFunction: (value: number) => `${value}$`,
+  test('getState method', () => {
+    expect(tooltip.state).toEqual({
+      isRendered: false,
+      isSet: false,
     });
 
-    expect(tooltip.value).toBe('70$');
+    tooltip.setOptions(userOptions);
+
+    expect(tooltip.state).toEqual({
+      isRendered: false,
+      isSet: true,
+    });
+
+    tooltip.render(root);
+
+    expect(tooltip.state).toEqual({
+      isRendered: true,
+      isSet: true,
+    });
+
+    tooltip.remove();
+
+    expect(tooltip.state).toEqual({
+      isRendered: false,
+      isSet: true,
+    });
+  });
+
+  test('setStyle method with custom styles', () => {
+    tooltip.setOptions({ ...userOptions, ...{ style: 'orange' } });
+
+    expect(tooltip.html.className).toBe(
+      `${horizontalClass}jquery-slider-tooltip_color_orange`,
+    );
   });
 });
