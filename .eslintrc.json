@@ -42,6 +42,17 @@
     "@typescript-eslint/no-var-requires": "off",
 
     "import/no-extraneous-dependencies": "off",
+    "import/order": ["error", {
+        "groups": [
+          "builtin", 
+          "internal", 
+          "external", 
+          ["parent", "sibling"], 
+          "index"
+        ],
+        "newlines-between": "always"
+      }],
+    "import/exports-last": "error",
     "import/extensions": [
       "error",
       "ignorePackages",
