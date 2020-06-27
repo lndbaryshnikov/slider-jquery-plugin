@@ -3,18 +3,21 @@ const areArraysEqual = (firstArray: any[], secondArray: any[]): boolean => {
 
   if (firstArray.length !== secondArray.length) return false;
 
-  for (let i = 0; i < firstArray.length; i += 1) {
+  const haveDifferentValues = firstArray.some((value, index) => {
     // Check if we have nested arrays
-    if (firstArray[i] instanceof Array && secondArray[i] instanceof Array) {
-      // recurse into the nested arrays
-      if (!areArraysEqual(firstArray[i], secondArray[i])) return false;
-    } else if (firstArray[i] !== secondArray[i]) {
+    if (firstArray[index] instanceof Array && secondArray[index] instanceof Array) {
+      // Recurse into the nested arrays
+      if (!areArraysEqual(firstArray[index], secondArray[index])) return true;
+    } else if (firstArray[index] !== secondArray[index]) {
       // Warning - two different object instances
       // will never be equal: {x:20} != {x:20}
-      return false;
+      return true;
     }
-  }
-  return true;
+
+    return false;
+  });
+
+  return !haveDifferentValues;
 };
 
 export default areArraysEqual;

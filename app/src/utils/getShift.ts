@@ -17,4 +17,5 @@ const getShift = ({ event, element }: {
   };
 };
 
-export { Shift, getShift };
+export default getShift;
+export { Shift };

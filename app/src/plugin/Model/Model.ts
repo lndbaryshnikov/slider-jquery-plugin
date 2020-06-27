@@ -41,22 +41,26 @@ class Model {
     return this.options;
   }
 
+  static get defaultOptions(): Options {
+    return { ...modelOptions };
+  }
+
   setOptions(userOptions?: UserOptions): void {
     const areUserOptionsCorrect = this._checkUserOptions(userOptions);
 
     if (!areUserOptionsCorrect) return;
 
-    const newOptions = !userOptions ? { ...modelOptions } : {
+    const fullOptions = !userOptions ? { ...modelOptions } : {
       ...(this.options ? this.options : modelOptions),
       ...userOptions,
     };
 
     if (userOptions) {
-      const areOptionsCorrect = this._checkOptions(newOptions);
+      const areOptionsCorrect = this._checkFullOptions(fullOptions);
       if (!areOptionsCorrect) return;
     }
 
-    this.options = newOptions;
+    this.options = fullOptions;
     this.optionsSetSubject.notifyObservers();
   }
 
@@ -72,10 +76,6 @@ class Model {
 
       this.valueUpdatedSubject.notifyObservers();
     }
-  }
-
-  static get defaultOptions(): Options {
-    return { ...modelOptions };
   }
 
   private _checkUserOptions(userOptions: UserOptions): boolean {
@@ -102,7 +102,7 @@ class Model {
     return true;
   }
 
-  private _checkOptions(newOptions: Options): boolean {
+  private _checkFullOptions(fullOptions: Options): boolean {
     const { errorSubject } = this;
 
     const {
@@ -110,12 +110,12 @@ class Model {
       findIncorrectTypeOption,
     } = modelValidationUtils;
 
-    if (!areOptionsKeysCorrect(newOptions)) {
+    if (!areOptionsKeysCorrect(fullOptions)) {
       errorSubject.notifyObservers({ errorCode: 'incorrectNames' });
       return false;
     }
 
-    const notANumber = findIncorrectTypeOption(newOptions, 'number', 'min', 'max', 'step');
+    const notANumber = findIncorrectTypeOption(fullOptions, 'number', 'min', 'max', 'step');
 
     if (notANumber) {
       errorSubject.notifyObservers({
@@ -126,24 +126,9 @@ class Model {
       return false;
     }
 
-    const validateOptions = (...optionNames: (keyof Options)[]): ErrorObject | undefined => {
-      let errorObject: ErrorObject;
-
-      optionNames.some((name) => {
-        const nameWithCapital = `${name[0].toUpperCase()}${name.slice(1)}`;
-        const validator = modelValidationUtils[`validate${nameWithCapital}`];
-        const { result, errorCode } = validator(newOptions);
-
-        if (!result) {
-          errorObject = { errorCode, option: name };
-          return true;
-        }
-        return false;
-      });
-      return errorObject;
-    };
-
-    const errorObject = validateOptions(
+    // Options order is important
+    const errorObject = this._checkSingleOption(
+      fullOptions,
       'range',
       'orientation',
       'step',
@@ -162,6 +147,26 @@ class Model {
       return false;
     }
     return true;
+  }
+
+  private _checkSingleOption(
+    fullOptions: Options,
+    ...optionNames: (keyof Options)[]
+  ): ErrorObject | undefined {
+    let errorObject: ErrorObject;
+
+    optionNames.some((name) => {
+      const nameWithCapital = `${name[0].toUpperCase()}${name.slice(1)}`;
+      const validator = modelValidationUtils[`validate${nameWithCapital}`];
+      const { result, errorCode } = validator(fullOptions);
+
+      if (!result) {
+        errorObject = { errorCode, option: name };
+        return true;
+      }
+      return false;
+    });
+    return errorObject;
   }
 }
 

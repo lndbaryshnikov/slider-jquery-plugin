@@ -1,15 +1,11 @@
 import MainView, { MainStyles } from '../View/MainView';
+import Model from '../Model/Model';
 import { UserOptions, Options } from '../Model/modelOptions';
 import ErrorHandler, { ErrorObject } from '../ErrorHandler/ErrorHandler';
-import Model from '../Model/Model';
 
 type CompleteUserOptions = UserOptions & { styles?: MainStyles & { tooltip?: string } };
 
 class Presenter {
-  private pluginStyles: {
-    tooltip: string;
-  }
-
   constructor(private view: MainView, private model: Model) {
     model.whenOptionsSet(this.updateView.bind(this));
     model.whenOptionsIncorrect(this.showError.bind(this));
@@ -61,7 +57,7 @@ class Presenter {
     const viewStyles = this.view.getStyles();
 
     if (viewStyles) {
-      return { ...modelOptions, styles: { ...viewStyles, ...this.pluginStyles } };
+      return { ...modelOptions, styles: { ...viewStyles } };
     }
     return { ...modelOptions };
   }

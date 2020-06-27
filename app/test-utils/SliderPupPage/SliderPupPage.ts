@@ -2,20 +2,12 @@ import {
   Browser, ElementHandle, Page, JSHandle,
 } from 'puppeteer';
 
-import { UserOptions, Options } from '../../src/plugin/Model/modelOptions';
 import SliderElement from '../../src/plugin/main';
+import { UserOptions, Options } from '../../src/plugin/Model/modelOptions';
 import { CompleteUserOptions } from '../../src/plugin/Presenter/Presenter';
+import { Coords } from '../../src/utils/getCoords';
 
-export interface Coords {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-  width: number;
-  height: number;
-}
-
-export default class SliderPupPage {
+class SliderPupPage {
   private pupPage: Page;
 
   private root: ElementHandle = null;
@@ -302,3 +294,5 @@ export default class SliderPupPage {
     } else this.tooltip = null;
   }
 }
+
+export default SliderPupPage;

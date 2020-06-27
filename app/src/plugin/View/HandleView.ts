@@ -1,5 +1,5 @@
 import getCoords, { Coords } from '../../utils/getCoords';
-import { Shift, getShift } from '../../utils/getShift';
+import getShift, { Shift } from '../../utils/getShift';
 import Observer from '../Observer/Observer';
 import TooltipView from './TooltipView';
 
@@ -17,6 +17,7 @@ class HandleView {
 
   constructor(number: HandleNumber) {
     this.position = number;
+
     this._createHandle();
     this._setListeners();
   }
@@ -31,7 +32,7 @@ class HandleView {
     this.mouseDownSubject.addObserver((cursorShift: Shift) => {
       const { width: handleWidth, height: handleHeight } = this.getCoords();
 
-      const handleNumber = this.number;
+      const { handleNumber } = this;
       const halfOfHandle = {
         width: handleWidth / 2,
         height: handleHeight / 2,
@@ -45,7 +46,7 @@ class HandleView {
     return this.handle;
   }
 
-  get number(): HandleNumber {
+  get handleNumber(): HandleNumber {
     return this.position;
   }
 
@@ -99,6 +100,7 @@ class HandleView {
 
   doesContainTooltip(): boolean {
     const { tooltip, handle } = this;
+
     return tooltip && handle.contains(tooltip.html);
   }
 
@@ -111,14 +113,14 @@ class HandleView {
   }
 
   private _setListeners(): void {
-    const notify = (mouseDownEvent: MouseEvent): false => {
+    const notifyObservers = (mouseDownEvent: MouseEvent): false => {
       const cursorShift = this.getCursorShift(mouseDownEvent);
       this.mouseDownSubject.notifyObservers(cursorShift);
 
       return false;
     };
 
-    this.handle.addEventListener('mousedown', notify);
+    this.handle.addEventListener('mousedown', notifyObservers);
   }
 }
 

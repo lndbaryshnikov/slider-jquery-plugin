@@ -29,7 +29,7 @@ class RangeView {
     this.range.style.transition = `${transitionValue}ms`;
   }
 
-  setUp({
+  setPosition({
     orientation, firstPoint, secondPoint,
   }: {
     orientation: 'horizontal' | 'vertical';
@@ -47,6 +47,7 @@ class RangeView {
   _createRange(): void {
     const range = document.createElement('div');
     range.setAttribute('class', 'jquery-slider__range');
+
     this.range = range;
   }
 }

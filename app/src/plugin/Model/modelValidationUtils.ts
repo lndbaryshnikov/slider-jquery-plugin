@@ -3,6 +3,10 @@ import modelOptions, { Options } from './modelOptions';
 
 type ValidationResult = { result: boolean; errorCode?: string };
 
+//------------------------------------
+// --- MULTIPLE OPTIONS VALIDATION ---
+//------------------------------------
+
 const areOptionsKeysCorrect = (options: Options): boolean => {
   const defaultOptions = { ...modelOptions };
   const optionsKeys = Object.keys(options);

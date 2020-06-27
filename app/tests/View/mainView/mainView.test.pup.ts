@@ -1,8 +1,9 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 
-import SliderPupPage, { Coords } from '../../../test-utils/SliderPupPage/SliderPupPage';
+import SliderPupPage from '../../../test-utils/SliderPupPage/SliderPupPage';
 import { Options } from '../../../src/plugin/Model/modelOptions';
 import SliderElement from '../../../src/plugin/main';
+import { Coords } from '../../../src/utils/getCoords';
 
 describe('slider events', () => {
   let browser: Browser;

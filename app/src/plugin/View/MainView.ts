@@ -504,7 +504,7 @@ class MainView {
     const endMaybeFirstOrSecond = range === 'min' ? firstHandlePosition : secondHandlePosition;
     const secondPoint = range === 'max' ? sliderEnd : endMaybeFirstOrSecond;
 
-    this.components.range.setUp({ orientation, firstPoint, secondPoint });
+    this.components.range.setPosition({ orientation, firstPoint, secondPoint });
   }
 
   private _getClosestHandleNumber(coordinate: number): 'first' | 'second' {

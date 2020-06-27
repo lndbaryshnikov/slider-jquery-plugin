@@ -1,7 +1,7 @@
-import './main.scss';
 import Presenter, { CompleteUserOptions } from './Presenter/Presenter';
 import MainView from './View/MainView';
 import Model from './Model/Model';
+import './main.scss';
 
 interface SliderElement extends JQuery<HTMLElement> {
   slider: (
@@ -11,9 +11,9 @@ interface SliderElement extends JQuery<HTMLElement> {
 }
 
 interface PluginMethods {
-  init: (options?: CompleteUserOptions) => this;
-  options: (options: CompleteUserOptions) => this;
-  remove: () => this;
+  init: (userOptions?: CompleteUserOptions) => JQuery | void;
+  options: (userOptions?: CompleteUserOptions) => SliderElement | CompleteUserOptions | void;
+  destroy: () => void;
 }
 
 (($): void => {
@@ -31,7 +31,7 @@ interface PluginMethods {
     });
   };
 
-  const throwError = (existsOrNot: boolean): void => {
+  const throwExistenceError = (existsOrNot: boolean): void => {
     const message = existsOrNot
       ? 'jQuery.slider already exists on this DOM element'
       : 'jQuery.slider does not exist on this DOM element';
@@ -39,8 +39,8 @@ interface PluginMethods {
     throw new Error(message);
   };
 
-  const sliderMethods = {
-    init(userOptions?: CompleteUserOptions): void | JQuery {
+  const pluginMethods: PluginMethods = {
+    init(userOptions?: CompleteUserOptions): JQuery | void {
       const $this = ((this as unknown) as SliderElement).eq(0);
 
       if (!getData($this)) {
@@ -54,19 +54,9 @@ interface PluginMethods {
         });
         return $this;
       }
-      throwError(true);
+      throwExistenceError(true);
 
       return undefined;
-    },
-    destroy(): void {
-      const $this = ((this as unknown) as SliderElement).eq(0);
-      const data = getData($this);
-
-      if (data) {
-        data.slider.destroy();
-      } else {
-        throwError(false);
-      }
     },
     options(userOptions?: CompleteUserOptions): (
     | void
@@ -85,31 +75,42 @@ interface PluginMethods {
 
         return $this;
       }
-      throwError(false);
+      throwExistenceError(false);
 
       return undefined;
+    },
+    destroy(): void {
+      const $this = ((this as unknown) as SliderElement).eq(0);
+      const data = getData($this);
+
+      if (data) {
+        data.slider.destroy();
+      } else {
+        throwExistenceError(false);
+      }
     },
   };
 
   // eslint-disable-next-line no-param-reassign,func-names
   ($.fn as SliderElement).slider = function (
-    method?: CompleteUserOptions | keyof PluginMethods,
+    methodNameOrOptions?: CompleteUserOptions | keyof PluginMethods,
     options?: CompleteUserOptions,
   ): void {
-    if (sliderMethods[method as keyof PluginMethods]) {
-      return sliderMethods[method as keyof PluginMethods].call(this, options);
+    const method = pluginMethods[methodNameOrOptions as keyof PluginMethods];
+    if (method) {
+      return method.call(this, options);
     }
 
-    const isObjectPassed = typeof method === 'object' && !options;
-    const isNothingPassed = !method && !options;
+    const isObjectPassed = typeof methodNameOrOptions === 'object' && !options;
+    const isNothingPassed = !methodNameOrOptions && !options;
     const isObjectOrNothingPassed = isObjectPassed || isNothingPassed;
 
     if (isObjectOrNothingPassed) {
-      const pluginOptions = method as CompleteUserOptions;
+      const pluginOptions = methodNameOrOptions as CompleteUserOptions;
 
-      return sliderMethods.init.call(this, pluginOptions);
+      return pluginMethods.init.call(this, pluginOptions);
     }
-    $.error(`Method '${method}' doesn't exist for jQuery.slider`);
+    throw new Error(`Method '${methodNameOrOptions}' doesn't exist for jQuery.slider`);
 
     return undefined;
   };

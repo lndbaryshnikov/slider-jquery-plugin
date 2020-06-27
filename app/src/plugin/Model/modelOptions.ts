@@ -33,7 +33,10 @@ const modelOptions: Options = {
 };
 
 export default modelOptions;
-
 export {
-  Options, UserOptions, OptionValue, ValueFunction, ChangeFunction,
+  Options,
+  UserOptions,
+  OptionValue,
+  ValueFunction,
+  ChangeFunction,
 };

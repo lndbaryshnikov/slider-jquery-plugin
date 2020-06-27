@@ -1,4 +1,4 @@
-import errorList from './errorsList';
+import errorList from './errorList';
 
 type ErrorObject = {
   type?: 'options' | 'plugin';

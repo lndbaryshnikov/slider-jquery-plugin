@@ -34,7 +34,8 @@ class LabelsView {
   }
 
   setOptions(options: LabelOptions): void {
-    if (!options.labels && !options.pips) return;
+    const { labels, pips } = options;
+    if (!labels && !pips) return;
 
     if (this.state.isRendered) {
       this.destroy();
@@ -44,7 +45,7 @@ class LabelsView {
 
     this._createLabels();
     this._setClasses();
-    if (this.options.labels) this._setValue();
+    if (labels) this._setValue();
     this._setClickHandler();
   }
 
@@ -57,8 +58,8 @@ class LabelsView {
       sliderSize,
       labelsArray,
       interval,
-      widthOrHeight,
-      leftOrBottom,
+      sizeProperty,
+      positionProperty,
     } = renderingOptions;
 
     const scale = document.createElement('div');
@@ -66,7 +67,7 @@ class LabelsView {
       'class',
       `jquery-slider-scale jquery-slider-scale_orientation_${this.options.orientation}`,
     );
-    scale.style[widthOrHeight] = `${sliderSize}px`;
+    scale.style[sizeProperty] = `${sliderSize}px`;
 
     root.append(scale);
 
@@ -75,16 +76,15 @@ class LabelsView {
     labelsArray.forEach((label) => {
       scale.append(label);
 
-      const labelSize = getCoords(label)[widthOrHeight];
-
+      const labelSize = getCoords(label)[sizeProperty];
       // eslint-disable-next-line no-param-reassign
-      label.style[leftOrBottom] = `${currentLabelIndent - labelSize / 2}px`;
+      label.style[positionProperty] = `${currentLabelIndent - labelSize / 2}px`;
 
       if (this.options.pips) {
         const pip = label.children[0] as HTMLElement;
-        const pipSize = getCoords(pip)[widthOrHeight];
+        const pipSize = getCoords(pip)[sizeProperty];
 
-        pip.style[leftOrBottom] = `${
+        pip.style[positionProperty] = `${
           labelSize / 2 - pipSize / 2
         }px`;
       }
@@ -138,10 +138,8 @@ class LabelsView {
   }
 
   private _setClasses(): void {
-    const { orientation } = this.options;
-
-    const areNoLabelsOrPipsRequired = !this.options.labels
-      && !this.options.pips;
+    const { orientation, labels, pips } = this.options;
+    const areNoLabelsOrPipsRequired = !labels && !pips;
 
     if (areNoLabelsOrPipsRequired) return;
 
@@ -149,7 +147,7 @@ class LabelsView {
       label.setAttribute('class', 'jquery-slider-scale__label');
       label.classList.add(`jquery-slider-scale__label_orientation_${orientation}`);
 
-      if (this.options.pips) {
+      if (pips) {
         const pip = label.children[0];
 
         pip.setAttribute('class', 'jquery-slider-scale__pip');
@@ -161,7 +159,7 @@ class LabelsView {
   private _setValue(): void {
     if (!this.options.labels) return;
 
-    const { min, step, valueFunction: valueFunc } = this.options;
+    const { min, step, valueFunction } = this.options;
 
     for (
       let i = 0, value = min;
@@ -170,8 +168,8 @@ class LabelsView {
     ) {
       const label = this.sliderLabels[i];
 
-      if (valueFunc) {
-        label.innerHTML += String(valueFunc(value));
+      if (valueFunction) {
+        label.innerHTML += String(valueFunction(value));
       } else label.innerHTML += String(value);
     }
   }
@@ -194,19 +192,19 @@ class LabelsView {
 
   private _getRenderingOptions(): {
     sliderSize: number;
-    widthOrHeight: 'width' | 'height';
-    leftOrBottom: 'left' | 'bottom';
+    sizeProperty: 'width' | 'height';
+    positionProperty: 'left' | 'bottom';
     interval: number;
     labelsArray: HTMLDivElement[];
     } | null {
     const { orientation } = this.options;
 
-    const widthOrHeight = orientation === 'horizontal' ? 'width' : 'height';
-    const leftOrBottom = orientation === 'horizontal' ? 'left' : 'bottom';
+    const sizeProperty = orientation === 'horizontal' ? 'width' : 'height';
+    const positionProperty = orientation === 'horizontal' ? 'left' : 'bottom';
 
-    const sliderSize = getCoords(this.root)[widthOrHeight];
+    const sliderSize = getCoords(this.root)[sizeProperty];
 
-    let itemsOptimalInterval = this._getItemsOptimalInterval();
+    let itemsOptimalInterval = this._getLabelsOptimalInterval();
 
     const { max, min, step } = this.options;
     const scaleRange = (max - min) / step;
@@ -240,12 +238,12 @@ class LabelsView {
       interval: newSizeInterval,
       labelsArray: newLabelsArray,
       sliderSize,
-      widthOrHeight,
-      leftOrBottom,
+      sizeProperty,
+      positionProperty,
     };
   }
 
-  private _getMaxItemCoords(): { maxLabelCoords: Coords; maxPipCoords: Coords } {
+  private _getMaxLabelCoords(): { maxLabelCoords: Coords; maxPipCoords: Coords } {
     const maxLabel = this.labels[this.labels.length - 2];
     const maxPip = this.options.pips ? maxLabel.children[0] as HTMLElement : null;
 
@@ -259,11 +257,11 @@ class LabelsView {
     return { maxLabelCoords, maxPipCoords };
   }
 
-  private _getItemsOptimalInterval(): null | number {
+  private _getLabelsOptimalInterval(): null | number {
     const { orientation } = this.options;
     const widthOrHeight = orientation === 'horizontal' ? 'width' : 'height';
 
-    const { maxLabelCoords, maxPipCoords } = this._getMaxItemCoords();
+    const { maxLabelCoords, maxPipCoords } = this._getMaxLabelCoords();
 
     const maxLabelSize = maxLabelCoords[widthOrHeight];
     const maxPipSize = maxPipCoords ? maxPipCoords[widthOrHeight] : null;

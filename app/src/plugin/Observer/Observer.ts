@@ -11,30 +11,34 @@ class Observer implements ObserversStorage {
     this.observers = [];
   }
 
-  addObserver(observer: Function): void {
-    if (typeof observer !== 'function') {
+  addObserver(newObserver: Function): void {
+    if (typeof newObserver !== 'function') {
       throw new Error('Observer must be a function');
     }
 
-    for (let i = 0; i < this.observers.length; i += 1) {
-      if (this.observers[i].toString() === observer.toString()) {
+    this.observers.forEach((observer) => {
+      if (observer.toString() === newObserver.toString()) {
         throw new Error('Observer already in the list');
       }
-    }
+    });
 
-    this.observers.push(observer);
+    this.observers.push(newObserver);
   }
 
-  removeObserver(observer: Function): void {
-    for (let i = 0; i < this.observers.length; i += 1) {
-      if (this.observers[i].toString() === observer.toString()) {
-        this.observers.splice(i, 1);
+  removeObserver(observerToDelete: Function): void {
+    let removalComplete = false;
 
-        return;
+    this.observers.forEach((observer, index) => {
+      if (observer.toString() === observerToDelete.toString()) {
+        this.observers.splice(index, 1);
+
+        removalComplete = true;
       }
-    }
+    });
 
-    throw new Error('Could not find observer in list of observers');
+    if (!removalComplete) {
+      throw new Error('Could not find observer in list of observers');
+    }
   }
 
   notifyObservers<CustomData>(data?: CustomData): void {
@@ -42,9 +46,9 @@ class Observer implements ObserversStorage {
     // is mutated during the notifications.
     const observersSnapshot = this.observers.slice(0);
 
-    for (let i = 0; i < observersSnapshot.length; i += 1) {
-      observersSnapshot[i](data);
-    }
+    observersSnapshot.forEach((observer) => {
+      observer(data);
+    });
   }
 }
 

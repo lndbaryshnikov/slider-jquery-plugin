@@ -1,7 +1,7 @@
 import Presenter, { CompleteUserOptions } from '../../src/plugin/Presenter/Presenter';
 import MainView from '../../src/plugin/View/MainView';
 import Model from '../../src/plugin/Model/Model';
-import errorsList from '../../src/plugin/ErrorHandler/errorsList';
+import errorsList from '../../src/plugin/ErrorHandler/errorList';
 
 describe('Presenter', () => {
   let slider: Presenter;
