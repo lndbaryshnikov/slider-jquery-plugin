@@ -132,7 +132,7 @@ class MainView {
 
     const isOutOfSecondBorder = currentHandleCoordinate > secondBorder;
     const isOutOfFirstBorder = currentHandleCoordinate < firstBorder;
-    const isOutOfBorders = isOutOfSecondBorder && isOutOfFirstBorder;
+    const isOutOfBorders = isOutOfSecondBorder || isOutOfFirstBorder;
 
     if (isOutOfBorders) {
       const { max, min } = this.options;
