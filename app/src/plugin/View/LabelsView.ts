@@ -65,7 +65,7 @@ class LabelsView {
     const scale = document.createElement('div');
     scale.setAttribute(
       'class',
-      `jquery-slider-scale jquery-slider-scale_orientation_${this.options.orientation}`,
+      `jquery-slider__scale jquery-slider__scale_orientation_${this.options.orientation}`,
     );
     scale.style[sizeProperty] = `${sliderSize}px`;
 
@@ -126,12 +126,12 @@ class LabelsView {
   private _getLabel(): HTMLDivElement {
     const label = document.createElement('div');
 
-    label.setAttribute('class', 'jquery-slider-scale__label');
+    label.setAttribute('class', 'jquery-slider__label');
 
     if (this.options.pips) {
       const pip = document.createElement('div');
 
-      pip.setAttribute('class', 'jquery-slider-scale__pip');
+      pip.setAttribute('class', 'jquery-slider__pip');
       label.append(pip);
     }
     return label;
@@ -144,14 +144,14 @@ class LabelsView {
     if (areNoLabelsOrPipsRequired) return;
 
     this.sliderLabels.forEach((label) => {
-      label.setAttribute('class', 'jquery-slider-scale__label');
-      label.classList.add(`jquery-slider-scale__label_orientation_${orientation}`);
+      label.setAttribute('class', 'jquery-slider__label');
+      label.classList.add(`jquery-slider__label_orientation_${orientation}`);
 
       if (pips) {
         const pip = label.children[0];
 
-        pip.setAttribute('class', 'jquery-slider-scale__pip');
-        pip.classList.add(`jquery-slider-scale__pip_orientation_${orientation}`);
+        pip.setAttribute('class', 'jquery-slider__pip');
+        pip.classList.add(`jquery-slider__pip_orientation_${orientation}`);
       }
     });
   }

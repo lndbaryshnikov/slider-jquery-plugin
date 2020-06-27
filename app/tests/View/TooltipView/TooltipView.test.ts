@@ -12,8 +12,8 @@ describe('TooltipView tests', () => {
     orientation: 'horizontal' as Options['orientation'],
   };
   const defaultsWithTooltip = { ...Model.defaultOptions, ...{ tooltip: true } };
-  const horizontalClass = 'jquery-slider-tooltip jquery-slider-tooltip_orientation_horizontal ';
-  const verticalClass = 'jquery-slider-tooltip jquery-slider-tooltip_orientation_vertical ';
+  const horizontalClass = 'jquery-slider__tooltip jquery-slider__tooltip_orientation_horizontal ';
+  const verticalClass = 'jquery-slider__tooltip jquery-slider__tooltip_orientation_vertical ';
 
   beforeEach(() => {
     root = document.createElement('div');
@@ -32,7 +32,7 @@ describe('TooltipView tests', () => {
       view.render(root);
 
       const handle = document.querySelector('.jquery-slider__handle');
-      let tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+      let tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(!!tooltipOnDon).toBeTruthy();
       expect(handle.contains(tooltipOnDon)).toBeTruthy();
@@ -40,7 +40,7 @@ describe('TooltipView tests', () => {
 
       const defaultsWIthAnotherValue = { ...defaultsWithTooltip, ...{ value: 50 } };
       view.setOptions(defaultsWIthAnotherValue);
-      tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+      tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(tooltipOnDon.innerHTML).toBe('50');
     });
@@ -52,13 +52,13 @@ describe('TooltipView tests', () => {
       view.setOptions(defaultsWithFunction);
       view.render(root);
 
-      let tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+      let tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(tooltipOnDon.innerHTML).toBe('0$');
 
       const defaultsWithAnotherValue = { ...defaultsWithFunction, ...{ value: 70 } };
       view.setOptions(defaultsWithAnotherValue);
-      tooltipOnDon = document.querySelector('.jquery-slider-tooltip');
+      tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(tooltipOnDon.innerHTML).toBe('70$');
     });
@@ -69,7 +69,7 @@ describe('TooltipView tests', () => {
     tooltip.render(root);
     tooltip.cleanTextField();
 
-    const tooltipOnDom = document.querySelector('.jquery-slider-tooltip');
+    const tooltipOnDom = document.querySelector('.jquery-slider__tooltip');
 
     expect(tooltip.value).toBe(null);
     expect(tooltipOnDom.innerHTML).toBe('');
@@ -87,7 +87,7 @@ describe('TooltipView tests', () => {
     tooltip.setOptions(userOptions);
     tooltip.render(root);
 
-    const tooltipOnDom = document.querySelector('.jquery-slider-tooltip');
+    const tooltipOnDom = document.querySelector('.jquery-slider__tooltip');
 
     expect(tooltipOnDom.className).toBe(horizontalClass);
 
@@ -132,7 +132,7 @@ describe('TooltipView tests', () => {
     tooltip.setOptions({ ...userOptions, ...{ style: 'orange' } });
 
     expect(tooltip.html.className).toBe(
-      `${horizontalClass}jquery-slider-tooltip_color_orange`,
+      `${horizontalClass}jquery-slider__tooltip_color_orange`,
     );
   });
 });

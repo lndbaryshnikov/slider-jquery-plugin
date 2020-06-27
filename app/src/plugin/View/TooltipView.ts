@@ -59,8 +59,8 @@ class TooltipView {
   }): void {
     this.orientation = orientation;
 
-    const main = `jquery-slider-tooltip jquery-slider-tooltip_orientation_${orientation}`;
-    const custom = style ? `jquery-slider-tooltip_color_${style}` : '';
+    const main = `jquery-slider__tooltip jquery-slider__tooltip_orientation_${orientation}`;
+    const custom = style ? `jquery-slider__tooltip_color_${style}` : '';
     this.tooltipHtml.className = `${main} ${custom}`;
   }
 
@@ -76,7 +76,7 @@ class TooltipView {
 
   private _create(): void {
     const tooltip = document.createElement('div');
-    tooltip.setAttribute('class', 'jquery-slider-tooltip');
+    tooltip.setAttribute('class', 'jquery-slider__tooltip');
 
     const stopMousedownPropagation = (clickEvent: MouseEvent): void => {
       clickEvent.stopPropagation();

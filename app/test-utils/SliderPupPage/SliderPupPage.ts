@@ -94,7 +94,7 @@ class SliderPupPage {
   ): Promise<{ label: string; pip: string } | { label: Coords; pip: Coords }> {
     return this.pupPage.evaluate(
       (dataToEval: string, LabelNumber: number) => {
-        const labels = document.querySelectorAll('.jquery-slider-scale__label');
+        const labels = document.querySelectorAll('.jquery-slider__label');
         const labelNeeded = labels[LabelNumber - 1] as HTMLElement;
         const labelFirstChild = labelNeeded.children[0] as HTMLElement;
 
@@ -290,7 +290,7 @@ class SliderPupPage {
     const isTooltipRequired = options && options.tooltip;
 
     if (isTooltipRequired) {
-      this.tooltip = await this.pupPage.$('.jquery-slider-tooltip');
+      this.tooltip = await this.pupPage.$('.jquery-slider__tooltip');
     } else this.tooltip = null;
   }
 }

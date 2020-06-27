@@ -71,118 +71,118 @@
       }
     }
   }
-}
 
-.jquery-slider-tooltip {
-  background-color: sandybrown;
-  font-size: 1.1rem;
-  text-align: center;
-  border-radius: 20%;
-  line-height: 1.75rem;
-  color: whitesmoke;
-  user-select: none;
-  cursor: auto;
-  position: absolute;
-
-  &::after {
-    content: '';
+  &__tooltip {
+    background-color: sandybrown;
+    font-size: 1.1rem;
+    text-align: center;
+    border-radius: 20%;
+    line-height: 1.75rem;
+    color: whitesmoke;
+    user-select: none;
+    cursor: auto;
     position: absolute;
-    border-width: 0.31rem;
-    border-style: solid;
-  }
 
-  &_orientation {
-    &_horizontal {
-      top: -2.19rem;
-      left: -0.81rem;
-      width: 2.75rem;
-      height: 1.75rem;
+    &::after {
+      content: '';
+      position: absolute;
+      border-width: 0.31rem;
+      border-style: solid;
+    }
 
-      &::after {
-        top: 100%;
-        left: 50%;
-        margin-left: -0.34rem;
-        border-color: sandybrown transparent transparent;
+    &_orientation {
+      &_horizontal {
+        top: -2.19rem;
+        left: -0.81rem;
+        width: 2.75rem;
+        height: 1.75rem;
+
+        &::after {
+          top: 100%;
+          left: 50%;
+          margin-left: -0.34rem;
+          border-color: sandybrown transparent transparent;
+        }
+      }
+
+      &_vertical {
+        top: -0.38rem;
+        right: -3.3rem;
+        width: 2.75rem;
+        height: 1.75rem;
+
+        &::after {
+          top: 50%;
+          right: 100%;
+          margin-top: -0.31rem;
+          border-color: transparent sandybrown transparent transparent;
+        }
       }
     }
 
-    &_vertical {
-      top: -0.38rem;
-      right: -3.3rem;
-      width: 2.75rem;
-      height: 1.75rem;
+    &_color {
+      &_gray {
+        background-color: grey;
 
-      &::after {
-        top: 50%;
-        right: 100%;
-        margin-top: -0.31rem;
-        border-color: transparent sandybrown transparent transparent;
+        &::after {
+          @at-root {
+            .jquery-slider_orientation_horizontal #{&} {
+              border-color: grey transparent transparent;
+            }
+
+            .jquery-slider_orientation_vertical #{&} {
+              border-color: transparent grey transparent transparent;
+            }
+          }
+        }
       }
-    }
-  }
 
-  &_color {
-    &_gray {
-      background-color: grey;
+      &_white {
+        background-color: white;
+        border: 0.06rem solid black;
+        color: black;
 
-      &::after {
         @at-root {
           .jquery-slider_orientation_horizontal #{&} {
-            border-color: grey transparent transparent;
+            top: -2.4rem;
+            left: -0.85rem;
           }
 
           .jquery-slider_orientation_vertical #{&} {
-            border-color: transparent grey transparent transparent;
+            top: -0.42rem;
+            right: -3.45rem;
           }
         }
-      }
-    }
 
-    &_white {
-      background-color: white;
-      border: 0.06rem solid black;
-      color: black;
+        &::after {
+          @at-root {
+            .jquery-slider_orientation_horizontal #{&} {
+              border-color: black transparent transparent;
+            }
 
-      @at-root {
-        .jquery-slider_orientation_horizontal #{&} {
-          top: -2.4rem;
-          left: -0.85rem;
-        }
-
-        .jquery-slider_orientation_vertical #{&} {
-          top: -0.42rem;
-          right: -3.45rem;
-        }
-      }
-
-      &::after {
-        @at-root {
-          .jquery-slider_orientation_horizontal #{&} {
-            border-color: black transparent transparent;
-          }
-
-          .jquery-slider_orientation_vertical #{&} {
-            border-color: transparent black transparent transparent;
-            margin-top: -0.3rem;
+            .jquery-slider_orientation_vertical #{&} {
+              border-color: transparent black transparent transparent;
+              margin-top: -0.3rem;
+            }
           }
         }
       }
     }
   }
-}
 
-.jquery-slider-scale {
-  position: absolute;
+  &__scale {
+    position: absolute;
 
-  &_orientation {
-    &_horizontal {
-      top: 1rem;
-      height: 1.7rem;
-    }
-  
-    &_vertical {
-      right: 1.5rem;
-      width: 2rem;
+    &_orientation {
+      &_horizontal {
+        top: 1rem;
+        height: 1.7rem;
+      }
+    
+      &_vertical {
+        right: 1.5rem;
+        width: 2rem;
+      }
     }
   }
 
