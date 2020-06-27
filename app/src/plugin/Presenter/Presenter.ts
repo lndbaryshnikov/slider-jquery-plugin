@@ -97,7 +97,7 @@ class Presenter {
     const options = this.model.getOptions();
     const { value, change } = options;
 
-    this.view.renderValue(value);
+    this.view.updateValue(value);
 
     if (change && typeof change === 'function') {
       change(options.value);

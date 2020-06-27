@@ -67,6 +67,15 @@ class MainView {
     return { ...{ slider: this.root }, ...this.components };
   }
 
+  setOptions(options: Options): void {
+    this.options = options;
+    this.setStyles();
+
+    if (this.isRendered()) {
+      this.render();
+    }
+  }
+
   getOptions(): Options {
     return this.options;
   }
@@ -77,15 +86,6 @@ class MainView {
 
   getStyles(): MainStyles {
     return this.styles;
-  }
-
-  setOptions(options: Options): void {
-    this.options = options;
-    this.setStyles();
-
-    if (this.isRendered()) {
-      this.render();
-    }
   }
 
   render(root?: HTMLElement): void {
@@ -106,32 +106,13 @@ class MainView {
     }
   }
 
-  renderValue(value: Options['value']): void {
+  updateValue(value: Options['value']): void {
     this.options.value = value;
 
     this._setHandlePositionInPixels();
     this._renderHandles();
     this._renderRange();
-
-    const { firstTooltip, secondTooltip } = this.components;
-    const { range, tooltip } = this.options;
-
-    const firstValue = range === true ? value[0] : value as number;
-    const valueFunction = typeof tooltip === 'function' ? tooltip : null;
-
-    if (firstTooltip && firstTooltip.state.isRendered) {
-      firstTooltip.setValue({
-        value: firstValue, valueFunction,
-      });
-    }
-
-    if (secondTooltip && secondTooltip.state.isRendered) {
-      const secondValue = range === true ? value[1] : undefined;
-
-      secondTooltip.setValue({
-        value: secondValue, valueFunction,
-      });
-    }
+    this._updateTooltips();
   }
 
   refreshValue({ currentHandleCoordinate, handleNumber }: {
@@ -141,22 +122,20 @@ class MainView {
     const maybeFirstOrClosest = this.options.range !== true
       ? 'first'
       : this._getClosestHandleNumber(currentHandleCoordinate);
-    const correctHandleNumber = handleNumber || maybeFirstOrClosest;
 
-    const { orientation, max, min } = this.options;
-    const difference = max - min;
+    const correctHandleNumber = handleNumber || maybeFirstOrClosest;
     const sliderCoords = this._getCoords();
-    const isHorizontal = orientation === 'horizontal';
+
+    const isHorizontal = this.options.orientation === 'horizontal';
+    const secondBorder = isHorizontal ? sliderCoords.right : sliderCoords.bottom;
     const firstBorder = isHorizontal ? sliderCoords.left : sliderCoords.top;
-    const secondBorder = isHorizontal
-      ? sliderCoords.right
-      : sliderCoords.bottom;
 
     const isOutOfSecondBorder = currentHandleCoordinate > secondBorder;
     const isOutOfFirstBorder = currentHandleCoordinate < firstBorder;
     const isOutOfBorders = isOutOfSecondBorder && isOutOfFirstBorder;
 
     if (isOutOfBorders) {
+      const { max, min } = this.options;
       const horizontalMaxValue = isOutOfSecondBorder ? max : min;
       const verticalMaxValue = isOutOfSecondBorder ? min : max;
 
@@ -164,52 +143,87 @@ class MainView {
         value: isHorizontal ? horizontalMaxValue : verticalMaxValue,
         handleNumber: correctHandleNumber,
       });
-
       return;
     }
 
-    const currentHandlePosition = isHorizontal
-      ? currentHandleCoordinate - sliderCoords.left
-      : sliderCoords.height - (currentHandleCoordinate - sliderCoords.top);
-
-    const getValuesArray = (): number[] => {
-      const valuesArray: number[] = [];
-      const { step } = this.options;
-
-      for (let currentValue = min; currentValue <= max; currentValue += step) {
-        valuesArray.push(currentValue);
-      }
-      return valuesArray;
-    };
-
-    const valuesArray = getValuesArray();
-    const { width: sliderWidth, height: sliderHeight } = this._getCoords();
-
-    const valueInPercents = isHorizontal
-      ? currentHandlePosition / sliderWidth
-      : currentHandlePosition / sliderHeight;
-
-    const approximateValue = valueInPercents * difference + this.options.min;
-
-    let value: number;
-
-    for (let i = 0; i < valuesArray.length; i += 1) {
-      const isValueBetweenTheseTwo = approximateValue >= valuesArray[i]
-        && approximateValue <= valuesArray[i + 1];
-
-      if (isValueBetweenTheseTwo) {
-        const rangeFromFirst = approximateValue - valuesArray[i];
-        const rangeFromSecond = valuesArray[i + 1] - approximateValue;
-
-        value = rangeFromFirst < rangeFromSecond
-          ? valuesArray[i]
-          : valuesArray[i + 1];
-
-        break;
-      }
-    }
+    const valueInPercents = this._getValueInPercents(currentHandleCoordinate);
+    const value = this._findExactValue(valueInPercents);
 
     this.valueChangedSubject.notifyObservers({ value, handleNumber: correctHandleNumber });
+  }
+
+  private _updateTooltips(): void {
+    const { firstTooltip, secondTooltip } = this.components;
+    const { value, range, tooltip: tooltipOption } = this.options;
+
+    const valueFunction = typeof tooltipOption === 'function' ? tooltipOption : null;
+    const updateTooltip = ({ tooltip, tooltipValue }: {
+      tooltip: TooltipView;
+      tooltipValue: number;
+    }): void => {
+      if (tooltip && tooltip.state.isRendered) {
+        tooltip.setValue({
+          value: tooltipValue, valueFunction,
+        });
+      }
+    };
+
+    const firstValue = range === true ? value[0] : value as number;
+    updateTooltip({ tooltip: firstTooltip, tooltipValue: firstValue });
+
+    const secondValue = range === true ? value[1] : undefined;
+    updateTooltip({ tooltip: secondTooltip, tooltipValue: secondValue });
+  }
+
+  private _getValueInPercents(handleCoordinate: number): number {
+    const sliderCoords = this._getCoords();
+    const isHorizontal = this.options.orientation === 'horizontal';
+
+    const currentHandlePosition = isHorizontal
+      ? handleCoordinate - sliderCoords.left
+      : sliderCoords.height - (handleCoordinate - sliderCoords.top);
+
+    const valueInPercents = isHorizontal
+      ? currentHandlePosition / sliderCoords.width
+      : currentHandlePosition / sliderCoords.height;
+
+    return valueInPercents;
+  }
+
+  private _findExactValue(valueInPercents: number): number {
+    const { max, min } = this.options;
+    const difference = max - min;
+    const approximateValue = valueInPercents * difference + min;
+    const valuesArray = this._getValuesArray();
+
+    let exactValue: number;
+
+    valuesArray.some((value, i) => {
+      const nextValue = valuesArray[i + 1];
+      const isValueBetweenTheseTwo = approximateValue >= value
+        && approximateValue <= nextValue;
+
+      if (isValueBetweenTheseTwo) {
+        const rangeFromFirst = approximateValue - value;
+        const rangeFromSecond = nextValue - approximateValue;
+
+        exactValue = rangeFromFirst < rangeFromSecond ? value : nextValue;
+
+        return true;
+      }
+      return false;
+    });
+    return exactValue;
+  }
+
+  private _getValuesArray(): number[] {
+    const valuesArray: number[] = [];
+    const { min, max, step } = this.options;
+
+    for (let currentValue = min; currentValue <= max; currentValue += step) {
+      valuesArray.push(currentValue);
+    }
+    return valuesArray;
   }
 
   private _setElements(): void {
@@ -240,20 +254,21 @@ class MainView {
   }
 
   private _setHandles(): void {
-    const { firstHandle } = this.components;
-    let { secondHandle } = this.components;
     const { range, orientation } = this.options;
     const handleModifiers = { orientation, color: this.styles && this.styles.handle };
 
-    firstHandle.stickTo(this.root);
-    firstHandle.whenMouseDown(this._allowHandleMoving.bind(this));
-    firstHandle.setModifiers(handleModifiers);
+    const setHandle = (handle: HandleView): void => {
+      handle.stickTo(this.root);
+      handle.whenMouseDown(this._allowHandleMoving.bind(this));
+      handle.setModifiers(handleModifiers);
+    };
+
+    const { firstHandle } = this.components;
+    setHandle(firstHandle);
 
     if (range === true) {
-      secondHandle = new HandleView('second');
-      secondHandle.stickTo(this.root);
-      secondHandle.whenMouseDown(this._allowHandleMoving.bind(this));
-      secondHandle.setModifiers(handleModifiers);
+      const secondHandle = new HandleView('second');
+      setHandle(secondHandle);
 
       this.components.secondHandle = secondHandle;
     }
