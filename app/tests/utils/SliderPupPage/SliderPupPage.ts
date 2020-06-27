@@ -2,10 +2,10 @@ import {
   Browser, ElementHandle, Page, JSHandle,
 } from 'puppeteer';
 
-import SliderElement from '../../src/plugin/main';
-import { UserOptions, Options } from '../../src/plugin/Model/modelOptions';
-import { CompleteUserOptions } from '../../src/plugin/Presenter/Presenter';
-import { Coords } from '../../src/utils/getCoords';
+import SliderElement from '../../../src/plugin/main';
+import { UserOptions, Options } from '../../../src/plugin/Model/modelOptions';
+import { CompleteUserOptions } from '../../../src/plugin/Presenter/Presenter';
+import { Coords } from '../../../src/utils/getCoords';
 
 class SliderPupPage {
   private pupPage: Page;
