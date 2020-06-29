@@ -14,14 +14,10 @@ type Item = {
   wrapper: HTMLDivElement;
   sign: HTMLDivElement;
   errorTooltip: HTMLDivElement;
-};
-
-type InputItem = Item & { input: HTMLInputElement };
-type SelectItem = Item & { select: HTMLSelectElement };
-
-type RangeItem = Item & {
-  firstInput: HTMLInputElement;
-  secondInput: HTMLInputElement;
+  input?: HTMLInputElement;
+  select?: HTMLSelectElement;
+  firstInput?: HTMLInputElement;
+  secondInput?: HTMLInputElement;
 };
 
 type ValueObject = {
@@ -30,17 +26,17 @@ type ValueObject = {
 };
 
 class ConfigItem {
-  private item: InputItem | SelectItem | RangeItem;
+  private item: Item;
 
   private type: ConfigItemType;
 
-  private optionName: keyof PanelOptions;
+  private optionName: string;
 
   private valueChangedSubject = new Observer();
 
   constructor({ type, wrapper }: { type: ConfigItemType; wrapper: HTMLDivElement }) {
     this.type = type;
-    this.optionName = wrapper.getAttribute('data-option') as keyof PanelOptions;
+    this.optionName = wrapper.getAttribute('data-option');
 
     this.item = this._getItem(type, wrapper);
     this._addListener();
@@ -48,19 +44,18 @@ class ConfigItem {
 
   setSelectOptions(options: string[]): void {
     if (this.type === 'select') {
-      const fragment = document.createDocumentFragment();
+      const optionsFragment = document.createDocumentFragment();
 
-      options.forEach((item: string): void => {
+      options.forEach((optionItem: string): void => {
         const optionElement = document.createElement('option');
         optionElement.setAttribute('class', 'select-option');
 
-        optionElement.value = item;
-        optionElement.innerHTML = item;
+        optionElement.value = optionItem;
+        optionElement.innerHTML = optionItem;
 
-        fragment.append(optionElement);
+        optionsFragment.append(optionElement);
       });
-
-      (this.item as SelectItem).select.append(fragment);
+      this.item.select.append(optionsFragment);
     }
   }
 
@@ -68,23 +63,18 @@ class ConfigItem {
     const { type, item } = this;
 
     if (type === 'input') {
-      const { input } = item as InputItem;
-
-      input.value = String(value as number);
+      const { input } = item;
+      input.value = String(value);
     }
-
     if (type === 'select') {
-      const { select } = item as SelectItem;
-
+      const { select } = item;
       select.value = String(value);
     }
-
     if (type === 'range') {
-      const { firstInput, secondInput } = item as RangeItem;
-      const isValueSingle = typeof value === 'number';
-      const [firstValue, secondValue] = isValueSingle
+      const { firstInput, secondInput } = item;
+      const [firstValue, secondValue] = !Array.isArray(value)
         ? [value, '']
-        : (value as number[]);
+        : value;
 
       firstInput.value = String(firstValue);
       secondInput.value = String(secondValue);
@@ -103,13 +93,13 @@ class ConfigItem {
     if (type === 'range') {
       const inputName = inputNumber === 1 ? 'firstInput' : 'secondInput';
 
-      dataField = (item as RangeItem)[inputName];
+      dataField = item[inputName];
       elementName = inputNumber === 1 ? 'first-input' : 'second-input';
     } else if (type === 'select') {
-      dataField = (item as SelectItem).select;
+      dataField = item.select;
       elementName = 'select';
     } else if (type === 'input') {
-      dataField = (item as InputItem).input;
+      dataField = item.input;
       elementName = 'input';
     }
 
@@ -128,12 +118,10 @@ class ConfigItem {
       document.removeEventListener('click', hideTooltipHandler);
       document.removeEventListener('keydown', hideTooltipHandler);
     };
-
     const addHideTooltipHandlerCallback = (): void => {
       document.addEventListener('click', hideTooltipHandler);
       document.addEventListener('keydown', hideTooltipHandler);
     };
-
     window.setTimeout(addHideTooltipHandlerCallback, 500);
   }
 
@@ -143,30 +131,26 @@ class ConfigItem {
     });
   }
 
-  private _getItem<T extends ConfigItemType>(
-    type: T,
+  private _getItem(
+    type: ConfigItemType,
     wrapper: HTMLDivElement,
-  ): T extends 'input'
-      ? InputItem
-      : T extends 'select'
-        ? SelectItem
-        : RangeItem {
-    const { children } = wrapper;
+  ): Item {
+    const children = (wrapper.children as unknown) as HTMLElement[];
 
     if (type === 'input') {
-      const [sign, input, errorTooltip] = (children as unknown) as [
+      const [sign, input, errorTooltip] = children as [
         HTMLDivElement,
         HTMLInputElement,
-        HTMLInputElement,
+        HTMLDivElement,
       ];
 
       return {
         wrapper, sign, input, errorTooltip,
-      } as any;
+      };
     }
 
     if (type === 'select') {
-      const [sign, select, errorTooltip] = (children as unknown) as [
+      const [sign, select, errorTooltip] = children as [
         HTMLDivElement,
         HTMLSelectElement,
         HTMLDivElement,
@@ -174,11 +158,11 @@ class ConfigItem {
 
       return {
         wrapper, sign, select, errorTooltip,
-      } as any;
+      };
     }
 
     if (type === 'range') {
-      const [sign, firstInput, secondInput, errorTooltip] = (children as unknown) as [
+      const [sign, firstInput, secondInput, errorTooltip] = children as [
         HTMLDivElement,
         HTMLInputElement,
         HTMLInputElement,
@@ -191,7 +175,7 @@ class ConfigItem {
         firstInput,
         secondInput,
         errorTooltip,
-      } as any;
+      };
     }
 
     return undefined;
@@ -210,8 +194,8 @@ class ConfigItem {
 
     if (isInputOrSelect) {
       const element = type === 'input'
-        ? (this.item as InputItem).input
-        : (this.item as SelectItem).select;
+        ? this.item.input
+        : this.item.select;
 
       const valueChangeListener = (event: Event): void => {
         const value = (event.target as
@@ -236,7 +220,7 @@ class ConfigItem {
       element.addEventListener('change', valueChangeListener);
     } else {
       const rangeValueChangeHandler = (): void => {
-        const { firstInput, secondInput } = this.item as RangeItem;
+        const { firstInput, secondInput } = this.item;
         const firstValue = firstInput.value.trim();
         const secondValue = secondInput.value.trim();
 
@@ -251,12 +235,12 @@ class ConfigItem {
         const isSecondValueEmpty = secondValue === '';
         const value = isSecondValueEmpty
           ? Number(firstValue)
-          : ([Number(firstValue), Number(secondValue)] as [number, number]);
+          : [Number(firstValue), Number(secondValue)];
 
         notify(value);
       };
 
-      const { firstInput, secondInput } = this.item as RangeItem;
+      const { firstInput, secondInput } = this.item;
 
       firstInput.addEventListener('change', rangeValueChangeHandler);
       secondInput.addEventListener('change', rangeValueChangeHandler);
@@ -267,9 +251,6 @@ class ConfigItem {
 export {
   ConfigItemType,
   ConfigItemValue,
-  InputItem,
-  SelectItem,
-  RangeItem,
   ValueObject,
 };
 

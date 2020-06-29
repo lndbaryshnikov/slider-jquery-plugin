@@ -145,7 +145,6 @@ class MainView {
       });
       return;
     }
-
     const valueInPercents = this._getValueInPercents(handleCoordinate);
     const value = this._findExactValue(valueInPercents);
 
@@ -510,9 +509,7 @@ class MainView {
 
       if (coordinate < firstRight) handleNumber = 'first';
       if (coordinate > secondLeft) handleNumber = 'second';
-    }
-
-    if (this.options.orientation === 'vertical') {
+    } else {
       const { top: firstTop } = firstHandleCoords;
       const { bottom: secondBottom } = secondHandleCoords;
 
