@@ -1,7 +1,7 @@
-import MainView from '../../src/plugin/View/MainView';
-import Model from '../../src/plugin/Model/Model';
-import { Options, UserOptions } from '../../src/plugin/Model/modelOptions';
-import { Coords } from '../../src/utils/getCoords';
+import MainView from '../../../src/plugin/View/MainView';
+import Model from '../../../src/plugin/Model/Model';
+import { Options, UserOptions } from '../../../src/plugin/Model/modelOptions';
+import { Coords } from '../../../src/utils/getCoords';
 
 describe('MainView tests', () => {
   let view: MainView;

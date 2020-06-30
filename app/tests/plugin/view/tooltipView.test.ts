@@ -1,5 +1,5 @@
-import TooltipView, { TooltipOptions } from '../../src/plugin/View/TooltipView';
-import { Options } from '../../src/plugin/Model/modelOptions';
+import TooltipView, { TooltipOptions } from '../../../src/plugin/View/TooltipView';
+import { Options } from '../../../src/plugin/Model/modelOptions';
 
 describe('TooltipView tests', () => {
   let root: HTMLDivElement;

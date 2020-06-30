@@ -1,6 +1,6 @@
-import Model from '../../src/plugin/Model/Model';
-import { UserOptions, Options, ValueFunction } from '../../src/plugin/Model/modelOptions';
-import ErrorHandler, { ErrorObject } from '../../src/plugin/ErrorHandler/ErrorHandler';
+import Model from '../../../src/plugin/Model/Model';
+import { UserOptions, Options, ValueFunction } from '../../../src/plugin/Model/modelOptions';
+import ErrorHandler, { ErrorObject } from '../../../src/plugin/ErrorHandler/ErrorHandler';
 
 describe('setOptions method', () => {
   let model: Model;

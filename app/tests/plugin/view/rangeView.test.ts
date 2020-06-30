@@ -1,4 +1,4 @@
-import RangeView from '../../src/plugin/View/RangeView';
+import RangeView from '../../../src/plugin/View/RangeView';
 
 describe('RangeView tests', () => {
   let root: HTMLDivElement;

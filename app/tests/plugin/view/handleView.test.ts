@@ -1,5 +1,5 @@
-import HandleView from '../../src/plugin/View/HandleView';
-import TooltipView from '../../src/plugin/View/TooltipView';
+import HandleView from '../../../src/plugin/View/HandleView';
+import TooltipView from '../../../src/plugin/View/TooltipView';
 
 describe('HandleView tests', () => {
   let root: HTMLDivElement;
@@ -23,26 +23,6 @@ describe('HandleView tests', () => {
 
   test('get handleNumber method returns correct number', () => {
     expect(handle.handleNumber).toBe('first');
-  });
-
-  test('allowHandleMoving ', () => {
-    expect(() => {
-      handle.allowMovingWithinSpace({
-        availableSpace: {
-          width: 300,
-          height: 6,
-          left: 20,
-          right: 320,
-          top: 200,
-          bottom: 206,
-        },
-        orientation: 'horizontal',
-        cursorShift: {
-          x: 2,
-          y: 3,
-        },
-      });
-    }).not.toThrow();
   });
 
   test('getCursorShift method returns correct shift', () => {

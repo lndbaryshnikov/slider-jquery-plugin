@@ -1,5 +1,5 @@
-import LabelsView, { LabelOptions } from '../../src/plugin/View/LabelsView';
-import { Options } from '../../src/plugin/Model/modelOptions';
+import LabelsView, { LabelOptions } from '../../../src/plugin/View/LabelsView';
+import { Options } from '../../../src/plugin/Model/modelOptions';
 
 const getOptions = (options?: Partial<LabelOptions>): LabelOptions => {
   const baseOptions: LabelOptions = {
