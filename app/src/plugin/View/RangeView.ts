@@ -44,7 +44,7 @@ class RangeView {
     this.range.style[differenceProperty] = `${secondPoint - firstPoint}px`;
   }
 
-  _createRange(): void {
+  private _createRange(): void {
     const range = document.createElement('div');
     range.setAttribute('class', 'jquery-slider__range');
 

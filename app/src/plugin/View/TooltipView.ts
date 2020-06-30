@@ -1,5 +1,12 @@
 import { ValueFunction } from '../Model/modelOptions';
 
+interface TooltipOptions {
+  value: number;
+  orientation: 'horizontal' | 'vertical';
+  valueFunction?: ValueFunction;
+  style?: string;
+}
+
 class TooltipView {
   private tooltipValue: string | number;
 
@@ -30,12 +37,7 @@ class TooltipView {
 
   setOptions({
     value, orientation, valueFunction, style,
-  }: {
-    value: number;
-    orientation: 'horizontal' | 'vertical';
-    valueFunction?: ValueFunction;
-    style?: string;
-  }): void {
+  }: TooltipOptions): void {
     this.setValue({ value, valueFunction });
     this.setStyle({ orientation, style });
   }
@@ -89,3 +91,4 @@ class TooltipView {
 }
 
 export default TooltipView;
+export { TooltipOptions };

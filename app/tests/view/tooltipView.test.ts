@@ -1,24 +1,19 @@
-import MainView from '../../../src/plugin/View/MainView';
-import Model from '../../../src/plugin/Model/Model';
-import TooltipView from '../../../src/plugin/View/TooltipView';
-import { Options } from '../../../src/plugin/Model/modelOptions';
+import TooltipView, { TooltipOptions } from '../../src/plugin/View/TooltipView';
+import { Options } from '../../src/plugin/Model/modelOptions';
 
 describe('TooltipView tests', () => {
-  let view: MainView;
   let root: HTMLDivElement;
   let tooltip: TooltipView;
-  const userOptions = {
+  const options: TooltipOptions = {
     value: 35,
     orientation: 'horizontal' as Options['orientation'],
   };
-  const defaultsWithTooltip = { ...Model.defaultOptions, ...{ tooltip: true } };
   const horizontalClass = 'jquery-slider__tooltip jquery-slider__tooltip_orientation_horizontal ';
   const verticalClass = 'jquery-slider__tooltip jquery-slider__tooltip_orientation_vertical ';
 
   beforeEach(() => {
     root = document.createElement('div');
     document.body.append(root);
-    view = new MainView();
     tooltip = new TooltipView();
   });
 
@@ -28,36 +23,35 @@ describe('TooltipView tests', () => {
 
   describe('render method', () => {
     test('tooltip rendered correctly', () => {
-      view.setOptions(defaultsWithTooltip);
-      view.render(root);
+      tooltip.setOptions(options);
+      tooltip.render(root);
 
-      const handle = document.querySelector('.jquery-slider__handle');
       let tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(!!tooltipOnDon).toBeTruthy();
-      expect(handle.contains(tooltipOnDon)).toBeTruthy();
-      expect(tooltipOnDon.innerHTML).toBe('0');
+      expect(root.contains(tooltipOnDon)).toBeTruthy();
+      expect(tooltipOnDon.innerHTML).toBe('35');
 
-      const defaultsWIthAnotherValue = { ...defaultsWithTooltip, ...{ value: 50 } };
-      view.setOptions(defaultsWIthAnotherValue);
+      const defaultsWIthAnotherValue = { ...options, ...{ value: 50 } };
+      tooltip.setOptions(defaultsWIthAnotherValue);
       tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(tooltipOnDon.innerHTML).toBe('50');
     });
 
     test('tooltip rendered correctly with function for value', () => {
-      const defaultsWithFunction = Model.defaultOptions;
-      defaultsWithFunction.tooltip = (value: number): string => `${value}$`;
+      const optionsWithFunction = { ...options };
+      optionsWithFunction.valueFunction = (value: number): string => `${value}$`;
 
-      view.setOptions(defaultsWithFunction);
-      view.render(root);
+      tooltip.setOptions(optionsWithFunction);
+      tooltip.render(root);
 
       let tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
-      expect(tooltipOnDon.innerHTML).toBe('0$');
+      expect(tooltipOnDon.innerHTML).toBe('35$');
 
-      const defaultsWithAnotherValue = { ...defaultsWithFunction, ...{ value: 70 } };
-      view.setOptions(defaultsWithAnotherValue);
+      const defaultsWithAnotherValue = { ...optionsWithFunction, ...{ value: 70 } };
+      tooltip.setOptions(defaultsWithAnotherValue);
       tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
       expect(tooltipOnDon.innerHTML).toBe('70$');
@@ -65,7 +59,7 @@ describe('TooltipView tests', () => {
   });
 
   test('cleanTextField, setValue, remove methods', () => {
-    tooltip.setOptions(userOptions);
+    tooltip.setOptions(options);
     tooltip.render(root);
     tooltip.cleanTextField();
 
@@ -84,7 +78,7 @@ describe('TooltipView tests', () => {
   });
 
   test('setOrientation method', () => {
-    tooltip.setOptions(userOptions);
+    tooltip.setOptions(options);
     tooltip.render(root);
 
     const tooltipOnDom = document.querySelector('.jquery-slider__tooltip');
@@ -106,7 +100,7 @@ describe('TooltipView tests', () => {
       isSet: false,
     });
 
-    tooltip.setOptions(userOptions);
+    tooltip.setOptions(options);
 
     expect(tooltip.state).toEqual({
       isRendered: false,
@@ -129,7 +123,7 @@ describe('TooltipView tests', () => {
   });
 
   test('setStyle method with custom styles', () => {
-    tooltip.setOptions({ ...userOptions, ...{ style: 'orange' } });
+    tooltip.setOptions({ ...options, ...{ style: 'orange' } });
 
     expect(tooltip.html.className).toBe(
       `${horizontalClass}jquery-slider__tooltip_color_orange`,

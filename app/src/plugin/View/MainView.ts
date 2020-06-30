@@ -124,7 +124,7 @@ class MainView {
       : this._getClosestHandleNumber(handleCoordinate);
 
     const correctHandleNumber = handleNumber || maybeFirstOrClosest;
-    const sliderCoords = this._getCoords();
+    const sliderCoords = this.getCoords();
 
     const isHorizontal = this.options.orientation === 'horizontal';
     const secondBorder = isHorizontal ? sliderCoords.right : sliderCoords.bottom;
@@ -149,6 +149,10 @@ class MainView {
     const value = this._findExactValue(valueInPercents);
 
     this.valueChangedSubject.notifyObservers({ value, handleNumber: correctHandleNumber });
+  }
+
+  getCoords(): Coords {
+    return getCoords(this.root);
   }
 
   private _setElements(): void {
@@ -354,7 +358,7 @@ class MainView {
 
     const firstValueInPercents = (firstValue - min) / difference;
 
-    const { width: sliderWidth, height: sliderHeight } = this._getCoords();
+    const { width: sliderWidth, height: sliderHeight } = this.getCoords();
 
     const addHandlePosition = (handleValueInPercents: number): void => {
       positions.push(
@@ -395,7 +399,7 @@ class MainView {
     if (range === false) return;
 
     const [firstHandlePosition, secondHandlePosition] = this.handlePositions;
-    const { width: sliderWidth, height: sliderHeight } = this._getCoords();
+    const { width: sliderWidth, height: sliderHeight } = this.getCoords();
     const { orientation } = this.options;
 
     const sliderStart = 0;
@@ -432,7 +436,7 @@ class MainView {
   }
 
   private _getValueInPercents(handleCoordinate: number): number {
-    const sliderCoords = this._getCoords();
+    const sliderCoords = this.getCoords();
     const isHorizontal = this.options.orientation === 'horizontal';
 
     const currentHandlePosition = isHorizontal
@@ -485,10 +489,8 @@ class MainView {
   private _getClosestHandleNumber(coordinate: number): 'first' | 'second' {
     let handleNumber: 'first' | 'second';
 
-    const { orientation, range } = this.options;
+    const { orientation } = this.options;
     const { firstHandle, secondHandle } = this.components;
-
-    if (range !== true) return undefined;
 
     const firstHandleCoords = firstHandle.getCoords();
     const secondHandleCoords = secondHandle.getCoords();
@@ -538,7 +540,7 @@ class MainView {
 
     let {
       right, left, top, bottom, width, height,
-    }: Coords = this._getCoords();
+    }: Coords = this.getCoords();
 
     if (this.options.range === true) {
       const firstHandleCoords = firstHandle.getCoords();
@@ -563,10 +565,6 @@ class MainView {
     return {
       right, left, top, bottom, width, height,
     };
-  }
-
-  private _getCoords(): Coords {
-    return getCoords(this.root);
   }
 }
 

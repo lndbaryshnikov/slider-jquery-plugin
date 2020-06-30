@@ -16,9 +16,9 @@ class LabelsView {
 
   private options: LabelOptions;
 
-  private root: HTMLElement | null = null;
+  private root: HTMLElement;
 
-  private labelHtml: HTMLDivElement | null = null;
+  private labelHtml: HTMLDivElement;
 
   private labelClickedSubject = new Observer();
 
@@ -37,10 +37,6 @@ class LabelsView {
     const { labels, pips } = options;
     if (!labels && !pips) return;
 
-    if (this.state.isRendered) {
-      this.destroy();
-    }
-
     this.options = options;
 
     this._createLabels();
@@ -56,8 +52,8 @@ class LabelsView {
 
     const {
       sliderSize,
-      labelsArray,
       interval,
+      labelsArray,
       sizeProperty,
       positionProperty,
     } = renderingOptions;
@@ -76,13 +72,13 @@ class LabelsView {
     labelsArray.forEach((label) => {
       scale.append(label);
 
-      const labelSize = getCoords(label)[sizeProperty];
+      const labelSize = this.getLabelCoords(label)[sizeProperty];
       // eslint-disable-next-line no-param-reassign
       label.style[positionProperty] = `${currentLabelIndent - labelSize / 2}px`;
 
       if (this.options.pips) {
-        const pip = label.children[0] as HTMLElement;
-        const pipSize = getCoords(pip)[sizeProperty];
+        const pip = label.firstChild as HTMLDivElement;
+        const pipSize = this.getPipCoords(pip)[sizeProperty];
 
         pip.style[positionProperty] = `${
           labelSize / 2 - pipSize / 2
@@ -94,22 +90,28 @@ class LabelsView {
     this.labelHtml = scale;
   }
 
-  remove(): void {
-    this.root.removeChild(this.labelHtml);
-    this.root = null;
-    this.labelHtml = null;
-  }
-
-  destroy(): void {
-    if (this.state.isRendered) this.remove();
-    this.sliderLabels = null;
-    this.options = null;
-  }
-
   whenUserClicksOnLabel(callback: (middleCoordinate: number) => void): void {
     this.labelClickedSubject.addObserver((middleCoordinate: number) => {
       callback(middleCoordinate);
     });
+  }
+
+  getRootCoords(): Coords {
+    return getCoords(this.root);
+  }
+
+  getLabelCoords(label: number | HTMLDivElement): Coords {
+    if (typeof label === 'number') {
+      return getCoords(this.sliderLabels[label - 1]);
+    }
+    return getCoords(label);
+  }
+
+  getPipCoords(label: number | HTMLDivElement): Coords {
+    if (typeof label === 'number') {
+      return getCoords(this.sliderLabels[label - 1].firstChild as HTMLElement);
+    }
+    return getCoords(label);
   }
 
   private _createLabels(): void {
@@ -175,9 +177,9 @@ class LabelsView {
   }
 
   private _setClickHandler(): void {
-    this.sliderLabels.forEach((label) => {
+    this.sliderLabels.forEach((label, index) => {
       const clickHandler = (): void => {
-        const labelCoords = getCoords(label);
+        const labelCoords = this.getLabelCoords(index + 1);
 
         const middle = this.options.orientation === 'horizontal'
           ? labelCoords.left + labelCoords.width / 2
@@ -202,7 +204,7 @@ class LabelsView {
     const sizeProperty = orientation === 'horizontal' ? 'width' : 'height';
     const positionProperty = orientation === 'horizontal' ? 'left' : 'bottom';
 
-    const sliderSize = getCoords(this.root)[sizeProperty];
+    const sliderSize = this.getRootCoords()[sizeProperty];
 
     let itemsOptimalInterval = this._getLabelsOptimalInterval();
 
@@ -231,7 +233,6 @@ class LabelsView {
       : this.labels.filter(filterLabelsArrayCallback);
 
     const defaultSizeInterval = sliderSize / (this.labels.length - 1);
-
     const newSizeInterval = defaultSizeInterval * itemsOptimalInterval;
 
     return {
@@ -244,13 +245,14 @@ class LabelsView {
   }
 
   private _getMaxLabelCoords(): { maxLabelCoords: Coords; maxPipCoords: Coords } {
-    const maxLabel = this.labels[this.labels.length - 2];
+    const maxLabelNumber = this.labels.length - 1;
+    const maxLabel = this.labels[maxLabelNumber - 1];
     const maxPip = this.options.pips ? maxLabel.children[0] as HTMLElement : null;
 
     this.root.append(maxLabel);
 
-    const maxLabelCoords = getCoords(maxLabel);
-    const maxPipCoords = maxPip && getCoords(maxPip);
+    const maxLabelCoords = this.getLabelCoords(maxLabelNumber);
+    const maxPipCoords = maxPip && this.getPipCoords(maxLabelNumber);
 
     maxLabel.remove();
 
@@ -265,7 +267,7 @@ class LabelsView {
 
     const maxLabelSize = maxLabelCoords[widthOrHeight];
     const maxPipSize = maxPipCoords ? maxPipCoords[widthOrHeight] : null;
-    const sliderSize = getCoords(this.root)[widthOrHeight];
+    const sliderSize = this.getRootCoords()[widthOrHeight];
 
     const itemSize = this.labels ? maxLabelSize : maxPipSize;
     const itemsAmount = this.labels.length;
