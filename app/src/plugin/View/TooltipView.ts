@@ -17,7 +17,7 @@ class TooltipView {
   private root: HTMLElement;
 
   constructor() {
-    this._create();
+    this.create();
   }
 
   get html(): HTMLDivElement {
@@ -76,7 +76,7 @@ class TooltipView {
     this.root = null;
   }
 
-  private _create(): void {
+  private create(): void {
     const tooltip = document.createElement('div');
     tooltip.setAttribute('class', 'jquery-slider__tooltip');
 

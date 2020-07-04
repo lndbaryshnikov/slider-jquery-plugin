@@ -33,7 +33,6 @@
   },
   "rules": {
     "linebreak-style": "off",
-    "no-underscore-dangle": "off",
     "no-await-in-loop": "off",
     "class-methods-use-this": "off",
     "no-new": "off",

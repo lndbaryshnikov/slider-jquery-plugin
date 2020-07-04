@@ -38,8 +38,8 @@ class ConfigItem {
     this.type = type;
     this.optionName = wrapper.getAttribute('data-option');
 
-    this.item = this._getItem(type, wrapper);
-    this._addListener();
+    this.item = this.getItem(type, wrapper);
+    this.addListener();
   }
 
   setSelectOptions(options: string[]): void {
@@ -131,7 +131,7 @@ class ConfigItem {
     });
   }
 
-  private _getItem(
+  private getItem(
     type: ConfigItemType,
     wrapper: HTMLDivElement,
   ): Item {
@@ -181,7 +181,7 @@ class ConfigItem {
     return undefined;
   }
 
-  private _addListener(): void {
+  private addListener(): void {
     const { type } = this;
     const isInputOrSelect = type === 'input' || type === 'select';
 

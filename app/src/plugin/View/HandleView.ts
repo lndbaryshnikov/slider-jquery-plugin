@@ -25,8 +25,8 @@ class HandleView {
   constructor(number: HandleNumber) {
     this.position = number;
 
-    this._createHandle();
-    this._setListeners();
+    this.createHandle();
+    this.setListeners();
   }
 
   whenMouseDown(
@@ -98,7 +98,7 @@ class HandleView {
     orientation: Options['orientation'];
     cursorShift: Shift;
   }): void {
-    const mouseMoveHandle = this._makeMouseMoveHandler({
+    const mouseMoveHandle = this.makeMouseMoveHandler({
       availableSpace, orientation, cursorShift,
     });
     document.addEventListener('mousemove', mouseMoveHandle);
@@ -126,7 +126,7 @@ class HandleView {
     return tooltip && handle.contains(tooltip.html);
   }
 
-  private _createHandle(): void {
+  private createHandle(): void {
     const handle = document.createElement('div');
     handle.setAttribute('class', 'jquery-slider__handle');
     handle.ondragstart = (): false => false;
@@ -134,7 +134,7 @@ class HandleView {
     this.handle = handle;
   }
 
-  private _setListeners(): void {
+  private setListeners(): void {
     const notifyObservers = (mouseDownEvent: MouseEvent): false => {
       const cursorShift = this.getCursorShift(mouseDownEvent);
       this.mouseDownSubject.notifyObservers(cursorShift);
@@ -145,7 +145,7 @@ class HandleView {
     this.handle.addEventListener('mousedown', notifyObservers);
   }
 
-  private _makeMouseMoveHandler({ availableSpace, orientation, cursorShift }: {
+  private makeMouseMoveHandler({ availableSpace, orientation, cursorShift }: {
     availableSpace: Coords;
     orientation: Options['orientation'];
     cursorShift: Shift;

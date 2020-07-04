@@ -25,7 +25,7 @@ class ConfigPanel {
   }) {
     this.wrapper = root;
 
-    this._definePanel(options);
+    this.definePanel(options);
   }
 
   whenOptionValueChange(callback: (valueObjet: ValueObject) => void): void {
@@ -56,7 +56,7 @@ class ConfigPanel {
     item.showError({ errorMessage, inputNumber });
   }
 
-  private _definePanel(options: PanelOptions): void {
+  private definePanel(options: PanelOptions): void {
     const { wrapper } = this;
 
     const getItem = <T extends ConfigItemType>(

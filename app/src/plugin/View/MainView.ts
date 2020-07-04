@@ -92,12 +92,12 @@ class MainView {
     this.root = root || this.root;
     this.root.className = 'jquery-slider';
 
-    this._setElements();
-    this._setSliderClickHandler();
-    this._setUITransition();
-    this._defineHandlePositions();
-    this._renderHandles();
-    this._renderRange();
+    this.setElements();
+    this.setSliderClickHandler();
+    this.setUITransition();
+    this.defineHandlePositions();
+    this.renderHandles();
+    this.renderRange();
   }
 
   destroy(): void {
@@ -109,10 +109,10 @@ class MainView {
   updateValue(value: Options['value']): void {
     this.options.value = value;
 
-    this._defineHandlePositions();
-    this._renderHandles();
-    this._renderRange();
-    this._updateTooltips();
+    this.defineHandlePositions();
+    this.renderHandles();
+    this.renderRange();
+    this.updateTooltips();
   }
 
   refreshValue({ handleCoordinate, handleNumber }: {
@@ -121,7 +121,7 @@ class MainView {
   }): void {
     const maybeFirstOrClosest = this.options.range !== true
       ? 'first'
-      : this._getClosestHandleNumber(handleCoordinate);
+      : this.getClosestHandleNumber(handleCoordinate);
 
     const correctHandleNumber = handleNumber || maybeFirstOrClosest;
     const sliderCoords = this.getCoords();
@@ -145,8 +145,8 @@ class MainView {
       });
       return;
     }
-    const valueInPercents = this._getValueInPercents(handleCoordinate);
-    const value = this._findExactValue(valueInPercents);
+    const valueInPercents = this.getValueInPercents(handleCoordinate);
+    const value = this.findExactValue(valueInPercents);
 
     this.valueChangedSubject.notifyObservers({ value, handleNumber: correctHandleNumber });
   }
@@ -155,7 +155,7 @@ class MainView {
     return getCoords(this.root);
   }
 
-  private _setElements(): void {
+  private setElements(): void {
     this.root.innerHTML = '';
     this.components = {
       range: new RangeView(),
@@ -168,13 +168,13 @@ class MainView {
       root.classList.add(`jquery-slider_color_${styles.slider}`);
     }
 
-    this._setRange();
-    this._setHandles();
-    this._setLabels();
-    this._setTooltips();
+    this.setRange();
+    this.setHandles();
+    this.setLabels();
+    this.setTooltips();
   }
 
-  private _setRange(): void {
+  private setRange(): void {
     const { range } = this.components;
     range.stickTo(this.root);
 
@@ -182,13 +182,13 @@ class MainView {
     range.setModifiers({ orientation, color: this.styles && this.styles.range });
   }
 
-  private _setHandles(): void {
+  private setHandles(): void {
     const { range, orientation } = this.options;
     const handleModifiers = { orientation, color: this.styles && this.styles.handle };
 
     const setHandle = (handle: HandleView): void => {
       handle.stickTo(this.root);
-      handle.whenMouseDown(this._allowHandleMoving.bind(this));
+      handle.whenMouseDown(this.allowHandleMoving.bind(this));
       handle.whenHandleMoved(this.refreshValue.bind(this));
       handle.setModifiers(handleModifiers);
     };
@@ -204,7 +204,7 @@ class MainView {
     }
   }
 
-  private _setLabels(): void {
+  private setLabels(): void {
     const {
       labels, pips, orientation, min, max, step,
     } = this.options;
@@ -234,7 +234,7 @@ class MainView {
     }
   }
 
-  private _setTooltips(): void {
+  private setTooltips(): void {
     const {
       range, tooltip, value, orientation,
     } = this.options;
@@ -271,22 +271,22 @@ class MainView {
     }
   }
 
-  private _allowHandleMoving({ handleNumber, cursorShift }: {
+  private allowHandleMoving({ handleNumber, cursorShift }: {
     handleNumber: HandleNumber;
     cursorShift: Shift;
   }): void {
-    this._cleanUITransition();
+    this.cleanUITransition();
 
     const { firstHandle, secondHandle } = this.components;
     const targetHandle = handleNumber === 'first' ? firstHandle : secondHandle;
 
     const { orientation } = this.options;
-    const availableSpace = this._countAvailableHandleSpace(handleNumber);
+    const availableSpace = this.countAvailableHandleSpace(handleNumber);
 
     targetHandle.allowMovingWithinSpace({ cursorShift, availableSpace, orientation });
   }
 
-  private _setSliderClickHandler(): void {
+  private setSliderClickHandler(): void {
     const sliderClickHandler = (clickEvent: MouseEvent): void => {
       const { firstHandle, secondHandle } = this.components;
       const { target } = clickEvent;
@@ -300,7 +300,7 @@ class MainView {
 
       const coordinateToMove = orientation === 'horizontal' ? pageX : pageY;
       const handleNumber = range === true
-        ? this._getClosestHandleNumber(coordinateToMove)
+        ? this.getClosestHandleNumber(coordinateToMove)
         : 'first';
 
       this.refreshValue({
@@ -315,7 +315,7 @@ class MainView {
     );
   }
 
-  private _setUITransition(): void {
+  private setUITransition(): void {
     const { animate } = this.options;
 
     const maybeNull = typeof animate === 'number' ? animate : 0;
@@ -335,7 +335,7 @@ class MainView {
     document.addEventListener('mouseup', applyTransition);
   }
 
-  private _cleanUITransition(): void {
+  private cleanUITransition(): void {
     const { firstHandle, secondHandle, range } = this.components;
 
     firstHandle.setTransition(0);
@@ -343,7 +343,7 @@ class MainView {
     range.setTransition(0);
   }
 
-  private _defineHandlePositions(): void {
+  private defineHandlePositions(): void {
     if (!this.isRendered()) return;
 
     const positions = [];
@@ -380,7 +380,7 @@ class MainView {
     this.handlePositions = positions;
   }
 
-  private _renderHandles(): void {
+  private renderHandles(): void {
     const { firstHandle, secondHandle } = this.components;
     const [firstHandlePositionInPx, secondHandlePositionInPx] = this.handlePositions;
 
@@ -393,7 +393,7 @@ class MainView {
     }
   }
 
-  private _renderRange(): void {
+  private renderRange(): void {
     const { range } = this.options;
 
     if (range === false) return;
@@ -412,7 +412,7 @@ class MainView {
     this.components.range.setPosition({ orientation, firstPoint, secondPoint });
   }
 
-  private _updateTooltips(): void {
+  private updateTooltips(): void {
     const { firstTooltip, secondTooltip } = this.components;
     const { value, range, tooltip: tooltipOption } = this.options;
 
@@ -435,7 +435,7 @@ class MainView {
     updateTooltip({ tooltip: secondTooltip, tooltipValue: secondValue });
   }
 
-  private _getValueInPercents(handleCoordinate: number): number {
+  private getValueInPercents(handleCoordinate: number): number {
     const sliderCoords = this.getCoords();
     const isHorizontal = this.options.orientation === 'horizontal';
 
@@ -450,11 +450,11 @@ class MainView {
     return valueInPercents;
   }
 
-  private _findExactValue(valueInPercents: number): number {
+  private findExactValue(valueInPercents: number): number {
     const { max, min } = this.options;
     const difference = max - min;
     const approximateValue = valueInPercents * difference + min;
-    const valuesArray = this._getValuesArray();
+    const valuesArray = this.getValuesArray();
 
     let exactValue: number;
 
@@ -476,7 +476,7 @@ class MainView {
     return exactValue;
   }
 
-  private _getValuesArray(): number[] {
+  private getValuesArray(): number[] {
     const valuesArray: number[] = [];
     const { min, max, step } = this.options;
 
@@ -486,7 +486,7 @@ class MainView {
     return valuesArray;
   }
 
-  private _getClosestHandleNumber(coordinate: number): 'first' | 'second' {
+  private getClosestHandleNumber(coordinate: number): 'first' | 'second' {
     let handleNumber: 'first' | 'second';
 
     const { orientation } = this.options;
@@ -532,7 +532,7 @@ class MainView {
     return handleNumber;
   }
 
-  private _countAvailableHandleSpace(
+  private countAvailableHandleSpace(
     targetHandleNumber: 'first' | 'second',
   ): Omit<Coords, 'centerX' | 'centerY'> {
     const { firstHandle, secondHandle } = this.components;

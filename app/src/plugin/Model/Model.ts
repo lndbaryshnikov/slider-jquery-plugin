@@ -46,7 +46,7 @@ class Model {
   }
 
   setOptions(userOptions?: UserOptions): void {
-    const areUserOptionsCorrect = this._checkUserOptions(userOptions);
+    const areUserOptionsCorrect = this.checkUserOptions(userOptions);
 
     if (!areUserOptionsCorrect) return;
 
@@ -56,7 +56,7 @@ class Model {
     };
 
     if (userOptions) {
-      const areOptionsCorrect = this._checkFullOptions(fullOptions);
+      const areOptionsCorrect = this.checkFullOptions(fullOptions);
       if (!areOptionsCorrect) return;
     }
 
@@ -78,7 +78,7 @@ class Model {
     }
   }
 
-  private _checkUserOptions(userOptions: UserOptions): boolean {
+  private checkUserOptions(userOptions: UserOptions): boolean {
     const { errorSubject } = this;
 
     const isObjectPassed = (
@@ -102,7 +102,7 @@ class Model {
     return true;
   }
 
-  private _checkFullOptions(fullOptions: Options): boolean {
+  private checkFullOptions(fullOptions: Options): boolean {
     const { errorSubject } = this;
 
     const {
@@ -127,7 +127,7 @@ class Model {
     }
 
     // Options order is important
-    const errorObject = this._checkSingleOption(
+    const errorObject = this.checkSingleOption(
       fullOptions,
       'range',
       'orientation',
@@ -149,7 +149,7 @@ class Model {
     return true;
   }
 
-  private _checkSingleOption(
+  private checkSingleOption(
     fullOptions: Options,
     ...optionNames: (keyof Options)[]
   ): ErrorObject | undefined {
