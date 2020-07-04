@@ -4,7 +4,6 @@ import { Options } from '../Model/modelOptions';
 import Observer from '../Observer/Observer';
 import TooltipView from './TooltipView';
 
-type HandleMouseEvent = 'click' | 'mousedown';
 type HandleNumber = 'first' | 'second';
 type HandleData = {
   handleNumber: HandleNumber;
@@ -184,6 +183,5 @@ class HandleView {
 
 export default HandleView;
 export {
-  HandleMouseEvent,
   HandleNumber,
 };
