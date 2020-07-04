@@ -41,7 +41,7 @@ interface PluginMethods {
 
   const pluginMethods: PluginMethods = {
     init(userOptions?: CompleteUserOptions): JQuery | void {
-      const $this = ((this as unknown) as SliderElement).eq(0);
+      const $this = this.eq(0);
 
       if (!getData($this)) {
         const slider = new Presenter(new MainView(), new Model());
@@ -63,7 +63,7 @@ interface PluginMethods {
     | CompleteUserOptions
     | SliderElement
     ) {
-      const $this = ((this as unknown) as SliderElement).eq(0);
+      const $this = this.eq(0);
       const data = getData($this);
       if (data) {
         const { slider } = data;
@@ -80,7 +80,7 @@ interface PluginMethods {
       return undefined;
     },
     destroy(): void {
-      const $this = ((this as unknown) as SliderElement).eq(0);
+      const $this = this.eq(0);
       const data = getData($this);
 
       if (data) {
