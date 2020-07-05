@@ -2,31 +2,16 @@ import MainView from '../../../src/plugin/View/MainView';
 import Model from '../../../src/plugin/Model/Model';
 import { Options, UserOptions } from '../../../src/plugin/Model/modelOptions';
 import { Coords } from '../../../src/utils/getCoords';
+import { horizontalSliderCoords, verticalSliderCoords } from './mockCoords';
 
 describe('MainView tests', () => {
   let view: MainView;
   let root: HTMLDivElement;
   let coordsSpy: jest.SpyInstance;
   const defaults = Model.defaultOptions;
-  const horizontalCoords = {
-    width: 300,
-    height: 6,
-    left: 20,
-    right: 320,
-    top: 200,
-    bottom: 206,
-  };
-  const verticalCoords = {
-    width: 6,
-    height: 300,
-    left: 20,
-    right: 26,
-    top: 100,
-    bottom: 400,
-  };
 
   const switchCoordsTo = (orientation: Options['orientation']): void => {
-    const coords = orientation === 'horizontal' ? horizontalCoords : verticalCoords;
+    const coords = orientation === 'horizontal' ? horizontalSliderCoords : verticalSliderCoords;
     coordsSpy = jest.spyOn(view, 'getCoords')
       .mockImplementation((): Coords => coords);
   };
@@ -187,7 +172,7 @@ describe('MainView tests', () => {
 
       test('works when orientation is vertical', () => {
         view.setOptions({ ...optionsWithRangeTrue, ...{ orientation: 'vertical' } });
-        coordsSpy.mockImplementation(() => verticalCoords);
+        coordsSpy.mockImplementation(() => verticalSliderCoords);
         view.render(root);
 
         const { firstHandle, secondHandle } = view.html;

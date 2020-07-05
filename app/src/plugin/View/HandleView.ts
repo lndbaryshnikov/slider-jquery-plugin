@@ -8,7 +8,13 @@ type HandleNumber = 'first' | 'second';
 type HandleData = {
   handleNumber: HandleNumber;
   handleCoordinate: Coords;
-}
+};
+type NewHandlePositionData = {
+  availableSpace: Coords;
+  orientation: Options['orientation'];
+  cursorShift: Shift;
+  mouseCoords: { mouseX: number; mouseY: number };
+};
 
 class HandleView {
   private handle: HTMLDivElement;
@@ -125,6 +131,37 @@ class HandleView {
     return tooltip && handle.contains(tooltip.html);
   }
 
+  validateNewCoordinate({
+    availableSpace, orientation, cursorShift, mouseCoords,
+  }: NewHandlePositionData): number {
+    const { x: shiftX, y: shiftY } = cursorShift;
+    const { mouseX, mouseY } = mouseCoords;
+    const isHorizontal = orientation === 'horizontal';
+
+    const newPosition = isHorizontal
+      ? mouseX - shiftX - availableSpace.left
+      : mouseY - shiftY - availableSpace.top;
+
+    const { width: handleWidth, height: handleHeight } = this.getCoords();
+
+    const firstEdge = isHorizontal
+      ? 0 - handleWidth / 2
+      : 0 - handleHeight / 2;
+
+    const secondEdge = isHorizontal
+      ? availableSpace.width - handleWidth / 2
+      : availableSpace.height - handleHeight / 2;
+
+    const maybeSecondEdge = newPosition > secondEdge ? secondEdge : newPosition;
+    const correctPosition = newPosition < firstEdge ? firstEdge : maybeSecondEdge;
+
+    const correctHandleCoordinate = isHorizontal
+      ? availableSpace.left + correctPosition + handleWidth / 2
+      : availableSpace.top + correctPosition + handleHeight / 2;
+
+    return correctHandleCoordinate;
+  }
+
   private createHandle(): void {
     const handle = document.createElement('div');
     handle.setAttribute('class', 'jquery-slider__handle');
@@ -144,36 +181,18 @@ class HandleView {
     this.handle.addEventListener('mousedown', notifyObservers);
   }
 
-  private makeMouseMoveHandler({ availableSpace, orientation, cursorShift }: {
-    availableSpace: Coords;
-    orientation: Options['orientation'];
-    cursorShift: Shift;
-  }): (mouseMoveEvent: MouseEvent) => void {
+  private makeMouseMoveHandler({
+    availableSpace, orientation, cursorShift,
+  }: Omit<NewHandlePositionData, 'mouseCoords'>): (mouseMoveEvent: MouseEvent) => void {
     return (mouseMoveEvent: MouseEvent): void => {
-      const isHorizontal = orientation === 'horizontal';
-      const { pageX: eventX, pageY: eventY } = mouseMoveEvent;
-      const { x: shiftX, y: shiftY } = cursorShift;
+      const { pageX: mouseX, pageY: mouseY } = mouseMoveEvent;
 
-      const newPosition = isHorizontal
-        ? eventX - shiftX - availableSpace.left
-        : eventY - shiftY - availableSpace.top;
-
-      const { width: handleWidth, height: handleHeight } = this.getCoords();
-
-      const firstEdge = isHorizontal
-        ? 0 - handleWidth / 2
-        : 0 - handleHeight / 2;
-
-      const secondEdge = isHorizontal
-        ? availableSpace.width - handleWidth / 2
-        : availableSpace.height - handleHeight / 2;
-
-      const maybeSecondEdge = newPosition > secondEdge ? secondEdge : newPosition;
-      const correctPosition = newPosition < firstEdge ? firstEdge : maybeSecondEdge;
-
-      const handleCoordinate = isHorizontal
-        ? availableSpace.left + correctPosition + handleWidth / 2
-        : availableSpace.top + correctPosition + handleHeight / 2;
+      const handleCoordinate = this.validateNewCoordinate({
+        availableSpace,
+        orientation,
+        cursorShift,
+        mouseCoords: { mouseX, mouseY },
+      });
 
       const { handleNumber } = this;
       this.handleMovedSubject.notifyObservers({ handleNumber, handleCoordinate });
@@ -184,4 +203,5 @@ class HandleView {
 export default HandleView;
 export {
   HandleNumber,
+  NewHandlePositionData,
 };
