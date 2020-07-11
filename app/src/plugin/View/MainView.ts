@@ -156,7 +156,8 @@ class MainView {
   }
 
   private setElements(): void {
-    this.root.innerHTML = '';
+    this.cleanRoot();
+
     this.components = {
       range: new RangeView(),
       firstHandle: new HandleView('first'),
@@ -172,6 +173,15 @@ class MainView {
     this.setHandles();
     this.setLabels();
     this.setTooltips();
+  }
+
+  private cleanRoot(): void {
+    const { root: oldRoot } = this;
+    const cleanRoot = oldRoot.cloneNode(false) as HTMLElement;
+
+    oldRoot.parentElement.replaceChild(cleanRoot, oldRoot);
+
+    this.root = cleanRoot;
   }
 
   private setRange(): void {
@@ -288,12 +298,11 @@ class MainView {
 
   private setSliderClickHandler(): void {
     const sliderClickHandler = (clickEvent: MouseEvent): void => {
-      const { firstHandle, secondHandle } = this.components;
       const { target } = clickEvent;
-      const areHandlesTargets = firstHandle.isEventTarget(target)
-        || (secondHandle && secondHandle.isEventTarget(target));
+      const areSliderTarget = target === this.root
+        || this.components.range.isEventTarget(target);
 
-      if (areHandlesTargets) return;
+      if (!areSliderTarget) return;
 
       const { pageX, pageY } = clickEvent;
       const { orientation, range } = this.options;
@@ -307,8 +316,6 @@ class MainView {
         handleCoordinate: coordinateToMove,
         handleNumber,
       });
-
-      clickEvent.stopImmediatePropagation();
     };
 
     this.root.addEventListener(

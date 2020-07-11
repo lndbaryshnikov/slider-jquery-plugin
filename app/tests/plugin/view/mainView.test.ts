@@ -30,16 +30,15 @@ describe('MainView tests', () => {
 
   afterEach(() => {
     root.remove();
+
+    const slider = document.querySelector('.jquery-slider');
+    if (slider) slider.remove();
   });
 
   describe('Handles rendering depends on range', () => {
     const defaultsRangeMin = getOptions({ range: 'min' });
     const defaultsRangeTrue = getOptions({ range: true, value: [0, 100] });
     const defaultsRangeFalse = getOptions({ range: false });
-
-    afterEach(() => {
-      root.remove();
-    });
 
     test('one firstHandle rendered if range is false and min', () => {
       view.setOptions(defaultsRangeFalse);

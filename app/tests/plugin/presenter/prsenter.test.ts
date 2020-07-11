@@ -7,6 +7,8 @@ describe('Presenter', () => {
   let slider: Presenter;
   let root: HTMLDivElement;
 
+  const getRoot = (): HTMLDivElement => document.querySelector('.jquery-slider');
+
   beforeEach(() => {
     root = document.createElement('div');
     document.body.append(root);
@@ -15,6 +17,9 @@ describe('Presenter', () => {
 
   afterEach(() => {
     root.remove();
+
+    const newRoot = document.querySelector('.jquery-slider');
+    if (newRoot) newRoot.remove();
   });
 
   describe('Initialize method', () => {
@@ -77,14 +82,15 @@ describe('Presenter', () => {
 
       const range = document.querySelector('.jquery-slider__range');
       const handle = document.querySelector('.jquery-slider__handle');
+      const newRoot = getRoot();
 
-      expect(document.body.contains(root)).toBeTruthy();
-      expect(root.contains(range)).toBeTruthy();
-      expect(root.contains(handle)).toBeTruthy();
+      expect(document.body.contains(newRoot)).toBeTruthy();
+      expect(newRoot.contains(range)).toBeTruthy();
+      expect(newRoot.contains(handle)).toBeTruthy();
 
       slider.destroy();
 
-      expect(document.body.contains(root)).not.toBeTruthy();
+      expect(document.body.contains(newRoot)).not.toBeTruthy();
     });
   });
 

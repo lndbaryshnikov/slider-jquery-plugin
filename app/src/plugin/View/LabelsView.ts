@@ -178,7 +178,7 @@ class LabelsView {
 
   private setClickHandler(): void {
     this.sliderLabels.forEach((label, index) => {
-      const clickHandler = (clickEvent: MouseEvent): void => {
+      const clickHandler = (): void => {
         const labelCoords = this.getLabelCoords(index + 1);
 
         const middle = this.options.orientation === 'horizontal'
@@ -186,8 +186,6 @@ class LabelsView {
           : labelCoords.top + labelCoords.height / 2;
 
         this.labelClickedSubject.notifyObservers(middle);
-
-        clickEvent.stopImmediatePropagation();
       };
 
       label.addEventListener('click', clickHandler);
