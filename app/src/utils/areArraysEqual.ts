@@ -1,8 +1,9 @@
-type AllowedArrayMembers = string | number | [];
+type allowedArrayPrimitive = string | number;
+type AllowedArrayMember = allowedArrayPrimitive | allowedArrayPrimitive[];
 
 const areArraysEqual = (
-  firstArray: AllowedArrayMembers[],
-  secondArray: AllowedArrayMembers[],
+  firstArray: AllowedArrayMember[],
+  secondArray: AllowedArrayMember[],
 ): boolean => {
   if (!firstArray || !secondArray) return false;
 
@@ -12,8 +13,8 @@ const areArraysEqual = (
     // Check if we have nested arrays
     if (firstArray[index] instanceof Array && secondArray[index] instanceof Array) {
       // Recurse into the nested arrays
-      const nestedFirst = firstArray[index] as [];
-      const nestedSecond = secondArray[index] as [];
+      const nestedFirst = firstArray[index] as AllowedArrayMember[];
+      const nestedSecond = secondArray[index] as AllowedArrayMember[];
       if (!areArraysEqual(nestedFirst, nestedSecond)) return true;
     } else if (firstArray[index] !== secondArray[index]) {
       // Warning - two different object instances
