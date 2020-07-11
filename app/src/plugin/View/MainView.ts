@@ -307,6 +307,8 @@ class MainView {
         handleCoordinate: coordinateToMove,
         handleNumber,
       });
+
+      clickEvent.stopImmediatePropagation();
     };
 
     this.root.addEventListener(
