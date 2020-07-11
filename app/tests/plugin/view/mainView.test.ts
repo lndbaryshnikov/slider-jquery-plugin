@@ -126,7 +126,7 @@ describe('MainView tests', () => {
       testRefreshValueMethod({ coordinate: 130, expectedValue: 10 });
     });
 
-    describe('_getClosestHandleNumber method is correct', () => {
+    describe('getClosestHandleNumber method is correct', () => {
       const optionsWithRangeTrue = getOptions({
         range: true,
         value: [10, 90],
@@ -195,7 +195,7 @@ describe('MainView tests', () => {
     });
   });
 
-  test('_setTooltipMethod - tooltips set correctly', () => {
+  test('setTooltips method - tooltips set correctly', () => {
     const defaultsWithoutTooltip = getOptions();
     const defaultsWithTooltip = getOptions({ tooltip: true });
     const defaultsWithTwoTooltips = getOptions({
