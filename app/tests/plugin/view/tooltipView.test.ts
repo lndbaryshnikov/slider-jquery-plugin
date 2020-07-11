@@ -32,7 +32,7 @@ describe('TooltipView tests', () => {
       expect(root.contains(tooltipOnDon)).toBeTruthy();
       expect(tooltipOnDon.innerHTML).toBe('35');
 
-      const defaultsWIthAnotherValue = { ...options, ...{ value: 50 } };
+      const defaultsWIthAnotherValue = { ...options, value: 50 };
       tooltip.setOptions(defaultsWIthAnotherValue);
       tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
@@ -50,7 +50,7 @@ describe('TooltipView tests', () => {
 
       expect(tooltipOnDon.innerHTML).toBe('35$');
 
-      const defaultsWithAnotherValue = { ...optionsWithFunction, ...{ value: 70 } };
+      const defaultsWithAnotherValue = { ...optionsWithFunction, value: 70 };
       tooltip.setOptions(defaultsWithAnotherValue);
       tooltipOnDon = document.querySelector('.jquery-slider__tooltip');
 
@@ -123,7 +123,7 @@ describe('TooltipView tests', () => {
   });
 
   test('setStyle method with custom styles', () => {
-    tooltip.setOptions({ ...options, ...{ style: 'orange' } });
+    tooltip.setOptions({ ...options, style: 'orange' });
 
     expect(tooltip.html.className).toBe(
       `${horizontalClass}jquery-slider__tooltip_color_orange`,

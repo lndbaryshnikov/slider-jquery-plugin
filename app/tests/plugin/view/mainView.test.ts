@@ -170,7 +170,7 @@ describe('MainView tests', () => {
       });
 
       test('works when orientation is vertical', () => {
-        view.setOptions({ ...optionsWithRangeTrue, ...{ orientation: 'vertical' } });
+        view.setOptions({ ...optionsWithRangeTrue, orientation: 'vertical' });
         coordsSpy.mockImplementation(() => verticalSliderCoords);
         view.render(root);
 

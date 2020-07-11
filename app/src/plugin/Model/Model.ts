@@ -65,7 +65,7 @@ class Model {
   }
 
   refreshValue(value: Options['value']): void {
-    const newOptions = { ...this.options, ...{ value } };
+    const newOptions = { ...this.options, value };
 
     const { result, errorCode } = modelValidationUtils.validateValue(newOptions);
 
