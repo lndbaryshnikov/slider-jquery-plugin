@@ -1,7 +1,11 @@
 import HandleView, { NewHandlePositionData } from '../../../src/plugin/View/HandleView';
 import TooltipView from '../../../src/plugin/View/TooltipView';
 import { Options } from '../../../src/plugin/Model/modelOptions';
-import { horizontalSliderCoords, verticalSliderCoords, cursorShiftMock } from '../../mocks/mockCoords';
+import {
+  horizontalSliderCoords,
+  verticalSliderCoords,
+  cursorShiftMock,
+} from '../../mocks/mockCoords';
 
 describe('HandleView tests', () => {
   let root: HTMLDivElement;

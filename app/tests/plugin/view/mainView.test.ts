@@ -125,7 +125,7 @@ describe('MainView tests', () => {
       testRefreshValueMethod({ coordinate: 130, expectedValue: 10 });
     });
 
-    describe('getClosestHandleNumber method is correct', () => {
+    describe('closest handle is chosen correctly when range is true', () => {
       const optionsWithRangeTrue = getOptions({
         range: true,
         value: [10, 90],
@@ -147,7 +147,7 @@ describe('MainView tests', () => {
         bottom: 373,
       };
 
-      test('works when orientation is horizontal', () => {
+      test('correct when orientation is horizontal', () => {
         view.setOptions(optionsWithRangeTrue);
         view.render(root);
 
@@ -169,7 +169,7 @@ describe('MainView tests', () => {
         testRefreshValueMethod({ coordinate: 320, expectedValue: [10, 100] });
       });
 
-      test('works when orientation is vertical', () => {
+      test('correct when orientation is vertical', () => {
         view.setOptions({ ...optionsWithRangeTrue, orientation: 'vertical' });
         coordsSpy.mockImplementation(() => verticalSliderCoords);
         view.render(root);
@@ -194,7 +194,7 @@ describe('MainView tests', () => {
     });
   });
 
-  test('setTooltips method - tooltips set correctly', () => {
+  test('tooltips are set correctly', () => {
     const defaultsWithoutTooltip = getOptions();
     const defaultsWithTooltip = getOptions({ tooltip: true });
     const defaultsWithTwoTooltips = getOptions({
