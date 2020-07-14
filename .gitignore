@@ -5,7 +5,10 @@ node_modules/
 # Dist
 dist/
 
-# Test Coverage
+# Tests
 coverage/
+
+# VSCode Config
+.vscode/
 
 
