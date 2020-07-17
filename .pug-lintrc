@@ -21,7 +21,7 @@
   "validateAttributeSeparator": { "separator": ", ", "multiLineSeparator": ",\n  " },
   "validateIndentation": 2,
   "validateDivTags": true,
-  "validateLineBreaks": "CRLF",
+  "validateLineBreaks": null,
   "validateSelfClosingTags": true,
   "validateTemplateString": true
 }
