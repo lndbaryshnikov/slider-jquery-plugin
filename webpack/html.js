@@ -5,7 +5,7 @@ module.exports = function (src) {
     plugins: [
       new HtmlWebpackPlugin({
         filename: 'index.html',
-        chunks: ['jquery-slider-demo'],
+        chunks: ['index'],
         template: `${src}/pages/slider-demo/slider-demo.pug`,
       }),
     ],

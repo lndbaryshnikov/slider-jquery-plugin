@@ -1,4 +1,5 @@
 const path = require('path');
+
 const merge = require('webpack-merge');
 
 const babel = require('./webpack/babel');
@@ -21,8 +22,8 @@ const PATHS = {
 const common = merge([
   {
     entry: {
-      'jquery-slider': `${PATHS.src}/plugin/main.ts`,
-      'jquery-slider-demo': `${PATHS.src}/pages/slider-demo/slider-demo.ts`,
+      index: `${PATHS.src}/pages/slider-demo/slider-demo.ts`,
+      'jquery-slider-plugin': `${PATHS.src}/plugin/main.ts`,
     },
 
     output: {
