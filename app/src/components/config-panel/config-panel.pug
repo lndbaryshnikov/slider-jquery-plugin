@@ -3,21 +3,21 @@ include ../config-item/config-item
 mixin config-panel(options)
   -
     options = options || [
-      ["min", "input"],
-      ["max", "input"],
-      ["step", "input"],
-      ["value", "range"],
-      ["range", "select"],
-      ["orientation", "select"],
-      ["tooltip", "select"],
-      ["animate", "select"],
-      ["labels", "select"],
-      ["pips", "select"]
+      ['min', 'input'],
+      ['max', 'input'],
+      ['step', 'input'],
+      ['value', 'range'],
+      ['range', 'select'],
+      ['orientation', 'select'],
+      ['tooltip', 'select'],
+      ['animate', 'select'],
+      ['labels', 'select'],
+      ['pips', 'select'],
     ];
 
   .config-panel.js-config-panel
     each item in options
-      - var [optionName, type] = item; 
+      - const [optionName, type] = item; 
 
       .config-panel__item
         +config-item({ optionName, type })
