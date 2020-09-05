@@ -1,27 +1,32 @@
 # slider-jquery-plugin
-    Кастомизируемый плагин-бегунок для JQuery с множеством опций для настрйоки нужного внешнего вида и поведения.
+    Кастомизируемый плагин-бегунок для JQuery с множеством опций для настройки нужного внешнего вида и поведения.
 
-Для ознакомления страница выложена на 
-[GitHub Pages](https://lndbaryshnikov.github.io/slider-jquery-plugin/).
+Для ознакомления страница выложена на [GitHub Pages](https://lndbaryshnikov.github.io/slider-jquery-plugin/).
 
 Развертывание 
 -------------
 ```bash
 $ git clone https://github.com/lndbaryshnikov/slider-jquery-plugin.git
+$ cd jquery-slider-plugin
 $ npm install
 $ npm run build
 ```
 
-Тестирование 
--------------
+Развертывание на GitHub Pages
 ```bash
-$ npm run test
+$ npm run deploy
 ```
 
 Сервер для разработки
 -------------
 ```bash
 $ npm run server
+```
+
+Тестирование 
+-------------
+```bash
+$ npm run test
 ```
 
 Линтинг (Pug, SCSS, JS)
@@ -32,7 +37,6 @@ $ npm run lint
 
 Отчет о покрытии тестами
 -------------
-Не включает тесты View в связке с Puppeteer
 ```bash
 $ npm run coverage
 ```
@@ -78,38 +82,38 @@ $ npm run coverage
 (Observer). Наблюдатель позволяет слоям легко подписываться на 
 изменения и оповещать о них.
 
-Приложение полность покрыто тестами. Тесты написаны с использованием
+Приложение полностью покрыто тестами. Тесты написаны с использованием
 фреймворка Jest. Тесты отображения реализованы и запускаются с 
 с помощью библиотеки Puppeteer. 
 
 Плагин добавляет в объект JQuery метод слайдер, который при инициализации 
 вешает бегунок на элемент по селектору:
 При инициализации возможна либо передача объекта опций, либо инициализация
-без ничего (тогда слайдре унаследует настрйоки по умолчанию).
+без ничего (тогда слайдер унаследует настройки по умолчанию).
 В дальнейшем возможно, с помощью параметров метода `slider`,
 получение объекта настроек или конкретной опции, установка также настроек 
 объектом или по отдельности:
 
 ```js
-    $("#selector").slider(); //инициализация с настройками по умолчанию
-    $("#selector").slider({min: 10, tooltip: true }); //инициализация с пользовательскими настройками
-    $("#selector").slider("options"); //возвращает объект текущих настроек
-    $("#selector").slider("options", { range: false, orientation: "vertical" }); //устанавливает новые опции
-    $("#selector").slider("destroy"); //удаляет слайдер
+    $('#root').slider(); // инициализация с настройками по умолчанию
+    $('#root').slider({ min: 10, tooltip: true }); // инициализация с пользовательскими настройками
+    $('#root').slider('options'); // возвращает объект текущих настроек
+    $('#root').slider('options', { range: false, orientation: 'vertical' }); // устанавливает новые опции
+    $('#root').slider('destroy'); // удаляет слайдер
 ```
 
-Сладер предусматривает следующии опции для конфигурации:
+Слайдер предусматривает следующие опции для конфигурации:
 ```js
     type Options = {
         min: number;
         max: number;
         step: number;
         value: number | number[];
-        orientation: "horizontal" | "vertical";
-        range: "min" | "max" | boolean;
-        tooltip: boolean | (value?: Options["value"]);
-        animate: "slow" | "fast" | false | number;
-        labels: true | false | (value?: Options["value"]) => string | number;
+        orientation: 'horizontal' | 'vertical';
+        range: 'min' | 'max' | boolean;
+        tooltip: boolean | (value: number) => string | number;
+        animate: 'slow' | 'fast' | false | number;
+        labels: true | false | (value: number) => string | number;
         pips: boolean;
         change: ((value: number | number[]) => void) | false;
 
@@ -128,4 +132,4 @@ $ npm run coverage
  
 **UML диаграмма архитектуры приложения:**
 
-![UML Diagram](https://github.com/lndbaryshnikov/slider-jquery-plugin/blob/master/app/src/assets/images/uml.png)
+![UML Diagram](https://github.com/lndbaryshnikov/slider-jquery-plugin/blob/master/src/plugin/uml-diagram.png)

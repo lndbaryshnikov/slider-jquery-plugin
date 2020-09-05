@@ -1,12 +1,12 @@
 const path = require('path');
 
-module.exports = function () {
+module.exports = function (src) {
   return {
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          include: path.resolve(__dirname, '../app'),
+          include: path.resolve(__dirname, src),
           use: 'ts-loader',
         },
       ],

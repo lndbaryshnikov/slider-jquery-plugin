@@ -9,20 +9,20 @@ const styles = require('./webpack/styles');
 const images = require('./webpack/images');
 const fonts = require('./webpack/fonts');
 const devserver = require('./webpack/devserver');
-const provideJQuery = require('./webpack/provide-jquery');
+const jqueryProvider = require('./webpack/jquery-provider');
 const typescript = require('./webpack/typescript');
 const favicons = require('./webpack/favicons');
 const minimizer = require('./webpack/minimizer');
 
 const PATHS = {
-  src: path.join(__dirname, 'app/src'),
+  src: path.join(__dirname, 'src'),
   dist: path.join(__dirname, 'dist'),
 };
 
-const common = merge([
+const commonSet = merge([
   {
     entry: {
-      index: `${PATHS.src}/pages/slider-demo/slider-demo.ts`,
+      index: `${PATHS.src}/demo-page/demo-page.ts`,
       'jquery-slider-plugin': `${PATHS.src}/plugin/main.ts`,
     },
 
@@ -38,22 +38,28 @@ const common = merge([
     devtool: 'source-map',
   },
   minimizer(),
-  html(PATHS.src),
-  babel(),
+  babel('../src'),
+  typescript('../src'),
   pug(),
   styles(),
-  images(),
-  fonts(),
-  provideJQuery(),
-  typescript(),
-  favicons('./app/src/images/favicon.png'),
+  html('../src/demo-page/demo-page.pug'),
+  images({
+    src: '../src',
+    exclude: [
+      '../src/demo-page/assets/fonts',
+      '../src/demo-page/assets/favicons',
+    ],
+  }),
+  fonts('../src/assets/fonts'),
+  jqueryProvider(),
+  favicons('../src/demo-page/assets/favicons'),
 ]);
 
 module.exports = function (env) {
   if (env === 'production') {
-    return common;
+    return commonSet;
   }
   if (env === 'development') {
-    return merge([{}, common, devserver()]);
+    return merge([{}, commonSet, devserver()]);
   }
 };

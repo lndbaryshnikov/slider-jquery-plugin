@@ -1,1 +1,6 @@
+# Dist
 /dist
+
+# Webpack config
+webpack/
+webpack.config.js

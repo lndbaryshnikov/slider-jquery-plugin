@@ -1,0 +1,36 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  font-family: 'Times New Roman', Arial, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  color: black;
+  background-color: #fff;
+}
+
+.header {
+  margin: 1.2rem;
+  font-size: 3rem;
+  text-align: center;
+  user-select: none;
+}
+
+.samples-wrapper {
+  margin: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.panel-wrapper {
+  margin: 0.5rem;
+}
+
+.sign {
+  text-align: center;
+  user-select: none;
+}

@@ -1,12 +1,14 @@
+const path = require('path');
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = function (src) {
+module.exports = function (templateSrc) {
   return {
     plugins: [
       new HtmlWebpackPlugin({
         filename: 'index.html',
         chunks: ['index'],
-        template: `${src}/pages/slider-demo/slider-demo.pug`,
+        template: path.resolve(__dirname, templateSrc),
       }),
     ],
   };

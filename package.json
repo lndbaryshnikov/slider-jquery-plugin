@@ -1,23 +1,20 @@
 {
   "name": "jquery-slider",
   "version": "1.0.0",
-  "description": "",
+  "description": "Slider plugin for jQuery",
   "main": "index.js",
   "scripts": {
     "server": "webpack-dev-server --mode development --open --env development",
     "build": "webpack --mode production --env production",
-    "test": "jest -c jest.config.js",
-    "lint": "npm run eslint && npm run stylelint && npm run pugLint",
-    "coverage": "jest -c jest.config.js --coverage",
     "deploy": "gh-pages -d dist",
-    "dev": "webpack --mode development --env development",
-    "watch": "webpack --mode development --watch --env development",
-    "watchTest": "jest -c jest.config.js --watchAll",
+    "test": "jest -c jest.config.js",
+    "testServer": "jest -c jest.config.js --watchAll",
+    "coverage": "jest -c jest.config.js --coverage",
+    "lint": "npm run eslint && npm run stylelint && npm run pugLint",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx app",
     "eslintFix": "eslint --ext .js,.jsx,.ts,.tsx app --fix",
     "pugLint": "pug-lint --config .pug-lintrc app",
-    "stylelint": "stylelint --config .stylelintrc \"app/src/**/*.scss\"",
-    "stylelintFix": "stylelint --config .stylelintrc \"app/src/**/*.scss\" --fix"
+    "stylelint": "stylelint --config .stylelintrc \"app/src/**/*.scss\""
   },
   "repository": {
     "type": "git",
