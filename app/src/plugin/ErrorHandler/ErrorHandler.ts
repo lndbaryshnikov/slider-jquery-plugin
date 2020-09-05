@@ -1,10 +1,10 @@
 import errorList from './errorList';
 
 type ErrorObject = {
+  errorCode: string;
   type?: 'options' | 'plugin';
   option?: string;
   value?: string;
-  errorCode: string;
 };
 
 class ErrorHandler {
