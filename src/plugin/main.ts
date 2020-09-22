@@ -111,8 +111,6 @@ interface PluginMethods {
       return pluginMethods.init.call(this, pluginOptions);
     }
     throw new Error(`Method '${methodNameOrOptions}' doesn't exist for jQuery.slider`);
-
-    return undefined;
   };
 })(jQuery);
 
