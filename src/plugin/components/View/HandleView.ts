@@ -7,7 +7,7 @@ import TooltipView from './TooltipView';
 type HandleNumber = 'first' | 'second';
 type HandleData = {
   handleNumber: HandleNumber;
-  handleCoordinate: Coords;
+  handleCoordinate: number;
 };
 type NewHandlePositionData = {
   availableSpace: Coords;

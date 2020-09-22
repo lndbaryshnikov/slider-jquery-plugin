@@ -7,10 +7,10 @@ type CompleteUserOptions = UserOptions & { styles?: MainStyles & { tooltip?: str
 
 class Presenter {
   constructor(private view: MainView, private model: Model) {
-    model.whenOptionsSet(this.updateView.bind(this));
-    model.whenOptionsIncorrect(this.showError.bind(this));
-    view.whenValueChanged(this.validateNewValue.bind(this));
-    model.whenValueUpdated(this.updateValue.bind(this));
+    model.whenOptionsSet(this.updateView);
+    model.whenOptionsIncorrect(this.showError);
+    view.whenValueChanged(this.validateNewValue);
+    model.whenValueUpdated(this.updateValue);
   }
 
   getModel(): Model {
@@ -77,23 +77,23 @@ class Presenter {
     this.view.destroy();
   }
 
-  updateView(): void {
+  updateView = (): void => {
     const options = this.model.getOptions();
 
     this.view.setOptions(options);
   }
 
-  showError(errorObject: ErrorObject): void {
+  showError = (errorObject: ErrorObject): void => {
     const handler = (message: string): void => { throw new Error(message); };
 
     new ErrorHandler(handler).throw(errorObject);
   }
 
-  validateNewValue(value: Options['value']): void {
+  validateNewValue = (value: Options['value']): void => {
     this.model.refreshValue(value);
   }
 
-  updateValue(): void {
+  updateValue = (): void => {
     const options = this.model.getOptions();
     const { value, change } = options;
 

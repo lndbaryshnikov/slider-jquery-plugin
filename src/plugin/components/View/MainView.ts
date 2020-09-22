@@ -115,10 +115,10 @@ class MainView {
     this.updateTooltips();
   }
 
-  refreshValue({ handleCoordinate, handleNumber }: {
+  refreshValue = ({ handleCoordinate, handleNumber }: {
     handleCoordinate: number;
     handleNumber?: 'first' | 'second';
-  }): void {
+  }): void => {
     const maybeFirstOrClosest = this.options.range !== true
       ? 'first'
       : this.getClosestHandleNumber(handleCoordinate);
@@ -198,8 +198,8 @@ class MainView {
 
     const setHandle = (handle: HandleView): void => {
       handle.stickTo(this.root);
-      handle.whenMouseDown(this.allowHandleMoving.bind(this));
-      handle.whenHandleMoved(this.refreshValue.bind(this));
+      handle.whenMouseDown(this.allowHandleMoving);
+      handle.whenHandleMoved(this.refreshValue);
       handle.setModifiers(handleModifiers);
     };
 
@@ -281,10 +281,10 @@ class MainView {
     }
   }
 
-  private allowHandleMoving({ handleNumber, cursorShift }: {
+  private allowHandleMoving = ({ handleNumber, cursorShift }: {
     handleNumber: HandleNumber;
     cursorShift: Shift;
-  }): void {
+  }): void => {
     this.cleanUITransition();
 
     const { firstHandle, secondHandle } = this.components;
