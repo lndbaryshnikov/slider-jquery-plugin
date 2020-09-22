@@ -78,9 +78,11 @@ export default class SliderPanel {
     try {
       this.slider.setOptions(newSliderOptions);
 
-      newPanelOptions.forEach((valueObject) => {
-        this.configPanel.setValue(valueObject);
-      });
+      if (newPanelOptions) {
+        newPanelOptions.forEach((valueObject) => {
+          this.configPanel.setValue(valueObject);
+        });
+      }
     } catch (error) {
       this.configPanel.setValue({
         option,

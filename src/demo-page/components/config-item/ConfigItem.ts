@@ -48,7 +48,7 @@ class ConfigItem {
 
       options.forEach((optionItem: string): void => {
         const optionElement = document.createElement('option');
-        optionElement.setAttribute('class', 'select-option');
+        optionElement.setAttribute('class', 'config-item__select-option');
 
         optionElement.value = optionItem;
         optionElement.innerHTML = optionItem;
