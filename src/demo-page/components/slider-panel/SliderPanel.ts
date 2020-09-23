@@ -20,8 +20,8 @@ export default class SliderPanel {
 
   constructor(private wrapper: HTMLDivElement) {
     this.defineElements();
-    this.slider.setOptions({ change: this.handleSliderValueChange.bind(this) });
-    this.configPanel.whenOptionValueChange(this.refreshSlider.bind(this));
+    this.slider.setOptions({ change: this.handleSliderValueChange });
+    this.configPanel.whenOptionValueChange(this.refreshSlider);
   }
 
   private defineElements(): void {
@@ -48,11 +48,11 @@ export default class SliderPanel {
     this.slider = slider;
   }
 
-  private handleSliderValueChange(value: number | [number, number]): void {
+  private handleSliderValueChange = (value: number | [number, number]): void => {
     this.configPanel.setValue({ option: 'value', value });
   }
 
-  private refreshSlider({ option, value: panelValue }: ValueObject): void {
+  private refreshSlider = ({ option, value: panelValue }: ValueObject): void => {
     const lastOptions = this.slider.getOptions();
 
     let newOptions: NewOptions;
